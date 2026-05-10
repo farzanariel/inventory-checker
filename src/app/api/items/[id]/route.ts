@@ -1,0 +1,147 @@
+/**
+ * /api/items/:id — PATCH (partial update) and DELETE.
+ *
+ * SPEC §10. PATCH validates fields with Zod. Toggling enabled false→true
+ * resets next_check_due_at so the worker picks it up immediately.
+ */
+
+import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+import { getDb } from "@/lib/db/client";
+import { items, type Item } from "@/lib/db/schema";
+
+const UpdateItemSchema = z
+  .object({
+    check_interval_min: z.number().int().min(1).max(60).optional(),
+    restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
+    enabled: z.boolean().optional(),
+    note: z.string().max(500).nullable().optional(),
+  })
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: "At least one field is required",
+  });
+
+function firstZodIssue(err: z.ZodError): string {
+  const issue = err.issues[0];
+  if (!issue) return "Invalid request body";
+  const path = issue.path.length > 0 ? `${issue.path.join(".")}: ` : "";
+  return `${path}${issue.message}`;
+}
+
+function parseId(raw: string): number | null {
+  const n = Number.parseInt(raw, 10);
+  if (Number.isNaN(n) || n <= 0) return null;
+  return n;
+}
+
+export async function PATCH(
+  req: NextRequest,
+  ctx: RouteContext<"/api/items/[id]">,
+) {
+  const { id: rawId } = await ctx.params;
+  const id = parseId(rawId);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const parsed = UpdateItemSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: firstZodIssue(parsed.error) },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const db = getDb();
+    const existing = db
+      .select()
+      .from(items)
+      .where(eq(items.id, id))
+      .get() as Item | undefined;
+
+    if (!existing) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    const now = Date.now();
+    const patch: Partial<Item> = { updatedAt: now };
+
+    if (parsed.data.check_interval_min !== undefined) {
+      patch.checkIntervalMin = parsed.data.check_interval_min;
+    }
+    if (parsed.data.restock_notify_interval_min !== undefined) {
+      patch.restockNotifyIntervalMin = parsed.data.restock_notify_interval_min;
+    }
+    if (parsed.data.note !== undefined) {
+      patch.note = parsed.data.note;
+    }
+    if (parsed.data.enabled !== undefined) {
+      const newEnabled = parsed.data.enabled ? 1 : 0;
+      patch.enabled = newEnabled;
+      // If we just re-enabled a disabled item, schedule it for immediate pickup.
+      if (newEnabled === 1 && existing.enabled === 0) {
+        patch.nextCheckDueAt = now;
+      }
+    }
+
+    const updated = db
+      .update(items)
+      .set(patch)
+      .where(eq(items.id, id))
+      .returning()
+      .get();
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("[PATCH /api/items/:id]", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  ctx: RouteContext<"/api/items/[id]">,
+) {
+  const { id: rawId } = await ctx.params;
+  const id = parseId(rawId);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+
+  try {
+    const db = getDb();
+    const deleted = db
+      .delete(items)
+      .where(eq(items.id, id))
+      .returning({ id: items.id })
+      .get();
+
+    if (!deleted) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[DELETE /api/items/:id]", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}

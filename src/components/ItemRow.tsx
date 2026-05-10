@@ -1,0 +1,344 @@
+"use client";
+
+/**
+ * ItemRow — single dense row in the watchlist.
+ *
+ * Layout (SPEC §11):
+ *  Desktop: one row line-1 = name … price · STATUS · ⋯
+ *           line-2 = SKU · interval · last-checked
+ *  Mobile:  line-1 = name (truncated) … ⋯
+ *           line-2 = price · STATUS · SKU · interval · last (mono, secondary)
+ *
+ * Polish:
+ *  - tabular-nums on every numeric value
+ *  - IN STOCK gets a 1px-wide × 12px-tall left accent bar
+ *  - hover reveals ⋯ on desktop; always visible on mobile
+ *  - row-flash animation when lastCheckedAt changes (key-driven)
+ *  - active:bg lift on touch
+ */
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { StatusDot } from "@/components/StatusDot";
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
+import { EditItemDialog } from "@/components/EditItemDialog";
+import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
+import { useIsDesktop } from "@/hooks/use-media-query";
+import { checkNow, patchItem } from "@/lib/api";
+import type { Item } from "@/lib/db/schema";
+import {
+  formatInterval,
+  formatPrice,
+  formatRelativeTime,
+} from "@/lib/format";
+import type {
+  HealthStatus,
+  StockStatus,
+} from "@/components/StatusDot";
+
+type Props = {
+  item: Item;
+  onChanged: () => void;
+};
+
+function badgeLabel(item: Item): string {
+  if (item.healthStatus === "ERROR") return "ERROR";
+  if (item.healthStatus === "DEGRADED") return "DEGRADED";
+  switch (item.lastStockStatus) {
+    case "IN_STOCK":
+      return "IN STOCK";
+    case "OUT_OF_STOCK":
+      return "OOS";
+    case "UNKNOWN":
+      return "UNKNOWN";
+    default:
+      return "—";
+  }
+}
+
+function badgeColorVar(item: Item): string {
+  if (item.healthStatus === "ERROR") return "var(--color-status-error)";
+  if (item.healthStatus === "DEGRADED") return "var(--color-status-degraded)";
+  if (item.lastStockStatus === "IN_STOCK") return "var(--color-status-in)";
+  return "var(--color-status-out)";
+}
+
+export function ItemRow({ item, onChanged }: Props) {
+  const [editOpen, setEditOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [flashing, setFlashing] = useState(false);
+  const lastCheckedRef = useRef(item.lastCheckedAt);
+  const isDesktop = useIsDesktop();
+
+  const isPaused = item.enabled === 0;
+  const stockStatus = item.lastStockStatus as StockStatus;
+  const healthStatus = item.healthStatus as HealthStatus;
+  const showInStockAccent =
+    item.healthStatus === "OK" && item.lastStockStatus === "IN_STOCK";
+
+  // Trigger row-flash whenever lastCheckedAt advances. Avoids first-mount flash.
+  // Toggle flashing on for the keyframe duration, then back off — the className
+  // restart triggers a fresh animation. We use a state flag (no `key` on the
+  // wrapper) so the dropdown-menu and dialogs aren't unmounted on every poll.
+  useEffect(() => {
+    const prev = lastCheckedRef.current;
+    if (prev != null && item.lastCheckedAt != null && item.lastCheckedAt !== prev) {
+      setFlashing(false);
+      // Re-trigger the animation on the next frame so the className transition fires.
+      const id = window.requestAnimationFrame(() => setFlashing(true));
+      const off = window.setTimeout(() => setFlashing(false), 950);
+      lastCheckedRef.current = item.lastCheckedAt;
+      return () => {
+        window.cancelAnimationFrame(id);
+        window.clearTimeout(off);
+      };
+    }
+    lastCheckedRef.current = item.lastCheckedAt;
+  }, [item.lastCheckedAt]);
+
+  async function handleCheckNow() {
+    setBusy(true);
+    try {
+      const result = await checkNow(item.id);
+      const stock = result.item.lastStockStatus;
+      const health = result.item.healthStatus;
+      if (health === "ERROR") {
+        toast.error(`Check failed: ${result.item.lastHealthMessage ?? "error"}`);
+      } else if (stock === "IN_STOCK") {
+        toast.success("Checked: in stock");
+      } else if (stock === "OUT_OF_STOCK") {
+        toast.success("Checked: out of stock");
+      } else {
+        toast.success(`Checked: ${result.outcome}`);
+      }
+      onChanged();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Check failed";
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleTogglePause() {
+    setBusy(true);
+    try {
+      await patchItem(item.id, { enabled: isPaused });
+      toast.success(isPaused ? "Resumed" : "Paused");
+      onChanged();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed";
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Line-2 secondary text
+  const consecutiveErrorsLine =
+    item.consecutiveErrors >= 3
+      ? `${item.consecutiveErrors} consecutive errors`
+      : null;
+
+  const priceLabel = formatPrice(item.currentPriceCents);
+  const intervalLabel = formatInterval(item.checkIntervalMin);
+  const relativeLabel = formatRelativeTime(item.lastCheckedAt);
+
+  return (
+    <>
+      <div
+        tabIndex={0}
+        role="button"
+        aria-label={`Open details for ${item.name ?? `SKU ${item.sku}`}`}
+        onClick={() => setEditOpen(true)}
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setEditOpen(true);
+          }
+        }}
+        className={`group relative flex items-center gap-3 px-1 py-2.5 min-h-12 cursor-pointer transition-colors duration-150 hover:bg-white/[0.02] active:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
+          flashing ? "row-flash" : ""
+        } ${isPaused ? "opacity-60" : ""}`}
+      >
+        {/* IN STOCK accent — 1px wide × 12px tall, sits flush at left edge. */}
+        {showInStockAccent ? (
+          <span
+            aria-hidden="true"
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-3 w-px"
+            style={{ backgroundColor: "var(--color-status-in)" }}
+          />
+        ) : null}
+
+        {/* dot — baseline-aligned with line-1 text via flex items-center on parent */}
+        <div className="pl-2 pr-1 self-center">
+          <StatusDot
+            stockStatus={stockStatus}
+            healthStatus={healthStatus}
+          />
+        </div>
+
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.name ?? `SKU ${item.sku}`}
+            width={40}
+            height={40}
+            className="size-10 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+          />
+        ) : null}
+
+        {/* main content — two lines */}
+        <div className="min-w-0 flex-1">
+          {/* line 1 */}
+          <div className="flex items-baseline gap-3">
+            <span
+              className="truncate text-sm font-medium text-foreground"
+              title={item.name ?? `SKU ${item.sku}`}
+            >
+              {item.name ?? `SKU ${item.sku}`}
+            </span>
+            {/* Desktop only: price + status pill on line 1, right-aligned. */}
+            <span className="ml-auto hidden md:inline font-mono text-sm tabular-nums text-foreground">
+              {priceLabel}
+            </span>
+            <span
+              className="hidden md:inline font-mono text-[11px] uppercase tracking-wider w-[5.5rem] text-right"
+              style={{ color: badgeColorVar(item) }}
+            >
+              {badgeLabel(item)}
+            </span>
+          </div>
+
+          {/* line 2 — mobile lifts price + status here; desktop keeps SKU + interval + last */}
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
+            {/* Mobile-only: price + status appear first on line 2. */}
+            <span className="md:hidden font-mono text-xs tabular-nums text-foreground">
+              {priceLabel}
+            </span>
+            <span
+              className="md:hidden font-mono text-[10px] uppercase tracking-wider"
+              style={{ color: badgeColorVar(item) }}
+            >
+              {badgeLabel(item)}
+            </span>
+            <span aria-hidden="true" className="md:hidden">·</span>
+
+            <span className="tabular-nums">SKU {item.sku}</span>
+            <span aria-hidden="true">·</span>
+            <span className="tabular-nums">{intervalLabel}</span>
+            <span aria-hidden="true">·</span>
+            {consecutiveErrorsLine ? (
+              <span
+                className="tabular-nums"
+                style={{ color: "var(--color-status-error)" }}
+              >
+                {consecutiveErrorsLine}
+              </span>
+            ) : (
+              <span className="tabular-nums">last {relativeLabel}</span>
+            )}
+            {isPaused ? (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>paused</span>
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        {/* dropdown trigger — always visible on mobile, hover-reveal on desktop */}
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-10 md:size-7 font-mono text-base text-muted-foreground hover:text-foreground md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100 md:aria-expanded:opacity-100 transition-opacity"
+                disabled={busy}
+                aria-label="Item actions"
+              />
+            }
+          >
+            ⋯
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={4}
+            className="w-52 md:w-44"
+          >
+            <DropdownMenuItem onClick={handleCheckNow}>
+              check now
+              {isDesktop ? (
+                <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+              ) : null}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              edit
+              {isDesktop ? (
+                <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+              ) : null}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleTogglePause}>
+              {isPaused ? "resume" : "pause"}
+              {isDesktop ? (
+                <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
+              ) : null}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
+              view history
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                window.open(item.productUrl, "_blank", "noopener,noreferrer");
+              }}
+            >
+              open on best buy
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setDeleteOpen(true)}
+            >
+              delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      <EditItemDialog
+        item={item}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        onSaved={onChanged}
+      />
+      <ItemHistoryDialog
+        item={item}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+      />
+      <ConfirmDeleteDialog
+        item={item}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onDeleted={onChanged}
+      />
+    </>
+  );
+}
