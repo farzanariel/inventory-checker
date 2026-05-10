@@ -19,6 +19,9 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: process.env.PORT || '3000',
+        // Bind to localhost; expect a reverse-proxy / Cloudflare Tunnel in front.
+        // Override with HOSTNAME=0.0.0.0 in shell env if a different setup is needed.
+        HOSTNAME: process.env.HOSTNAME || '127.0.0.1',
       },
       out_file: path.join(__dirname, 'logs', 'app.out.log'),
       error_file: path.join(__dirname, 'logs', 'app.err.log'),
