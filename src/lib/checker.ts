@@ -4,21 +4,6 @@
  * The Best Buy fetch happens BEFORE this is called — never inside the
  * transaction. This file is the single source of truth for what one
  * `ProductResult` does to one `items` row.
- *
- * Pipeline (per item):
- *   1. (caller) fetchProducts(...) — outside any DB lock
- *   2. BEGIN IMMEDIATE
- *   3. SELECT items WHERE id = ?
- *   4. Decide new state + notification intent
- *   5. UPDATE items
- *   6. INSERT stock_events row(s) for transitions/errors
- *   7. COMMIT
- *   8. (post-commit) Fire Discord webhook if intent != null
- *   9. (post-commit) Insert NOTIFIED audit row recording webhook outcome
- *
- * Re-reading the row inside the transaction is the dedupe guarantee against
- * concurrent worker-vs-check-now invocations: the second caller observes the
- * first caller's `last_notified_at` and downgrades 'alert' → null.
  */
 
 import { eq } from "drizzle-orm";
@@ -33,40 +18,37 @@ import {
   type StockStatus,
 } from "./bestbuy";
 import {
+  type PriceDropContext,
+  sendCombinedAlert,
+  sendPriceDropAlert,
   sendReminder,
   sendRestockAlert,
   type AlertContext,
 } from "./discord";
 import { getSettings } from "./settings";
 
+export type NotificationKind =
+  | "alert"
+  | "reminder"
+  | "price_drop"
+  | "combined"
+  | null;
+
 export type CheckOutcome = {
-  /** Stock state changed compared to last_stock_status */
   transitioned: boolean;
-  /** Notification fired post-commit (or attempted to) */
-  notification: "alert" | "reminder" | null;
-  /** Whether the post-commit webhook send succeeded — null if no webhook attempted */
+  notification: NotificationKind;
   webhookOk: boolean | null;
-  /** Human-readable explanation, useful for logs and tests */
   reason: string;
 };
 
 export type ApplyOptions = {
-  /** Override the drizzle db (used in tests with in-memory SQLite). Defaults to getDb(). */
   db?: ReturnType<typeof getDb>;
-  /** Override "now" timestamp (unix ms). Defaults to Date.now(). */
   now?: number;
-  /** Override webhook URL. Defaults to settings (DB → env fallback). */
   webhookUrl?: string;
-  /** Override webhook username. Defaults to settings (DB → built-in default). */
   webhookUsername?: string;
-  /** Suppress the post-commit webhook fire (used in tests). Default false. */
   suppressWebhook?: boolean;
 };
 
-/**
- * Compute next_check_due_at with ±10% jitter applied to the per-item interval.
- * Formula: now + intervalMin * 60_000 * (0.9 + Math.random() * 0.2)
- */
 export function computeNextCheckDueAt(
   now: number,
   checkIntervalMin: number,
@@ -75,45 +57,182 @@ export function computeNextCheckDueAt(
   return now + Math.round(checkIntervalMin * 60_000 * jitter);
 }
 
+type TxnEvent =
+  | { kind: "transition"; status: StockStatus; buttonState?: string; priceCents?: number }
+  | { kind: "error"; message: string }
+  | null;
+
 type DecisionOutput = {
-  /** Patch to apply via UPDATE items SET ... */
   patch: Partial<Item>;
-  /** New stock_status post-decision (used to detect transition) */
   newStockStatus: StockStatus;
-  /** Did stock_status actually change vs. fresh row? */
   transitioned: boolean;
-  /** Intended notification (pre-webhook) */
-  notification: "alert" | "reminder" | null;
-  /** Should we insert a transition / error stock_events row inside the txn? */
-  insideTxnEvent:
-    | { kind: "transition"; status: StockStatus; buttonState?: string; priceCents?: number }
-    | { kind: "error"; message: string }
+  stockNotification: "alert" | "reminder" | null;
+  priceNotification: "price_drop" | null;
+  notification: NotificationKind;
+  insideTxnEvent: TxnEvent;
+  priceEvent:
+    | {
+        kind: "price_drop";
+        buttonState?: string;
+        oldPriceCents: number;
+        newPriceCents: number;
+      }
     | null;
   reason: string;
 };
 
-/**
- * Pure decision function — no DB. Given the fresh row + just-fetched result,
- * compute the patch + transition + notification intent.
- */
-function decide(item: Item, result: ProductResult, now: number): DecisionOutput {
-  const nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin);
+type PriceAlertDecision = {
+  patch: Partial<Item>;
+  notification: "price_drop" | null;
+  reason: string;
+  event:
+    | { kind: "price_drop"; oldPriceCents: number; newPriceCents: number }
+    | null;
+};
 
-  // Result shape error / invalid SKU — same handling as a network failure (§6.5/§6.6).
-  // Also: if buttonState is unknown, treat as ERROR (don't corrupt stock state).
-  if (!result.ok) {
-    return errorDecision(item, result.error, now, nextCheckDueAt);
+function combineNotifications(
+  stockNotification: "alert" | "reminder" | null,
+  priceNotification: "price_drop" | null,
+): NotificationKind {
+  if (stockNotification && priceNotification) return "combined";
+  return stockNotification ?? priceNotification;
+}
+
+export function decidePriceAlert(
+  item: Item,
+  currentPriceCents: number,
+  newStockStatus: StockStatus,
+  now: number,
+): PriceAlertDecision {
+  if (item.priceAlertEnabled !== 1) {
+    return {
+      patch: {
+        pendingLowerPriceCents: null,
+        pendingLowerSeenCount: 0,
+      },
+      notification: null,
+      reason: "price alerts disabled",
+      event: null,
+    };
   }
 
-  const newStockStatus = interpretStock(result.buttonState);
-  if (newStockStatus === "UNKNOWN") {
-    // Got data but buttonState is unrecognized — treat as ERROR but record button_state for diagnostics.
-    const dec = errorDecision(item, "Invalid response shape", now, nextCheckDueAt);
-    dec.patch.lastButtonState = result.buttonState;
-    return dec;
+  if (item.baselinePriceCents == null) {
+    return {
+      patch: {
+        baselinePriceCents: currentPriceCents,
+        baselineSetAt: now,
+        pendingLowerPriceCents: null,
+        pendingLowerSeenCount: 0,
+      },
+      notification: null,
+      reason: "price baseline initialized",
+      event: null,
+    };
   }
 
-  // Got a fresh, parseable result.
+  const baseline = item.baselinePriceCents;
+  if (currentPriceCents >= baseline) {
+    return {
+      patch: {
+        pendingLowerPriceCents: null,
+        pendingLowerSeenCount: 0,
+      },
+      notification: null,
+      reason: "candidate >= baseline",
+      event: null,
+    };
+  }
+
+  const pctThreshold = Math.round((baseline * item.priceDropThresholdPct) / 100);
+  const threshold = Math.max(pctThreshold, item.priceDropThresholdCents);
+  const delta = baseline - currentPriceCents;
+
+  const trackCandidate = (): Partial<Item> => {
+    const prev = item.pendingLowerPriceCents;
+    if (prev !== currentPriceCents) {
+      return {
+        pendingLowerPriceCents: currentPriceCents,
+        pendingLowerSeenCount: 1,
+      };
+    }
+    return {
+      pendingLowerPriceCents: currentPriceCents,
+      pendingLowerSeenCount: item.pendingLowerSeenCount + 1,
+    };
+  };
+
+  if (delta < threshold) {
+    return {
+      patch: trackCandidate(),
+      notification: null,
+      reason: "price drop below threshold",
+      event: null,
+    };
+  }
+
+  const cooldownMs = item.priceNotifyIntervalMin * 60_000;
+  const inCooldown =
+    item.lastPriceNotifiedAt != null && now - item.lastPriceNotifiedAt < cooldownMs;
+  const suppressWhileOos = item.priceAlertWhileOos !== 1 && newStockStatus === "OUT_OF_STOCK";
+
+  if (inCooldown || suppressWhileOos) {
+    return {
+      patch: trackCandidate(),
+      notification: null,
+      reason: inCooldown ? "price cooldown active" : "price alerts suppressed while OOS",
+      event: null,
+    };
+  }
+
+  if (item.pendingLowerPriceCents !== currentPriceCents) {
+    return {
+      patch: {
+        pendingLowerPriceCents: currentPriceCents,
+        pendingLowerSeenCount: 1,
+      },
+      notification: null,
+      reason: "price candidate first hit",
+      event: null,
+    };
+  }
+
+  if (item.pendingLowerSeenCount + 1 < 2) {
+    return {
+      patch: {
+        pendingLowerPriceCents: currentPriceCents,
+        pendingLowerSeenCount: item.pendingLowerSeenCount + 1,
+      },
+      notification: null,
+      reason: "price candidate awaiting second consecutive hit",
+      event: null,
+    };
+  }
+
+  return {
+    patch: {
+      baselinePriceCents: currentPriceCents,
+      baselineSetAt: now,
+      lastPriceNotifiedAt: now,
+      pendingLowerPriceCents: null,
+      pendingLowerSeenCount: 0,
+    },
+    notification: "price_drop",
+    reason: "price drop threshold met and confirmed",
+    event: {
+      kind: "price_drop",
+      oldPriceCents: baseline,
+      newPriceCents: currentPriceCents,
+    },
+  };
+}
+
+function decideStock(
+  item: Item,
+  result: Extract<ProductResult, { ok: true }>,
+  newStockStatus: StockStatus,
+  now: number,
+  nextCheckDueAt: number,
+): Omit<DecisionOutput, "priceNotification" | "notification" | "priceEvent"> {
   const prev: StockStatus = item.lastStockStatus as StockStatus;
 
   const patch: Partial<Item> = {
@@ -132,7 +251,6 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
     updatedAt: now,
   };
 
-  // State transitions
   if (prev === "UNKNOWN" && newStockStatus === "IN_STOCK") {
     patch.lastStockStatus = "IN_STOCK";
     patch.lastInStockAt = now;
@@ -141,7 +259,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
       patch,
       newStockStatus,
       transitioned: true,
-      notification: "alert",
+      stockNotification: "alert",
       insideTxnEvent: {
         kind: "transition",
         status: "IN_STOCK",
@@ -158,7 +276,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
       patch,
       newStockStatus,
       transitioned: true,
-      notification: null,
+      stockNotification: null,
       insideTxnEvent: {
         kind: "transition",
         status: "OUT_OF_STOCK",
@@ -177,7 +295,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
       patch,
       newStockStatus,
       transitioned: true,
-      notification: "alert",
+      stockNotification: "alert",
       insideTxnEvent: {
         kind: "transition",
         status: "IN_STOCK",
@@ -189,11 +307,9 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
   }
 
   if (prev === "IN_STOCK" && newStockStatus === "IN_STOCK") {
-    // Steady state in stock — possible reminder.
     const intervalMs = item.restockNotifyIntervalMin * 60_000;
     const last = item.lastNotifiedAt;
-    const dueForReminder =
-      last == null || now - last >= intervalMs;
+    const dueForReminder = last == null || now - last >= intervalMs;
 
     if (dueForReminder) {
       patch.lastNotifiedAt = now;
@@ -202,7 +318,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
         patch,
         newStockStatus,
         transitioned: false,
-        notification: "reminder",
+        stockNotification: "reminder",
         insideTxnEvent: null,
         reason: "IN_STOCK steady (reminder window elapsed)",
       };
@@ -213,7 +329,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
       patch,
       newStockStatus,
       transitioned: false,
-      notification: null,
+      stockNotification: null,
       insideTxnEvent: null,
       reason: "IN_STOCK steady (within reminder window)",
     };
@@ -221,12 +337,12 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
 
   if (prev === "IN_STOCK" && newStockStatus === "OUT_OF_STOCK") {
     patch.lastStockStatus = "OUT_OF_STOCK";
-    patch.lastNotifiedAt = null; // reset so next out->in fires immediately
+    patch.lastNotifiedAt = null;
     return {
       patch,
       newStockStatus,
       transitioned: true,
-      notification: null,
+      stockNotification: null,
       insideTxnEvent: {
         kind: "transition",
         status: "OUT_OF_STOCK",
@@ -237,12 +353,11 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
     };
   }
 
-  // OUT_OF_STOCK -> OUT_OF_STOCK (steady-state OOS, no event)
   return {
     patch,
     newStockStatus,
     transitioned: false,
-    notification: null,
+    stockNotification: null,
     insideTxnEvent: null,
     reason: "OUT_OF_STOCK steady",
   };
@@ -272,17 +387,62 @@ function errorDecision(
     patch,
     newStockStatus: item.lastStockStatus as StockStatus,
     transitioned: false,
+    stockNotification: null,
+    priceNotification: null,
     notification: null,
     insideTxnEvent: { kind: "error", message: errorMessage },
+    priceEvent: null,
     reason: `Error: ${errorMessage} (consecutive_errors=${newConsecutive}, health=${healthStatus})`,
   };
 }
 
-/**
- * Apply a single product check result to the database for one item.
- * Pipeline: BEGIN IMMEDIATE → re-read item → decide → update → insert event(s) → COMMIT → fire webhook.
- * The Best Buy fetch happens BEFORE this is called — never inside the transaction (per SPEC §7.5).
- */
+function decide(item: Item, result: ProductResult, now: number): DecisionOutput {
+  const nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin);
+
+  if (!result.ok) {
+    return errorDecision(item, result.error, now, nextCheckDueAt);
+  }
+
+  const newStockStatus = interpretStock(result.buttonState);
+  if (newStockStatus === "UNKNOWN") {
+    const dec = errorDecision(item, "Invalid response shape", now, nextCheckDueAt);
+    dec.patch.lastButtonState = result.buttonState;
+    return dec;
+  }
+
+  const stockDec = decideStock(item, result, newStockStatus, now, nextCheckDueAt);
+  const priceDec = decidePriceAlert(item, result.currentPriceCents, newStockStatus, now);
+
+  const patch: Partial<Item> = {
+    ...stockDec.patch,
+    ...priceDec.patch,
+  };
+
+  const notification = combineNotifications(stockDec.stockNotification, priceDec.notification);
+
+  const priceEvent =
+    priceDec.event == null
+      ? null
+      : {
+          kind: "price_drop" as const,
+          buttonState: result.buttonState,
+          oldPriceCents: priceDec.event.oldPriceCents,
+          newPriceCents: priceDec.event.newPriceCents,
+        };
+
+  return {
+    patch,
+    newStockStatus,
+    transitioned: stockDec.transitioned,
+    stockNotification: stockDec.stockNotification,
+    priceNotification: priceDec.notification,
+    notification,
+    insideTxnEvent: stockDec.insideTxnEvent,
+    priceEvent,
+    reason: `${stockDec.reason}; ${priceDec.reason}`,
+  };
+}
+
 export async function applyCheckResult(
   itemId: number,
   result: ProductResult,
@@ -298,11 +458,6 @@ export async function applyCheckResult(
   const webhookUsername = opts.webhookUsername ?? resolved.discordUsername;
   const suppressWebhook = opts.suppressWebhook === true;
 
-  // ---- main transaction: read-decide-write-events-COMMIT ----
-  // Drizzle's better-sqlite3 driver maps `behavior: 'immediate'` to
-  // `betterSqliteTransaction.immediate(tx)`, which issues `BEGIN IMMEDIATE`.
-  // See: drizzle-orm/better-sqlite3/session.js line 40 —
-  //   `return nativeTx[config.behavior ?? "deferred"](tx);`
   let decision: DecisionOutput | null = null;
   let updatedItem: Item | null = null;
 
@@ -315,7 +470,6 @@ export async function applyCheckResult(
         .get() as Item | undefined;
 
       if (!fresh) {
-        // Item was deleted between fetch and apply. Bail out cleanly.
         decision = null;
         return;
       }
@@ -351,7 +505,19 @@ export async function applyCheckResult(
         }
       }
 
-      // Re-read the post-update row so we have a coherent snapshot for the webhook.
+      if (dec.priceEvent) {
+        tx.insert(stockEvents)
+          .values({
+            itemId,
+            status: "PRICE_DROP",
+            buttonState: dec.priceEvent.buttonState ?? null,
+            priceCents: dec.priceEvent.newPriceCents,
+            message: `${dec.priceEvent.oldPriceCents} -> ${dec.priceEvent.newPriceCents}`,
+            ts: now,
+          })
+          .run();
+      }
+
       updatedItem = tx
         .select()
         .from(items)
@@ -370,11 +536,9 @@ export async function applyCheckResult(
     };
   }
 
-  // Decision is non-null below; assert for TS.
   const dec: DecisionOutput = decision;
   const item: Item | null = updatedItem;
 
-  // ---- post-commit webhook fire (if any) ----
   if (dec.notification == null) {
     return {
       transitioned: dec.transitioned,
@@ -394,7 +558,6 @@ export async function applyCheckResult(
   }
 
   if (!item) {
-    // Should not happen — we just updated it. Defensive.
     return {
       transitioned: dec.transitioned,
       notification: dec.notification,
@@ -405,7 +568,7 @@ export async function applyCheckResult(
 
   const ctx = buildAlertContext(item);
 
-  let webhookOk: boolean;
+  let webhookOk = false;
   let webhookErr: string | null = null;
 
   if (!webhookUrl) {
@@ -415,21 +578,38 @@ export async function applyCheckResult(
       `[checker] item ${itemId}: ${dec.notification} fire skipped — no DISCORD_WEBHOOK_URL configured`,
     );
   } else {
-    const send =
-      dec.notification === "alert"
-        ? await sendRestockAlert(webhookUrl, ctx, webhookUsername)
-        : await sendReminder(webhookUrl, ctx, webhookUsername);
-    if (send.ok) {
-      webhookOk = true;
+    let send;
+    if (dec.notification === "alert") {
+      send = await sendRestockAlert(webhookUrl, ctx, webhookUsername);
+    } else if (dec.notification === "reminder") {
+      send = await sendReminder(webhookUrl, ctx, webhookUsername);
+    } else if (dec.notification === "price_drop") {
+      if (ctx.baselinePriceCents == null) {
+        webhookOk = false;
+        webhookErr = "missing baseline for price alert";
+        send = null;
+      } else {
+        send = await sendPriceDropAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
+      }
     } else {
-      webhookOk = false;
-      webhookErr = send.error;
+      if (ctx.baselinePriceCents == null) {
+        webhookOk = false;
+        webhookErr = "missing baseline for combined alert";
+        send = null;
+      } else {
+        send = await sendCombinedAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
+      }
+    }
+    if (send) {
+      if (send.ok) {
+        webhookOk = true;
+      } else {
+        webhookOk = false;
+        webhookErr = send.error;
+      }
     }
   }
 
-  // ---- post-webhook: log NOTIFIED row + (on failure) bump health ----
-  // Use a small second transaction; the main work has already committed so this is
-  // a separate atomic logging step that cannot affect stock state.
   db.transaction(
     (tx) => {
       if (webhookOk) {
@@ -455,7 +635,6 @@ export async function applyCheckResult(
           })
           .run();
 
-        // Bump health to DEGRADED only if not already at ERROR (don't downgrade).
         const fresh = tx
           .select()
           .from(items)
@@ -489,6 +668,7 @@ function buildAlertContext(item: Item): AlertContext {
     sku: item.sku,
     name: item.name ?? `SKU ${item.sku}`,
     currentPriceCents: item.currentPriceCents ?? 0,
+    baselinePriceCents: item.baselinePriceCents ?? undefined,
     buttonState: item.lastButtonState ?? "ADD_TO_CART",
     imageUrl: item.imageUrl ?? imageUrlForSku(item.sku),
     productUrl: item.productUrl,

@@ -38,6 +38,24 @@ export const items = sqliteTable(
     lastInStockAt: integer('last_in_stock_at'),
     lastNotifiedAt: integer('last_notified_at'),
     nextCheckDueAt: integer('next_check_due_at'),
+    priceAlertEnabled: integer('price_alert_enabled').notNull().default(1),
+    priceDropThresholdPct: integer('price_drop_threshold_pct')
+      .notNull()
+      .default(5),
+    priceDropThresholdCents: integer('price_drop_threshold_cents')
+      .notNull()
+      .default(1000),
+    priceNotifyIntervalMin: integer('price_notify_interval_min')
+      .notNull()
+      .default(60),
+    lastPriceNotifiedAt: integer('last_price_notified_at'),
+    baselinePriceCents: integer('baseline_price_cents'),
+    baselineSetAt: integer('baseline_set_at'),
+    priceAlertWhileOos: integer('price_alert_while_oos').notNull().default(1),
+    pendingLowerPriceCents: integer('pending_lower_price_cents'),
+    pendingLowerSeenCount: integer('pending_lower_seen_count')
+      .notNull()
+      .default(0),
     createdAt: integer('created_at').notNull(),
     updatedAt: integer('updated_at').notNull(),
   },

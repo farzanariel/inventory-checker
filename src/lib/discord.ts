@@ -1,10 +1,5 @@
 /**
  * Discord webhook client for the inventory monitor.
- *
- * Per SPEC.md §8: send a rich embed with thumbnail, fields, and a bare cart URL
- * in `content` so Discord unfurls it as a tap-friendly link card. This module
- * is responsible only for formatting and POSTing payloads — it does NOT retry
- * (caller owns retry policy per §7.4) and never throws (returns SendResult).
  */
 
 export type AlertContext = {
@@ -13,11 +8,15 @@ export type AlertContext = {
   brand?: string;
   currentPriceCents: number;
   regularPriceCents?: number;
+  baselinePriceCents?: number;
   buttonState: string;
   imageUrl: string;
   productUrl: string;
   cartUrl: string;
   note?: string;
+};
+export type PriceDropContext = AlertContext & {
+  baselinePriceCents: number;
 };
 
 export type SendResult =
@@ -43,23 +42,8 @@ type WebhookPayload = {
 const WEBHOOK_TIMEOUT_MS = 5000;
 const COLOR_GREEN = 5763719;
 const COLOR_AMBER = 16766720;
-const COLOR_BLUE = 0x3b82f6;
+const COLOR_BLUE = 3900150;
 
-export type PriceDropContext = AlertContext & {
-  baselinePriceCents: number;
-};
-
-function formatPriceDeltaValue(baselineCents: number, currentCents: number): string {
-  const saveCents = baselineCents - currentCents;
-  const pct = Math.round((saveCents / baselineCents) * 100);
-  return `${formatDollars(baselineCents)} → ${formatDollars(currentCents)} (▼ ${pct}%, save ${formatDollars(saveCents)})`;
-}
-
-/**
- * Format a cents amount as a USD price string with thousands separators.
- * If a regular price is provided AND is greater than the current price,
- * appends " (was $Y.YY)".
- */
 export function formatPrice(currentCents: number, regularCents?: number): string {
   const current = formatDollars(currentCents);
   if (regularCents !== undefined && regularCents > currentCents) {
@@ -74,6 +58,12 @@ function formatDollars(cents: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
+}
+
+function formatDropSummary(currentCents: number, baselineCents: number): string {
+  const savedCents = baselineCents - currentCents;
+  const pct = Math.round((savedCents / baselineCents) * 100);
+  return `${formatDollars(baselineCents)} → ${formatDollars(currentCents)} (▼ ${pct}%, save ${formatDollars(savedCents)})`;
 }
 
 const DEFAULT_USERNAME = "Inventory Monitor";
@@ -105,6 +95,39 @@ function buildPayload(
         thumbnail: { url: ctx.imageUrl },
         fields,
         footer: { text: footerText },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+}
+
+function buildPriceDropPayload(
+  ctx: PriceDropContext,
+  combined: boolean,
+  username: string = DEFAULT_USERNAME,
+): WebhookPayload {
+  const baseline = ctx.baselinePriceCents;
+  const fields: EmbedField[] = [
+    { name: "Price", value: formatDropSummary(ctx.currentPriceCents, baseline), inline: true },
+    { name: "SKU", value: ctx.sku, inline: true },
+    { name: "State", value: ctx.buttonState, inline: true },
+    { name: "Baseline", value: formatDollars(baseline), inline: true },
+  ];
+  if (ctx.note) {
+    fields.push({ name: "Note", value: ctx.note, inline: false });
+  }
+
+  return {
+    username,
+    content: ctx.cartUrl,
+    embeds: [
+      {
+        title: `${combined ? "🟢💰 IN STOCK + PRICE DROP —" : "💰 PRICE DROP —"} ${ctx.name}`,
+        url: ctx.productUrl,
+        color: combined ? COLOR_GREEN : COLOR_BLUE,
+        thumbnail: { url: ctx.imageUrl },
+        fields,
+        footer: { text: combined ? "stock + price event • Tap title to open" : "price-drop alert • Tap title to open" },
         timestamp: new Date().toISOString(),
       },
     ],
@@ -162,65 +185,17 @@ export async function sendReminder(
 export async function sendPriceDropAlert(
   webhookUrl: string,
   ctx: PriceDropContext,
-  username: string = DEFAULT_USERNAME,
+  username?: string,
 ): Promise<SendResult> {
-  const priceDelta = formatPriceDeltaValue(ctx.baselinePriceCents, ctx.currentPriceCents);
-  const fields: EmbedField[] = [
-    { name: "Price", value: priceDelta, inline: false },
-    { name: "Baseline", value: formatDollars(ctx.baselinePriceCents), inline: true },
-    { name: "SKU", value: ctx.sku, inline: true },
-  ];
-  if (ctx.note) {
-    fields.push({ name: "Note", value: ctx.note, inline: false });
-  }
-  const payload: WebhookPayload = {
-    username,
-    content: ctx.cartUrl,
-    embeds: [
-      {
-        title: `💰 PRICE DROP — ${ctx.name}`,
-        url: ctx.productUrl,
-        color: COLOR_BLUE,
-        thumbnail: { url: ctx.imageUrl },
-        fields,
-        footer: { text: "Tap title to open • Add-to-cart link below" },
-        timestamp: new Date().toISOString(),
-      },
-    ],
-  };
-  return postWebhook(webhookUrl, payload);
+  return postWebhook(webhookUrl, buildPriceDropPayload(ctx, false, username));
 }
 
 export async function sendCombinedAlert(
   webhookUrl: string,
   ctx: PriceDropContext,
-  username: string = DEFAULT_USERNAME,
+  username?: string,
 ): Promise<SendResult> {
-  const priceDelta = formatPriceDeltaValue(ctx.baselinePriceCents, ctx.currentPriceCents);
-  const fields: EmbedField[] = [
-    { name: "Price", value: priceDelta, inline: true },
-    { name: "SKU", value: ctx.sku, inline: true },
-    { name: "State", value: ctx.buttonState, inline: true },
-  ];
-  if (ctx.note) {
-    fields.push({ name: "Note", value: ctx.note, inline: false });
-  }
-  const payload: WebhookPayload = {
-    username,
-    content: ctx.cartUrl,
-    embeds: [
-      {
-        title: `🟢💰 IN STOCK + PRICE DROP — ${ctx.name}`,
-        url: ctx.productUrl,
-        color: COLOR_GREEN,
-        thumbnail: { url: ctx.imageUrl },
-        fields,
-        footer: { text: "Tap title to open • Add-to-cart link below" },
-        timestamp: new Date().toISOString(),
-      },
-    ],
-  };
-  return postWebhook(webhookUrl, payload);
+  return postWebhook(webhookUrl, buildPriceDropPayload(ctx, true, username));
 }
 
 export async function sendTestAlert(
