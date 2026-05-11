@@ -156,11 +156,11 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
 
       {lookup || lookupLoading || lookupError ? (
         <div
-          className="rounded-lg border border-border bg-card px-3 py-2"
+          className="overflow-hidden rounded-lg border border-border bg-card px-3 py-2"
           aria-live="polite"
         >
           {lookup ? (
-            <div className="flex gap-3">
+            <div className="flex min-w-0 gap-3">
               <Image
                 src={lookup.image_url}
                 alt={lookup.name}
@@ -168,23 +168,23 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                 height={56}
                 className="size-14 shrink-0 rounded-md border border-border bg-white object-contain p-1"
               />
-              <div className="min-w-0 flex flex-1 flex-col gap-1">
-                <div className="flex items-start gap-2">
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <div className="flex min-w-0 items-start gap-2">
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">
                     {lookup.name}
                   </span>
-                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                  <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
                     SKU {lookup.sku}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
-                  {lookup.brand ? <span>{lookup.brand}</span> : null}
+                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
+                  {lookup.brand ? <span className="truncate">{lookup.brand}</span> : null}
                   {lookup.brand ? <span aria-hidden="true">·</span> : null}
                   <span className="tabular-nums">
                     {formatPrice(lookup.current_price_cents)}
                   </span>
                   <span aria-hidden="true">·</span>
-                  <span>{lookup.button_state.replaceAll("_", " ")}</span>
+                  <span className="truncate">{lookup.button_state.replaceAll("_", " ")}</span>
                 </div>
               </div>
             </div>
