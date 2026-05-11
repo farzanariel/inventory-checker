@@ -312,7 +312,7 @@ describe("sendTestAlert", () => {
 const priceCtx: PriceDropContext = {
   ...baseCtx,
   currentPriceCents: 12999,
-  baselinePriceCents: 15999,
+  targetPriceCents: 13000,
 };
 
 describe("sendPriceDropAlert", () => {
@@ -327,10 +327,10 @@ describe("sendPriceDropAlert", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses '💰 PRICE DROP —' title prefix with product name", async () => {
+  it("uses '💰 PRICE TARGET HIT —' title prefix with product name", async () => {
     await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.embeds[0].title).toBe(`💰 PRICE DROP — ${priceCtx.name}`);
+    expect(body.embeds[0].title).toBe(`💰 PRICE TARGET HIT — ${priceCtx.name}`);
   });
 
   it("uses blue color 0x3b82f6 (3,901,179 decimal)", async () => {
@@ -339,31 +339,31 @@ describe("sendPriceDropAlert", () => {
     expect(body.embeds[0].color).toBe(0x3b82f6);
   });
 
-  it("renders price-delta field as '$old → $new (▼ N%, save $X.XX)'", async () => {
+  it("renders price field as '$current (target $X.XX · $Y.YY below)' when below target", async () => {
     await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
     const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
-    expect(priceField?.value).toBe("$159.99 → $129.99 (▼ 19%, save $30.00)");
+    expect(priceField?.value).toBe("$129.99 (target $130.00 · $0.01 below)");
   });
 
-  it("rounds percent and computes exact save amount for representative inputs", async () => {
+  it("renders price field as '$current (target $X.XX)' when exactly at target", async () => {
     await sendPriceDropAlert(WEBHOOK_URL, {
       ...priceCtx,
-      baselinePriceCents: 100000,
-      currentPriceCents: 90000,
+      currentPriceCents: 13000,
+      targetPriceCents: 13000,
     });
     const body = getCallBody(fetchMock) as PayloadShape;
     const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
-    expect(priceField?.value).toBe("$1,000.00 → $900.00 (▼ 10%, save $100.00)");
+    expect(priceField?.value).toBe("$130.00 (target $130.00)");
   });
 
-  it("includes inline Baseline and SKU fields", async () => {
+  it("renders Target inline field with the configured value", async () => {
     await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    const baseline = body.embeds[0].fields.find((f) => f.name === "Baseline");
+    const target = body.embeds[0].fields.find((f) => f.name === "Target");
     const sku = body.embeds[0].fields.find((f) => f.name === "SKU");
-    expect(baseline?.value).toBe("$159.99");
-    expect(baseline?.inline).toBe(true);
+    expect(target?.value).toBe("$130.00");
+    expect(target?.inline).toBe(true);
     expect(sku?.value).toBe(priceCtx.sku);
     expect(sku?.inline).toBe(true);
   });
@@ -399,24 +399,16 @@ describe("sendCombinedAlert", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses '🟢💰 IN STOCK + PRICE DROP —' title prefix", async () => {
+  it("uses '🟢💰 IN STOCK + PRICE TARGET HIT —' title prefix", async () => {
     await sendCombinedAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.embeds[0].title).toBe(`🟢💰 IN STOCK + PRICE DROP — ${priceCtx.name}`);
+    expect(body.embeds[0].title).toBe(`🟢💰 IN STOCK + PRICE TARGET HIT — ${priceCtx.name}`);
   });
 
   it("stays green (primary) for the embed color", async () => {
     await sendCombinedAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
     expect(body.embeds[0].color).toBe(5763719);
-  });
-
-  it("includes the price-delta as an inline field", async () => {
-    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
-    const body = getCallBody(fetchMock) as PayloadShape;
-    const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
-    expect(priceField?.value).toBe("$159.99 → $129.99 (▼ 19%, save $30.00)");
-    expect(priceField?.inline).toBe(true);
   });
 
   it("includes SKU and State inline fields", async () => {

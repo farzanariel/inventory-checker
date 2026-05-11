@@ -19,8 +19,7 @@ const UpdateItemSchema = z
     enabled: z.boolean().optional(),
     note: z.string().max(500).nullable().optional(),
     price_alert_enabled: z.boolean().optional(),
-    price_drop_threshold_pct: z.number().int().min(1).max(99).optional(),
-    price_drop_threshold_cents: z.number().int().min(0).optional(),
+    target_price_cents: z.number().int().min(1).nullable().optional(),
     price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
     price_alert_while_oos: z.boolean().optional(),
   })
@@ -96,11 +95,11 @@ export async function PATCH(
     if (parsed.data.price_alert_enabled !== undefined) {
       patch.priceAlertEnabled = parsed.data.price_alert_enabled ? 1 : 0;
     }
-    if (parsed.data.price_drop_threshold_pct !== undefined) {
-      patch.priceDropThresholdPct = parsed.data.price_drop_threshold_pct;
-    }
-    if (parsed.data.price_drop_threshold_cents !== undefined) {
-      patch.priceDropThresholdCents = parsed.data.price_drop_threshold_cents;
+    if (parsed.data.target_price_cents !== undefined) {
+      patch.targetPriceCents = parsed.data.target_price_cents;
+      // Changing the target invalidates the pending-hit guard counters.
+      patch.pendingHitPriceCents = null;
+      patch.pendingHitSeenCount = 0;
     }
     if (parsed.data.price_notify_interval_min !== undefined) {
       patch.priceNotifyIntervalMin = parsed.data.price_notify_interval_min;

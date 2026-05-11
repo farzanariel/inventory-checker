@@ -116,6 +116,11 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     setError(null);
     setSubmitting(true);
     try {
+      const targetDollarsNum = Number.parseFloat(priceAlert.targetDollars);
+      const targetCents =
+        priceAlert.targetDollars.trim() !== "" && Number.isFinite(targetDollarsNum)
+          ? Math.round(targetDollarsNum * 100)
+          : undefined;
       const created = await createItem({
         input: input.trim(),
         check_interval_min: Number.parseInt(checkInterval, 10) || 1,
@@ -123,10 +128,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           Number.parseInt(restockInterval, 10) || 10,
         note: note.trim() || undefined,
         price_alert_enabled: priceAlert.enabled,
-        price_drop_threshold_pct:
-          Number.parseInt(priceAlert.thresholdPct, 10) || 5,
-        price_drop_threshold_cents:
-          Number.parseInt(priceAlert.thresholdCents, 10) || 1000,
+        ...(targetCents !== undefined && { target_price_cents: targetCents }),
         price_notify_interval_min:
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
         price_alert_while_oos: priceAlert.whileOos,
@@ -263,6 +265,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
         idPrefix="add"
         values={priceAlert}
         onChange={setPriceAlert}
+        currentPriceCents={lookup?.current_price_cents ?? null}
         disabled={submitting}
       />
 

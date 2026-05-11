@@ -68,8 +68,10 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
   const [note, setNote] = useState(item.note ?? "");
   const [priceAlert, setPriceAlert] = useState<PriceAlertValues>({
     enabled: item.priceAlertEnabled === 1,
-    thresholdPct: String(item.priceDropThresholdPct),
-    thresholdCents: String(item.priceDropThresholdCents),
+    targetDollars:
+      item.targetPriceCents != null
+        ? (item.targetPriceCents / 100).toFixed(2)
+        : "",
     notifyIntervalMin: String(item.priceNotifyIntervalMin),
     whileOos: item.priceAlertWhileOos === 1,
   });
@@ -82,16 +84,18 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
     setError(null);
     setSubmitting(true);
     try {
+      const targetDollarsNum = Number.parseFloat(priceAlert.targetDollars);
+      const targetCents =
+        priceAlert.targetDollars.trim() !== "" && Number.isFinite(targetDollarsNum)
+          ? Math.round(targetDollarsNum * 100)
+          : null;
       await patchItem(item.id, {
         check_interval_min: Number.parseInt(checkInterval, 10) || 1,
         restock_notify_interval_min:
           Number.parseInt(restockInterval, 10) || 10,
         note: note.trim() || null,
         price_alert_enabled: priceAlert.enabled,
-        price_drop_threshold_pct:
-          Number.parseInt(priceAlert.thresholdPct, 10) || 5,
-        price_drop_threshold_cents:
-          Number.parseInt(priceAlert.thresholdCents, 10) || 1000,
+        target_price_cents: targetCents,
         price_notify_interval_min:
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
         price_alert_while_oos: priceAlert.whileOos,
@@ -200,6 +204,7 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           idPrefix="edit"
           values={priceAlert}
           onChange={setPriceAlert}
+          currentPriceCents={item.currentPriceCents}
           disabled={submitting}
         />
 

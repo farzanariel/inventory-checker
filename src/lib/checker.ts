@@ -98,6 +98,16 @@ function combineNotifications(
   return stockNotification ?? priceNotification;
 }
 
+/**
+ * Target-price decision (SPEC §19 v5).
+ *
+ * Fires when `currentPriceCents <= item.targetPriceCents` for two consecutive
+ * checks at the same value (stale-price guard, defends against API flicker),
+ * the per-item cooldown has elapsed, and the while-OOS toggle permits it.
+ *
+ * `event.oldPriceCents` carries the configured target (for embed display);
+ * `event.newPriceCents` carries the actual hit price.
+ */
 export function decidePriceAlert(
   item: Item,
   currentPriceCents: number,
@@ -106,121 +116,92 @@ export function decidePriceAlert(
 ): PriceAlertDecision {
   if (item.priceAlertEnabled !== 1) {
     return {
-      patch: {
-        pendingLowerPriceCents: null,
-        pendingLowerSeenCount: 0,
-      },
+      patch: { pendingHitPriceCents: null, pendingHitSeenCount: 0 },
       notification: null,
       reason: "price alerts disabled",
       event: null,
     };
   }
 
-  if (item.baselinePriceCents == null) {
+  if (item.targetPriceCents == null) {
     return {
-      patch: {
-        baselinePriceCents: currentPriceCents,
-        baselineSetAt: now,
-        pendingLowerPriceCents: null,
-        pendingLowerSeenCount: 0,
-      },
+      patch: {},
       notification: null,
-      reason: "price baseline initialized",
+      reason: "no target price set",
       event: null,
     };
   }
 
-  const baseline = item.baselinePriceCents;
-  if (currentPriceCents >= baseline) {
+  const target = item.targetPriceCents;
+  if (currentPriceCents > target) {
     return {
-      patch: {
-        pendingLowerPriceCents: null,
-        pendingLowerSeenCount: 0,
-      },
+      patch: { pendingHitPriceCents: null, pendingHitSeenCount: 0 },
       notification: null,
-      reason: "candidate >= baseline",
+      reason: "current above target",
       event: null,
     };
   }
 
-  const pctThreshold = Math.round((baseline * item.priceDropThresholdPct) / 100);
-  const threshold = Math.max(pctThreshold, item.priceDropThresholdCents);
-  const delta = baseline - currentPriceCents;
-
-  const trackCandidate = (): Partial<Item> => {
-    const prev = item.pendingLowerPriceCents;
-    if (prev !== currentPriceCents) {
+  const trackHit = (): Partial<Item> => {
+    if (item.pendingHitPriceCents !== currentPriceCents) {
       return {
-        pendingLowerPriceCents: currentPriceCents,
-        pendingLowerSeenCount: 1,
+        pendingHitPriceCents: currentPriceCents,
+        pendingHitSeenCount: 1,
       };
     }
     return {
-      pendingLowerPriceCents: currentPriceCents,
-      pendingLowerSeenCount: item.pendingLowerSeenCount + 1,
+      pendingHitPriceCents: currentPriceCents,
+      pendingHitSeenCount: item.pendingHitSeenCount + 1,
     };
   };
-
-  if (delta < threshold) {
-    return {
-      patch: trackCandidate(),
-      notification: null,
-      reason: "price drop below threshold",
-      event: null,
-    };
-  }
 
   const cooldownMs = item.priceNotifyIntervalMin * 60_000;
   const inCooldown =
     item.lastPriceNotifiedAt != null && now - item.lastPriceNotifiedAt < cooldownMs;
-  const suppressWhileOos = item.priceAlertWhileOos !== 1 && newStockStatus === "OUT_OF_STOCK";
+  const suppressWhileOos =
+    item.priceAlertWhileOos !== 1 && newStockStatus === "OUT_OF_STOCK";
 
   if (inCooldown || suppressWhileOos) {
     return {
-      patch: trackCandidate(),
+      patch: trackHit(),
       notification: null,
       reason: inCooldown ? "price cooldown active" : "price alerts suppressed while OOS",
       event: null,
     };
   }
 
-  if (item.pendingLowerPriceCents !== currentPriceCents) {
+  if (item.pendingHitPriceCents !== currentPriceCents) {
     return {
-      patch: {
-        pendingLowerPriceCents: currentPriceCents,
-        pendingLowerSeenCount: 1,
-      },
+      patch: { pendingHitPriceCents: currentPriceCents, pendingHitSeenCount: 1 },
       notification: null,
-      reason: "price candidate first hit",
+      reason: "target-hit first observation",
       event: null,
     };
   }
 
-  if (item.pendingLowerSeenCount + 1 < 2) {
+  if (item.pendingHitSeenCount + 1 < 2) {
     return {
       patch: {
-        pendingLowerPriceCents: currentPriceCents,
-        pendingLowerSeenCount: item.pendingLowerSeenCount + 1,
+        pendingHitPriceCents: currentPriceCents,
+        pendingHitSeenCount: item.pendingHitSeenCount + 1,
       },
       notification: null,
-      reason: "price candidate awaiting second consecutive hit",
+      reason: "awaiting second consecutive hit",
       event: null,
     };
   }
 
   return {
     patch: {
-      baselinePriceCents: currentPriceCents,
-      baselineSetAt: now,
       lastPriceNotifiedAt: now,
-      pendingLowerPriceCents: null,
-      pendingLowerSeenCount: 0,
+      pendingHitPriceCents: null,
+      pendingHitSeenCount: 0,
     },
     notification: "price_drop",
-    reason: "price drop threshold met and confirmed",
+    reason: "target price hit (confirmed)",
     event: {
       kind: "price_drop",
-      oldPriceCents: baseline,
+      oldPriceCents: target,
       newPriceCents: currentPriceCents,
     },
   };
@@ -584,17 +565,17 @@ export async function applyCheckResult(
     } else if (dec.notification === "reminder") {
       send = await sendReminder(webhookUrl, ctx, webhookUsername);
     } else if (dec.notification === "price_drop") {
-      if (ctx.baselinePriceCents == null) {
+      if (ctx.targetPriceCents == null) {
         webhookOk = false;
-        webhookErr = "missing baseline for price alert";
+        webhookErr = "missing target price";
         send = null;
       } else {
         send = await sendPriceDropAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
       }
     } else {
-      if (ctx.baselinePriceCents == null) {
+      if (ctx.targetPriceCents == null) {
         webhookOk = false;
-        webhookErr = "missing baseline for combined alert";
+        webhookErr = "missing target price for combined alert";
         send = null;
       } else {
         send = await sendCombinedAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
@@ -668,7 +649,7 @@ function buildAlertContext(item: Item): AlertContext {
     sku: item.sku,
     name: item.name ?? `SKU ${item.sku}`,
     currentPriceCents: item.currentPriceCents ?? 0,
-    baselinePriceCents: item.baselinePriceCents ?? undefined,
+    targetPriceCents: item.targetPriceCents ?? undefined,
     buttonState: item.lastButtonState ?? "ADD_TO_CART",
     imageUrl: item.imageUrl ?? imageUrlForSku(item.sku),
     productUrl: item.productUrl,

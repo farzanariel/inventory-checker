@@ -8,7 +8,7 @@ export type AlertContext = {
   brand?: string;
   currentPriceCents: number;
   regularPriceCents?: number;
-  baselinePriceCents?: number;
+  targetPriceCents?: number;
   buttonState: string;
   imageUrl: string;
   productUrl: string;
@@ -16,7 +16,7 @@ export type AlertContext = {
   note?: string;
 };
 export type PriceDropContext = AlertContext & {
-  baselinePriceCents: number;
+  targetPriceCents: number;
 };
 
 export type SendResult =
@@ -60,10 +60,13 @@ function formatDollars(cents: number): string {
   })}`;
 }
 
-function formatDropSummary(currentCents: number, baselineCents: number): string {
-  const savedCents = baselineCents - currentCents;
-  const pct = Math.round((savedCents / baselineCents) * 100);
-  return `${formatDollars(baselineCents)} → ${formatDollars(currentCents)} (▼ ${pct}%, save ${formatDollars(savedCents)})`;
+function formatTargetSummary(currentCents: number, targetCents: number): string {
+  // Current price is at or below target. Show how far below — flat when equal.
+  if (currentCents >= targetCents) {
+    return `${formatDollars(currentCents)} (target ${formatDollars(targetCents)})`;
+  }
+  const undershoot = targetCents - currentCents;
+  return `${formatDollars(currentCents)} (target ${formatDollars(targetCents)} · ${formatDollars(undershoot)} below)`;
 }
 
 const DEFAULT_USERNAME = "Inventory Monitor";
@@ -106,12 +109,12 @@ function buildPriceDropPayload(
   combined: boolean,
   username: string = DEFAULT_USERNAME,
 ): WebhookPayload {
-  const baseline = ctx.baselinePriceCents;
+  const target = ctx.targetPriceCents;
   const fields: EmbedField[] = [
-    { name: "Price", value: formatDropSummary(ctx.currentPriceCents, baseline), inline: true },
+    { name: "Price", value: formatTargetSummary(ctx.currentPriceCents, target), inline: true },
     { name: "SKU", value: ctx.sku, inline: true },
     { name: "State", value: ctx.buttonState, inline: true },
-    { name: "Baseline", value: formatDollars(baseline), inline: true },
+    { name: "Target", value: formatDollars(target), inline: true },
   ];
   if (ctx.note) {
     fields.push({ name: "Note", value: ctx.note, inline: false });
@@ -122,12 +125,12 @@ function buildPriceDropPayload(
     content: ctx.cartUrl,
     embeds: [
       {
-        title: `${combined ? "🟢💰 IN STOCK + PRICE DROP —" : "💰 PRICE DROP —"} ${ctx.name}`,
+        title: `${combined ? "🟢💰 IN STOCK + PRICE TARGET HIT —" : "💰 PRICE TARGET HIT —"} ${ctx.name}`,
         url: ctx.productUrl,
         color: combined ? COLOR_GREEN : COLOR_BLUE,
         thumbnail: { url: ctx.imageUrl },
         fields,
-        footer: { text: combined ? "stock + price event • Tap title to open" : "price-drop alert • Tap title to open" },
+        footer: { text: combined ? "stock + target hit • Tap title to open" : "target hit • Tap title to open" },
         timestamp: new Date().toISOString(),
       },
     ],

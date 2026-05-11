@@ -55,8 +55,7 @@ export type CreateItemInput = {
   restock_notify_interval_min?: number;
   note?: string;
   price_alert_enabled?: boolean;
-  price_drop_threshold_pct?: number;
-  price_drop_threshold_cents?: number;
+  target_price_cents?: number;
   price_notify_interval_min?: number;
   price_alert_while_oos?: boolean;
 };
@@ -101,8 +100,7 @@ export type PatchItemInput = {
   enabled?: boolean;
   note?: string | null;
   price_alert_enabled?: boolean;
-  price_drop_threshold_pct?: number;
-  price_drop_threshold_cents?: number;
+  target_price_cents?: number | null;
   price_notify_interval_min?: number;
   price_alert_while_oos?: boolean;
 };

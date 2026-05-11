@@ -154,31 +154,19 @@ export function ItemRow({ item, onChanged }: Props) {
       : null;
 
   const priceLabel = formatPrice(item.currentPriceCents);
-  const priceDrop =
+  // Show "at/below target" chip only when a target is set and current is at or under it.
+  const atTarget =
     item.currentPriceCents != null &&
-    item.baselinePriceCents != null &&
-    item.currentPriceCents < item.baselinePriceCents
-      ? {
-          pct: Math.round(
-            ((item.baselinePriceCents - item.currentPriceCents) /
-              item.baselinePriceCents) *
-              100,
-          ),
-          savingCents: item.baselinePriceCents - item.currentPriceCents,
-        }
-      : null;
-  const dropChip = priceDrop ? (
+    item.targetPriceCents != null &&
+    item.currentPriceCents <= item.targetPriceCents;
+  const dropChip = atTarget ? (
     <span
       className="font-mono text-[10px] md:text-[11px] tabular-nums tracking-tight"
       style={{ color: "var(--color-status-pricedrop)" }}
-      aria-label={`Price dropped ${priceDrop.pct}% from baseline`}
-      title={
-        item.baselinePriceCents != null
-          ? `Baseline ${formatPrice(item.baselinePriceCents)} · saving ${formatPrice(priceDrop.savingCents)}`
-          : undefined
-      }
+      aria-label={`Current price at or below target of ${formatPrice(item.targetPriceCents!)}`}
+      title={`Target ${formatPrice(item.targetPriceCents!)} — hit`}
     >
-      ▼-{priceDrop.pct}%
+      ✓ at target
     </span>
   ) : null;
   const intervalLabel = formatInterval(item.checkIntervalMin);

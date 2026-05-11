@@ -1,23 +1,26 @@
 "use client";
 
 /**
- * PriceAlertSection — collapsible "Price alert" group used by both
- * AddItemDialog and EditItemDialog (NEC-11 §3 / NEC-17).
+ * PriceAlertSection — collapsible "Price alert" group used by Add + Edit.
  *
- * The master <Switch> doubles as the group header: toggling it off collapses
- * the body via a 180ms grid-rows transition (CSS in globals.css). Threshold
- * inputs render inline ("[ 5 ] % or [ 10 ] $ whichever is greater") and stack
- * on viewports < 380px.
+ * SPEC §19 v5 (NEC-10 follow-up): single dollar target. The master <Switch>
+ * doubles as the group header; toggling it off collapses the body.
+ *
+ * Current-price-aware: when the dialog knows the current price, the target
+ * input shows it as context ("Currently $159.99") and warns when the target
+ * is at or above current (the alert would fire immediately, which is almost
+ * certainly not what the user wanted).
  */
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { formatPrice } from "@/lib/format";
 
 export type PriceAlertValues = {
   enabled: boolean;
-  thresholdPct: string;
-  thresholdCents: string;
+  /** Target price as a user-entered dollar string (e.g. "129.99"). Empty = no target set. */
+  targetDollars: string;
   notifyIntervalMin: string;
   whileOos: boolean;
 };
@@ -26,6 +29,8 @@ type Props = {
   idPrefix: string;
   values: PriceAlertValues;
   onChange: (next: PriceAlertValues) => void;
+  /** Current observed price in cents. `null` when unknown (item just added, lookup failed). */
+  currentPriceCents?: number | null;
   disabled?: boolean;
 };
 
@@ -33,11 +38,13 @@ export function PriceAlertSection({
   idPrefix,
   values,
   onChange,
+  currentPriceCents,
   disabled,
 }: Props) {
   const collapsed = !values.enabled;
   const headerId = `${idPrefix}-price-alert`;
   const bodyId = `${idPrefix}-price-alert-body`;
+  const targetId = `${idPrefix}-price-target`;
 
   function set<K extends keyof PriceAlertValues>(
     key: K,
@@ -45,6 +52,18 @@ export function PriceAlertSection({
   ) {
     onChange({ ...values, [key]: value });
   }
+
+  // Validation hints — soft, not blocking.
+  const parsedTarget = Number.parseFloat(values.targetDollars);
+  const targetCents =
+    values.targetDollars.trim() !== "" && Number.isFinite(parsedTarget)
+      ? Math.round(parsedTarget * 100)
+      : null;
+  const targetTooHigh =
+    currentPriceCents != null &&
+    targetCents != null &&
+    targetCents >= currentPriceCents;
+  const targetBlank = values.targetDollars.trim() === "" && values.enabled;
 
   return (
     <div className="rounded-lg border border-border bg-card/40 px-3 py-2.5">
@@ -77,50 +96,52 @@ export function PriceAlertSection({
         >
           <div className="flex flex-col gap-3 pt-3">
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-muted-foreground">
-                Notify when price drops by
-              </span>
-              <div className="flex flex-col min-[380px]:flex-row flex-wrap items-stretch min-[380px]:items-center gap-2 font-mono text-sm">
-                <div className="flex items-center gap-1.5">
-                  <Input
-                    id={`${idPrefix}-price-pct`}
-                    type="number"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    min={1}
-                    max={99}
-                    step={1}
-                    value={values.thresholdPct}
-                    onChange={(e) => set("thresholdPct", e.target.value)}
-                    className="w-16 font-mono tabular-nums text-base sm:text-sm"
-                    disabled={disabled || !values.enabled}
-                    aria-label="Percent threshold"
-                  />
-                  <span className="text-muted-foreground">%</span>
-                </div>
-                <span className="text-muted-foreground self-center">or</span>
-                <div className="flex items-center gap-1.5">
-                  <Input
-                    id={`${idPrefix}-price-cents`}
-                    type="number"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    min={1}
-                    step={1}
-                    value={values.thresholdCents}
-                    onChange={(e) => set("thresholdCents", e.target.value)}
-                    className="w-20 font-mono tabular-nums text-base sm:text-sm"
-                    disabled={disabled || !values.enabled}
-                    aria-label="Dollar threshold (cents)"
-                  />
-                  <span className="text-muted-foreground">¢</span>
-                </div>
-                <span className="text-muted-foreground self-center text-xs">
-                  whichever is greater
-                </span>
+              <Label htmlFor={targetId} className="text-xs">
+                Alert when price drops to
+              </Label>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-base sm:text-sm text-muted-foreground">$</span>
+                <Input
+                  id={targetId}
+                  type="number"
+                  inputMode="decimal"
+                  min="0.01"
+                  step="0.01"
+                  placeholder={
+                    currentPriceCents != null
+                      ? (currentPriceCents * 0.9 / 100).toFixed(2)
+                      : "0.00"
+                  }
+                  value={values.targetDollars}
+                  onChange={(e) => set("targetDollars", e.target.value)}
+                  className="w-28 font-mono tabular-nums text-base sm:text-sm"
+                  disabled={disabled || !values.enabled}
+                  aria-invalid={targetTooHigh || undefined}
+                  aria-describedby={`${targetId}-hint`}
+                />
+                {currentPriceCents != null ? (
+                  <span className="font-mono text-xs text-muted-foreground">
+                    currently {formatPrice(currentPriceCents)}
+                  </span>
+                ) : null}
               </div>
-              <p className="text-[11px] text-muted-foreground -mt-0.5">
-                Dollar threshold is in cents (e.g. 1000 = $10.00).
+              <p
+                id={`${targetId}-hint`}
+                className="text-[11px] font-mono"
+                style={{
+                  color: targetTooHigh
+                    ? "var(--color-status-error)"
+                    : "var(--muted-foreground)",
+                }}
+                role={targetTooHigh ? "alert" : undefined}
+              >
+                {targetTooHigh
+                  ? `Target $${(targetCents! / 100).toFixed(2)} is at or above the current price — alert would fire immediately. Pick a lower number.`
+                  : targetBlank
+                    ? "Leave blank to disable the price alert for this item."
+                    : currentPriceCents != null
+                      ? "We'll ping you on Discord when the price hits this target."
+                      : "Enter a dollar amount (e.g. 129.99)."}
               </p>
             </div>
 
@@ -162,8 +183,7 @@ export function PriceAlertSection({
 
 export const PRICE_ALERT_DEFAULTS: PriceAlertValues = {
   enabled: true,
-  thresholdPct: "5",
-  thresholdCents: "1000",
+  targetDollars: "",
   notifyIntervalMin: "60",
   whileOos: true,
 };

@@ -451,123 +451,138 @@ describe("applyCheckResult — transitions and notifications", () => {
     expect(notified?.message?.startsWith("failed:")).toBe(true);
   });
 
-  it("Price baseline initializes on first successful check", async () => {
+  it("No target set: alert never fires regardless of price moves", async () => {
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
-      baselinePriceCents: null,
+      targetPriceCents: null,
     });
 
     const outcome = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 20000 }),
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 5000 }),
       { db: env.db, webhookUrl: WEBHOOK, suppressWebhook: true },
     );
 
     expect(outcome.notification).toBeNull();
     const after = reread(env.db, item.id);
-    expect(after.baselinePriceCents).toBe(20000);
-    expect(after.pendingLowerPriceCents).toBeNull();
-    expect(after.pendingLowerSeenCount).toBe(0);
+    expect(after.targetPriceCents).toBeNull();
+    expect(after.pendingHitPriceCents).toBeNull();
+    expect(after.pendingHitSeenCount).toBe(0);
+    expect(after.lastPriceNotifiedAt).toBeNull();
   });
 
-  it("Price drop requires two consecutive same-candidate hits before firing", async () => {
+  it("Current above target: pending guard stays cleared, no fire", async () => {
+    const item = insertItem(env.db, {
+      lastStockStatus: "OUT_OF_STOCK",
+      targetPriceCents: 12000,
+      pendingHitPriceCents: 11000,
+      pendingHitSeenCount: 1,
+    });
+
+    const outcome = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 15000 }),
+      { db: env.db, webhookUrl: WEBHOOK, suppressWebhook: true },
+    );
+
+    expect(outcome.notification).toBeNull();
+    const after = reread(env.db, item.id);
+    expect(after.pendingHitPriceCents).toBeNull();
+    expect(after.pendingHitSeenCount).toBe(0);
+  });
+
+  it("Target hit requires two consecutive same-price observations before firing", async () => {
     const now = Date.now();
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
-      baselinePriceCents: 20000,
-      baselineSetAt: now - 86_400_000,
-      priceDropThresholdPct: 5,
-      priceDropThresholdCents: 1000,
+      targetPriceCents: 13000,
       priceNotifyIntervalMin: 60,
-      pendingLowerPriceCents: null,
-      pendingLowerSeenCount: 0,
+      pendingHitPriceCents: null,
+      pendingHitSeenCount: 0,
     });
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
 
     const first = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 18000 }),
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 12500 }),
       { db: env.db, now, webhookUrl: WEBHOOK },
     );
     expect(first.notification).toBeNull();
 
     let after = reread(env.db, item.id);
-    expect(after.pendingLowerPriceCents).toBe(18000);
-    expect(after.pendingLowerSeenCount).toBe(1);
-    expect(after.baselinePriceCents).toBe(20000);
+    expect(after.pendingHitPriceCents).toBe(12500);
+    expect(after.pendingHitSeenCount).toBe(1);
+    expect(after.targetPriceCents).toBe(13000);
+    expect(after.lastPriceNotifiedAt).toBeNull();
 
     const second = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 18000 }),
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 12500 }),
       { db: env.db, now: now + 60_000, webhookUrl: WEBHOOK },
     );
     expect(second.notification).toBe("price_drop");
 
     after = reread(env.db, item.id);
-    expect(after.baselinePriceCents).toBe(18000);
-    expect(after.pendingLowerPriceCents).toBeNull();
-    expect(after.pendingLowerSeenCount).toBe(0);
+    expect(after.targetPriceCents).toBe(13000); // target itself unchanged
+    expect(after.pendingHitPriceCents).toBeNull();
+    expect(after.pendingHitSeenCount).toBe(0);
     expect(after.lastPriceNotifiedAt).toBe(now + 60_000);
 
     const priceDropEvents = getEvents(env.db, item.id).filter((e) => e.status === "PRICE_DROP");
     expect(priceDropEvents).toHaveLength(1);
-    expect(priceDropEvents[0]?.message).toBe("20000 -> 18000");
+    expect(priceDropEvents[0]?.message).toBe("13000 -> 12500");
   });
 
-  it("Different lower candidate resets pending count to 1 for the new candidate", async () => {
+  it("Different hit price resets pending count to 1 for the new candidate", async () => {
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
-      baselinePriceCents: 20000,
-      priceDropThresholdPct: 5,
-      priceDropThresholdCents: 1000,
-      pendingLowerPriceCents: 18000,
-      pendingLowerSeenCount: 1,
+      targetPriceCents: 13000,
+      pendingHitPriceCents: 12500,
+      pendingHitSeenCount: 1,
     });
 
     const outcome = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 17000 }),
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 12000 }),
       { db: env.db, webhookUrl: WEBHOOK, suppressWebhook: true },
     );
 
     expect(outcome.notification).toBeNull();
     const after = reread(env.db, item.id);
-    expect(after.pendingLowerPriceCents).toBe(17000);
-    expect(after.pendingLowerSeenCount).toBe(1);
-    expect(after.baselinePriceCents).toBe(20000);
+    expect(after.pendingHitPriceCents).toBe(12000);
+    expect(after.pendingHitSeenCount).toBe(1);
+    expect(after.targetPriceCents).toBe(13000);
   });
 
-  it("Cooldown blocks price-drop fire and baseline advance", async () => {
+  it("Cooldown blocks target-hit fire", async () => {
     const now = Date.now();
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
-      baselinePriceCents: 20000,
+      targetPriceCents: 13000,
       lastPriceNotifiedAt: now - 10 * 60_000,
       priceNotifyIntervalMin: 60,
-      priceDropThresholdPct: 5,
-      priceDropThresholdCents: 1000,
     });
 
     const outcome = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 18000 }),
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 12500 }),
       { db: env.db, now, webhookUrl: WEBHOOK, suppressWebhook: true },
     );
 
     expect(outcome.notification).toBeNull();
     const after = reread(env.db, item.id);
-    expect(after.baselinePriceCents).toBe(20000);
-    expect(after.pendingLowerPriceCents).toBe(18000);
-    expect(after.pendingLowerSeenCount).toBe(1);
+    expect(after.pendingHitPriceCents).toBe(12500);
+    expect(after.pendingHitSeenCount).toBe(1);
+    expect(after.lastPriceNotifiedAt).toBe(now - 10 * 60_000); // unchanged
   });
 
-  it("Combined stock+price signal fires a single combined webhook notification", async () => {
+  it("Combined stock+target signal fires a single combined webhook notification", async () => {
     const now = Date.now();
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
-      baselinePriceCents: 20000,
-      pendingLowerPriceCents: 18000,
-      pendingLowerSeenCount: 1,
+      targetPriceCents: 13000,
+      pendingHitPriceCents: 12500,
+      pendingHitSeenCount: 1,
       lastPriceNotifiedAt: null,
       priceNotifyIntervalMin: 60,
     });
@@ -575,7 +590,7 @@ describe("applyCheckResult — transitions and notifications", () => {
 
     const outcome = await applyCheckResult(
       item.id,
-      okResult({ buttonState: "ADD_TO_CART", currentPriceCents: 18000 }),
+      okResult({ buttonState: "ADD_TO_CART", currentPriceCents: 12500 }),
       { db: env.db, now, webhookUrl: WEBHOOK },
     );
 
@@ -584,5 +599,26 @@ describe("applyCheckResult — transitions and notifications", () => {
     expect(events.filter((e) => e.status === "IN_STOCK")).toHaveLength(1);
     expect(events.filter((e) => e.status === "PRICE_DROP")).toHaveLength(1);
     expect(events.filter((e) => e.status === "NOTIFIED" && e.message === "combined")).toHaveLength(1);
+  });
+
+  it("price_alert_while_oos=0 suppresses fire while OOS", async () => {
+    const now = Date.now();
+    const item = insertItem(env.db, {
+      lastStockStatus: "OUT_OF_STOCK",
+      targetPriceCents: 13000,
+      priceAlertWhileOos: 0,
+      pendingHitPriceCents: 12500,
+      pendingHitSeenCount: 1,
+    });
+
+    const outcome = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 12500 }),
+      { db: env.db, now, webhookUrl: WEBHOOK, suppressWebhook: true },
+    );
+
+    expect(outcome.notification).toBeNull();
+    const after = reread(env.db, item.id);
+    expect(after.lastPriceNotifiedAt).toBeNull();
   });
 });
