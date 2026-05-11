@@ -148,7 +148,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
 
   // Body — same form on every viewport. Wrapper differs.
   const formBody = (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="add-input">URL or SKU</Label>
         <Input
