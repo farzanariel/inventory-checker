@@ -312,7 +312,8 @@ describe("sendTestAlert", () => {
 const priceCtx: PriceDropContext = {
   ...baseCtx,
   currentPriceCents: 12999,
-  targetPriceCents: 13000,
+  priceAlertMode: "target",
+  oldPriceCents: 13000,
 };
 
 describe("sendPriceDropAlert", () => {
@@ -350,7 +351,7 @@ describe("sendPriceDropAlert", () => {
     await sendPriceDropAlert(WEBHOOK_URL, {
       ...priceCtx,
       currentPriceCents: 13000,
-      targetPriceCents: 13000,
+      oldPriceCents: 13000,
     });
     const body = getCallBody(fetchMock) as PayloadShape;
     const priceField = body.embeds[0].fields.find((f) => f.name === "Price");

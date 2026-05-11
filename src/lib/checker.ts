@@ -73,6 +73,7 @@ type DecisionOutput = {
   priceEvent:
     | {
         kind: "price_drop";
+        mode: "target" | "drop";
         buttonState?: string;
         oldPriceCents: number;
         newPriceCents: number;
@@ -86,7 +87,12 @@ type PriceAlertDecision = {
   notification: "price_drop" | null;
   reason: string;
   event:
-    | { kind: "price_drop"; oldPriceCents: number; newPriceCents: number }
+    | {
+        kind: "price_drop";
+        mode: "target" | "drop";
+        oldPriceCents: number;
+        newPriceCents: number;
+      }
     | null;
 };
 
@@ -99,14 +105,21 @@ function combineNotifications(
 }
 
 /**
- * Target-price decision (SPEC §19 v5).
+ * Price-alert decision (SPEC §19 v6 — dual mode).
  *
- * Fires when `currentPriceCents <= item.targetPriceCents` for two consecutive
- * checks at the same value (stale-price guard, defends against API flicker),
- * the per-item cooldown has elapsed, and the while-OOS toggle permits it.
+ * Mode is selected per item by whether `targetPriceCents` is set:
+ *   • target mode  — fire when current <= target.
+ *   • drop mode    — fire on any decrease vs the previously observed price
+ *                    (item.currentPriceCents). Baseline tracks the last
+ *                    observed price up *and* down, so a price increase
+ *                    re-anchors the comparison.
  *
- * `event.oldPriceCents` carries the configured target (for embed display);
- * `event.newPriceCents` carries the actual hit price.
+ * Both modes share: two-consecutive same-value confirmation guard, per-item
+ * cooldown, and the while-OOS suppression toggle.
+ *
+ * Event payload:
+ *   • target mode → oldPriceCents = target, newPriceCents = hit price.
+ *   • drop mode   → oldPriceCents = previous price, newPriceCents = hit price.
  */
 export function decidePriceAlert(
   item: Item,
@@ -123,31 +136,59 @@ export function decidePriceAlert(
     };
   }
 
-  if (item.targetPriceCents == null) {
-    return {
-      patch: {},
-      notification: null,
-      reason: "no target price set",
-      event: null,
-    };
+  const mode: "target" | "drop" = item.targetPriceCents != null ? "target" : "drop";
+
+  // Comparison anchor:
+  //   • target mode → always the configured target.
+  //   • drop mode   → the pre-drop price captured when the dip was first
+  //     detected; stored in `pendingHitPriceCents` while we wait for
+  //     confirmation. Before the first dip is detected we use the prior
+  //     observed `item.currentPriceCents`.
+  // `pendingHitPriceCents` therefore means two different things by mode:
+  //   • target mode → the candidate price (must match exactly across two ticks).
+  //   • drop mode   → the pre-drop anchor (any sub-anchor candidate counts).
+  let anchor: number;
+  let isHit: boolean;
+  if (mode === "target") {
+    anchor = item.targetPriceCents as number;
+    isHit = currentPriceCents <= anchor;
+  } else if (item.pendingHitPriceCents != null) {
+    anchor = item.pendingHitPriceCents;
+    isHit = currentPriceCents <= anchor;
+  } else {
+    if (item.currentPriceCents == null) {
+      return {
+        patch: { pendingHitPriceCents: null, pendingHitSeenCount: 0 },
+        notification: null,
+        reason: "drop mode: no prior price observed",
+        event: null,
+      };
+    }
+    anchor = item.currentPriceCents;
+    isHit = currentPriceCents < anchor;
   }
 
-  const target = item.targetPriceCents;
-  if (currentPriceCents > target) {
+  if (!isHit) {
     return {
       patch: { pendingHitPriceCents: null, pendingHitSeenCount: 0 },
       notification: null,
-      reason: "current above target",
+      reason: mode === "target" ? "current above target" : "no decrease vs anchor",
       event: null,
     };
   }
 
+  // Track a hit toward confirmation. Mode determines how `pendingHitPriceCents` is interpreted.
   const trackHit = (): Partial<Item> => {
-    if (item.pendingHitPriceCents !== currentPriceCents) {
+    if (mode === "drop") {
+      // Anchor is stable across the confirmation window. Once stored, leave it alone and just bump count.
+      const samePending = item.pendingHitPriceCents === anchor;
       return {
-        pendingHitPriceCents: currentPriceCents,
-        pendingHitSeenCount: 1,
+        pendingHitPriceCents: anchor,
+        pendingHitSeenCount: samePending ? item.pendingHitSeenCount + 1 : 1,
       };
+    }
+    if (item.pendingHitPriceCents !== currentPriceCents) {
+      return { pendingHitPriceCents: currentPriceCents, pendingHitSeenCount: 1 };
     }
     return {
       pendingHitPriceCents: currentPriceCents,
@@ -170,21 +211,30 @@ export function decidePriceAlert(
     };
   }
 
-  if (item.pendingHitPriceCents !== currentPriceCents) {
+  // First-observation gate.
+  const isFirstObservation =
+    mode === "drop"
+      ? item.pendingHitPriceCents !== anchor
+      : item.pendingHitPriceCents !== currentPriceCents;
+
+  if (isFirstObservation) {
     return {
-      patch: { pendingHitPriceCents: currentPriceCents, pendingHitSeenCount: 1 },
+      patch:
+        mode === "drop"
+          ? { pendingHitPriceCents: anchor, pendingHitSeenCount: 1 }
+          : { pendingHitPriceCents: currentPriceCents, pendingHitSeenCount: 1 },
       notification: null,
-      reason: "target-hit first observation",
+      reason: "price-hit first observation",
       event: null,
     };
   }
 
   if (item.pendingHitSeenCount + 1 < 2) {
     return {
-      patch: {
-        pendingHitPriceCents: currentPriceCents,
-        pendingHitSeenCount: item.pendingHitSeenCount + 1,
-      },
+      patch:
+        mode === "drop"
+          ? { pendingHitPriceCents: anchor, pendingHitSeenCount: item.pendingHitSeenCount + 1 }
+          : { pendingHitPriceCents: currentPriceCents, pendingHitSeenCount: item.pendingHitSeenCount + 1 },
       notification: null,
       reason: "awaiting second consecutive hit",
       event: null,
@@ -198,10 +248,11 @@ export function decidePriceAlert(
       pendingHitSeenCount: 0,
     },
     notification: "price_drop",
-    reason: "target price hit (confirmed)",
+    reason: mode === "target" ? "target price hit (confirmed)" : "price decrease confirmed",
     event: {
       kind: "price_drop",
-      oldPriceCents: target,
+      mode,
+      oldPriceCents: anchor,
       newPriceCents: currentPriceCents,
     },
   };
@@ -406,6 +457,7 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
       ? null
       : {
           kind: "price_drop" as const,
+          mode: priceDec.event.mode,
           buttonState: result.buttonState,
           oldPriceCents: priceDec.event.oldPriceCents,
           newPriceCents: priceDec.event.newPriceCents,
@@ -564,22 +616,22 @@ export async function applyCheckResult(
       send = await sendRestockAlert(webhookUrl, ctx, webhookUsername);
     } else if (dec.notification === "reminder") {
       send = await sendReminder(webhookUrl, ctx, webhookUsername);
-    } else if (dec.notification === "price_drop") {
-      if (ctx.targetPriceCents == null) {
-        webhookOk = false;
-        webhookErr = "missing target price";
-        send = null;
+    } else if (dec.priceEvent) {
+      const priceCtx: PriceDropContext = {
+        ...ctx,
+        priceAlertMode: dec.priceEvent.mode,
+        oldPriceCents: dec.priceEvent.oldPriceCents,
+        currentPriceCents: dec.priceEvent.newPriceCents,
+      };
+      if (dec.notification === "price_drop") {
+        send = await sendPriceDropAlert(webhookUrl, priceCtx, webhookUsername);
       } else {
-        send = await sendPriceDropAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
+        send = await sendCombinedAlert(webhookUrl, priceCtx, webhookUsername);
       }
     } else {
-      if (ctx.targetPriceCents == null) {
-        webhookOk = false;
-        webhookErr = "missing target price for combined alert";
-        send = null;
-      } else {
-        send = await sendCombinedAlert(webhookUrl, ctx as PriceDropContext, webhookUsername);
-      }
+      webhookOk = false;
+      webhookErr = "price notification dispatched without priceEvent";
+      send = null;
     }
     if (send) {
       if (send.ok) {

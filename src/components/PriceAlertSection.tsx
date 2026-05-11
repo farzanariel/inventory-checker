@@ -97,7 +97,7 @@ export function PriceAlertSection({
           <div className="flex flex-col gap-3 pt-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={targetId} className="text-xs">
-                Alert when price drops to
+                Alert when price drops to (optional)
               </Label>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-base sm:text-sm text-muted-foreground">$</span>
@@ -138,10 +138,10 @@ export function PriceAlertSection({
                 {targetTooHigh
                   ? `Target $${(targetCents! / 100).toFixed(2)} is at or above the current price — alert would fire immediately. Pick a lower number.`
                   : targetBlank
-                    ? "Leave blank to disable the price alert for this item."
+                    ? "Leave blank to be notified on any price drop from the most recent price."
                     : currentPriceCents != null
-                      ? "We'll ping you on Discord when the price hits this target."
-                      : "Enter a dollar amount (e.g. 129.99)."}
+                      ? "We'll ping you on Discord when the price hits this target (or any lower)."
+                      : "Enter a dollar amount (e.g. 129.99), or leave blank to alert on any drop."}
               </p>
             </div>
 

@@ -451,10 +451,11 @@ describe("applyCheckResult — transitions and notifications", () => {
     expect(notified?.message?.startsWith("failed:")).toBe(true);
   });
 
-  it("No target set: alert never fires regardless of price moves", async () => {
+  it("Drop mode: no prior price observed → does not fire on first observation", async () => {
     const item = insertItem(env.db, {
       lastStockStatus: "OUT_OF_STOCK",
       targetPriceCents: null,
+      currentPriceCents: null,
     });
 
     const outcome = await applyCheckResult(
@@ -469,6 +470,96 @@ describe("applyCheckResult — transitions and notifications", () => {
     expect(after.pendingHitPriceCents).toBeNull();
     expect(after.pendingHitSeenCount).toBe(0);
     expect(after.lastPriceNotifiedAt).toBeNull();
+  });
+
+  it("Drop mode: price decreases vs prior → fires after second consecutive sub-anchor observation", async () => {
+    const now = Date.now();
+    const item = insertItem(env.db, {
+      lastStockStatus: "OUT_OF_STOCK",
+      targetPriceCents: null,
+      currentPriceCents: 10000,
+      priceNotifyIntervalMin: 60,
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
+
+    const first = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 9000 }),
+      { db: env.db, now, webhookUrl: WEBHOOK },
+    );
+    expect(first.notification).toBeNull();
+    let after = reread(env.db, item.id);
+    // Pending stores the pre-drop anchor (10000), not the candidate (9000).
+    expect(after.pendingHitPriceCents).toBe(10000);
+    expect(after.pendingHitSeenCount).toBe(1);
+
+    const second = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 9000 }),
+      { db: env.db, now: now + 60_000, webhookUrl: WEBHOOK },
+    );
+    expect(second.notification).toBe("price_drop");
+
+    after = reread(env.db, item.id);
+    expect(after.pendingHitPriceCents).toBeNull();
+    expect(after.pendingHitSeenCount).toBe(0);
+    expect(after.lastPriceNotifiedAt).toBe(now + 60_000);
+
+    const priceDropEvents = getEvents(env.db, item.id).filter((e) => e.status === "PRICE_DROP");
+    expect(priceDropEvents).toHaveLength(1);
+    expect(priceDropEvents[0]?.message).toBe("10000 -> 9000");
+  });
+
+  it("Drop mode: price increase re-anchors the baseline (no fire on later partial decrease)", async () => {
+    const now = Date.now();
+    const item = insertItem(env.db, {
+      lastStockStatus: "OUT_OF_STOCK",
+      targetPriceCents: null,
+      currentPriceCents: 10000,
+    });
+
+    // Price goes UP from 10000 to 11000 — no fire, baseline tracks up.
+    const up = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 11000 }),
+      { db: env.db, now, webhookUrl: WEBHOOK, suppressWebhook: true },
+    );
+    expect(up.notification).toBeNull();
+    let after = reread(env.db, item.id);
+    expect(after.currentPriceCents).toBe(11000);
+    expect(after.pendingHitPriceCents).toBeNull();
+
+    // Then price drops to 10500 — that's BELOW current 11000 anchor, so it's a hit.
+    const down = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 10500 }),
+      { db: env.db, now: now + 1000, webhookUrl: WEBHOOK, suppressWebhook: true },
+    );
+    expect(down.notification).toBeNull(); // first observation, awaiting confirmation
+    after = reread(env.db, item.id);
+    // Pre-drop anchor was the (now-tracked) 11000 — baseline followed up.
+    expect(after.pendingHitPriceCents).toBe(11000);
+    expect(after.pendingHitSeenCount).toBe(1);
+  });
+
+  it("Drop mode: price stable or rising clears the pending guard", async () => {
+    const item = insertItem(env.db, {
+      lastStockStatus: "OUT_OF_STOCK",
+      targetPriceCents: null,
+      currentPriceCents: 10000,
+      pendingHitPriceCents: 9000,
+      pendingHitSeenCount: 1,
+    });
+
+    const outcome = await applyCheckResult(
+      item.id,
+      okResult({ buttonState: "SOLD_OUT", currentPriceCents: 10000 }),
+      { db: env.db, webhookUrl: WEBHOOK, suppressWebhook: true },
+    );
+    expect(outcome.notification).toBeNull();
+    const after = reread(env.db, item.id);
+    expect(after.pendingHitPriceCents).toBeNull();
+    expect(after.pendingHitSeenCount).toBe(0);
   });
 
   it("Current above target: pending guard stays cleared, no fire", async () => {

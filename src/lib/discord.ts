@@ -16,7 +16,11 @@ export type AlertContext = {
   note?: string;
 };
 export type PriceDropContext = AlertContext & {
-  targetPriceCents: number;
+  // "target" = user set a target_price and it was hit;
+  // "drop"   = no target set, price decreased vs previously observed price.
+  priceAlertMode: "target" | "drop";
+  // For "target" mode this is the configured target; for "drop" mode this is the previous observed price.
+  oldPriceCents: number;
 };
 
 export type SendResult =
@@ -69,6 +73,13 @@ function formatTargetSummary(currentCents: number, targetCents: number): string 
   return `${formatDollars(currentCents)} (target ${formatDollars(targetCents)} · ${formatDollars(undershoot)} below)`;
 }
 
+function formatDropSummary(previousCents: number, currentCents: number): string {
+  const delta = previousCents - currentCents;
+  if (delta <= 0) return formatDollars(currentCents);
+  const pct = Math.round((delta / previousCents) * 100);
+  return `${formatDollars(previousCents)} → ${formatDollars(currentCents)} (▼ ${pct}%, save ${formatDollars(delta)})`;
+}
+
 const DEFAULT_USERNAME = "Inventory Monitor";
 
 function buildPayload(
@@ -109,28 +120,37 @@ function buildPriceDropPayload(
   combined: boolean,
   username: string = DEFAULT_USERNAME,
 ): WebhookPayload {
-  const target = ctx.targetPriceCents;
+  const isTarget = ctx.priceAlertMode === "target";
+  const priceValue = isTarget
+    ? formatTargetSummary(ctx.currentPriceCents, ctx.oldPriceCents)
+    : formatDropSummary(ctx.oldPriceCents, ctx.currentPriceCents);
   const fields: EmbedField[] = [
-    { name: "Price", value: formatTargetSummary(ctx.currentPriceCents, target), inline: true },
+    { name: "Price", value: priceValue, inline: true },
     { name: "SKU", value: ctx.sku, inline: true },
     { name: "State", value: ctx.buttonState, inline: true },
-    { name: "Target", value: formatDollars(target), inline: true },
+    {
+      name: isTarget ? "Target" : "Was",
+      value: formatDollars(ctx.oldPriceCents),
+      inline: true,
+    },
   ];
   if (ctx.note) {
     fields.push({ name: "Note", value: ctx.note, inline: false });
   }
 
+  const dropLabel = isTarget ? "PRICE TARGET HIT" : "PRICE DROP";
+  const footerLabel = isTarget ? "target hit" : "price drop";
   return {
     username,
     content: ctx.cartUrl,
     embeds: [
       {
-        title: `${combined ? "🟢💰 IN STOCK + PRICE TARGET HIT —" : "💰 PRICE TARGET HIT —"} ${ctx.name}`,
+        title: `${combined ? "🟢💰 IN STOCK + " + dropLabel + " —" : "💰 " + dropLabel + " —"} ${ctx.name}`,
         url: ctx.productUrl,
         color: combined ? COLOR_GREEN : COLOR_BLUE,
         thumbnail: { url: ctx.imageUrl },
         fields,
-        footer: { text: combined ? "stock + target hit • Tap title to open" : "target hit • Tap title to open" },
+        footer: { text: combined ? `stock + ${footerLabel} • Tap title to open` : `${footerLabel} • Tap title to open` },
         timestamp: new Date().toISOString(),
       },
     ],
