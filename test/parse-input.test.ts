@@ -261,7 +261,7 @@ describe("resolveSkuFromInput", () => {
     expect(result).toEqual({ ok: true, sku: NEC13_SKU });
   });
 
-  it("returns a clear error when the page has no extractable SKU", async () => {
+  it("returns the actionable recovery hint when the page has no extractable SKU", async () => {
     const fetchImpl = vi
       .fn()
       .mockResolvedValue(
@@ -270,28 +270,32 @@ describe("resolveSkuFromInput", () => {
     const result = await resolveSkuFromInput(NEC13_URL, { fetchImpl });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toMatch(/Could not extract a Best Buy SKU/);
+      // Single error message that tells the user exactly how to recover. We
+      // intentionally do NOT leak the upstream cause (tarpit/timeout/5xx) —
+      // it's not useful to the user, and bouncing between "timeout" and
+      // "couldn't read body" is confusing on a flaky upstream.
+      expect(result.error).toMatch(/Open the link in your browser/);
+      expect(result.error).toMatch(/skuId/);
     }
   });
 
-  it("returns a clear error when the upstream request fails", async () => {
+  it("returns the actionable recovery hint when the upstream request fails (tarpit/timeout)", async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new Error("ETIMEDOUT"));
     const result = await resolveSkuFromInput(NEC13_URL, { fetchImpl });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toMatch(/Could not reach Best Buy/);
-      expect(result.error).toMatch(/ETIMEDOUT/);
+      expect(result.error).toMatch(/Open the link in your browser/);
     }
   });
 
-  it("returns a clear error on non-2xx", async () => {
+  it("returns the actionable recovery hint on non-2xx", async () => {
     const fetchImpl = vi
       .fn()
       .mockResolvedValue(mockResponse({ body: "", status: 503, url: NEC13_URL }));
     const result = await resolveSkuFromInput(NEC13_URL, { fetchImpl });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toMatch(/HTTP 503/);
+      expect(result.error).toMatch(/Open the link in your browser/);
     }
   });
 

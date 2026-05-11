@@ -99,12 +99,20 @@ export interface ResolveOptions {
  * Resolve an input to a Best Buy SKU.
  *
  * Tries `parseUrlOrSku` first (cheap, no network). If the input is a Best Buy
- * `/product/` landing page URL with no numeric SKU in it, fetch the page and
- * extract the SKU from the canonical link / og:url / JSON-LD payload.
+ * `/product/` ad/landing-page URL with no numeric SKU in it, try a short
+ * fetch — Best Buy's edge tarpits this route from most server IPs, so we cap
+ * the attempt aggressively and return a clear, actionable error rather than
+ * blocking the UI on a long timeout.
+ *
+ * On the happy path (request goes through, redirects or HTML scrape yield the
+ * SKU), we return it. Otherwise we tell the user how to recover.
  *
  * Best Buy's edge does TLS fingerprinting; we use Node's native `fetch`
  * (undici), not curl. Browser-like headers per SPEC §6.
  */
+const AD_URL_RECOVERY_HINT =
+  "Best Buy doesn't expose the SKU in this ad/landing URL and blocks server-side resolution. Open the link in your browser, then either paste the new URL from the address bar (it'll contain `.p?skuId=...`) or paste the SKU number directly (visible on the product page).";
+
 export async function resolveSkuFromInput(
   input: string,
   options: ResolveOptions = {}
@@ -119,7 +127,10 @@ export async function resolveSkuFromInput(
   }
 
   const fetchImpl = options.fetchImpl ?? fetch;
-  const timeoutMs = options.timeoutMs ?? 10_000;
+  // 4s cap: in practice the request either succeeds in <1s or tarpits past 30s.
+  // 4s keeps the dialog snappy while still leaving margin for a slow but real
+  // response if BB ever stops blocking us.
+  const timeoutMs = options.timeoutMs ?? 4_000;
 
   let response: Response;
   try {
@@ -128,19 +139,12 @@ export async function resolveSkuFromInput(
       redirect: "follow",
       signal: AbortSignal.timeout(timeoutMs),
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Network error";
-    return {
-      ok: false,
-      error: `Could not reach Best Buy to resolve this URL (${message}).`,
-    };
+  } catch {
+    return { ok: false, error: AD_URL_RECOVERY_HINT };
   }
 
   if (!response.ok) {
-    return {
-      ok: false,
-      error: `Best Buy returned HTTP ${response.status} for this URL.`,
-    };
+    return { ok: false, error: AD_URL_RECOVERY_HINT };
   }
 
   // After redirects, the final URL may already be the /site/.../{sku}.p form.
@@ -153,20 +157,13 @@ export async function resolveSkuFromInput(
   try {
     html = await response.text();
   } catch {
-    return {
-      ok: false,
-      error: "Best Buy response could not be read.",
-    };
+    return { ok: false, error: AD_URL_RECOVERY_HINT };
   }
 
   const sku = extractSkuFromHtml(html);
   if (sku) return { ok: true, sku };
 
-  return {
-    ok: false,
-    error:
-      "Could not extract a Best Buy SKU from this URL. Try the /site/.../{sku}.p URL or paste the SKU directly.",
-  };
+  return { ok: false, error: AD_URL_RECOVERY_HINT };
 }
 
 /**
