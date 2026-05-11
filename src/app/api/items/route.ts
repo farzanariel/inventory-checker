@@ -24,6 +24,11 @@ const CreateItemSchema = z.object({
   check_interval_min: z.number().int().min(1).max(60).optional(),
   restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
   note: z.string().max(500).optional(),
+  price_alert_enabled: z.boolean().optional(),
+  price_drop_threshold_pct: z.number().int().min(1).max(99).optional(),
+  price_drop_threshold_cents: z.number().int().min(0).optional(),
+  price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
+  price_alert_while_oos: z.boolean().optional(),
 });
 
 function firstZodIssue(err: z.ZodError): string {
@@ -95,6 +100,21 @@ export async function POST(req: NextRequest) {
         restockNotifyIntervalMin,
         enabled: 1,
         note: parsed.data.note ?? null,
+        ...(parsed.data.price_alert_enabled !== undefined && {
+          priceAlertEnabled: parsed.data.price_alert_enabled ? 1 : 0,
+        }),
+        ...(parsed.data.price_drop_threshold_pct !== undefined && {
+          priceDropThresholdPct: parsed.data.price_drop_threshold_pct,
+        }),
+        ...(parsed.data.price_drop_threshold_cents !== undefined && {
+          priceDropThresholdCents: parsed.data.price_drop_threshold_cents,
+        }),
+        ...(parsed.data.price_notify_interval_min !== undefined && {
+          priceNotifyIntervalMin: parsed.data.price_notify_interval_min,
+        }),
+        ...(parsed.data.price_alert_while_oos !== undefined && {
+          priceAlertWhileOos: parsed.data.price_alert_while_oos ? 1 : 0,
+        }),
         lastStockStatus: product ? interpretStock(product.buttonState) : "UNKNOWN",
         lastButtonState: product?.buttonState ?? null,
         healthStatus: "OK",

@@ -54,6 +54,11 @@ export type CreateItemInput = {
   check_interval_min?: number;
   restock_notify_interval_min?: number;
   note?: string;
+  price_alert_enabled?: boolean;
+  price_drop_threshold_pct?: number;
+  price_drop_threshold_cents?: number;
+  price_notify_interval_min?: number;
+  price_alert_while_oos?: boolean;
 };
 
 export async function createItem(input: CreateItemInput): Promise<Item> {
@@ -95,6 +100,11 @@ export type PatchItemInput = {
   restock_notify_interval_min?: number;
   enabled?: boolean;
   note?: string | null;
+  price_alert_enabled?: boolean;
+  price_drop_threshold_pct?: number;
+  price_drop_threshold_cents?: number;
+  price_notify_interval_min?: number;
+  price_alert_while_oos?: boolean;
 };
 
 export async function patchItem(

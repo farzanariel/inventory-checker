@@ -18,6 +18,11 @@ const UpdateItemSchema = z
     restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
     enabled: z.boolean().optional(),
     note: z.string().max(500).nullable().optional(),
+    price_alert_enabled: z.boolean().optional(),
+    price_drop_threshold_pct: z.number().int().min(1).max(99).optional(),
+    price_drop_threshold_cents: z.number().int().min(0).optional(),
+    price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
+    price_alert_while_oos: z.boolean().optional(),
   })
   .refine((obj) => Object.keys(obj).length > 0, {
     message: "At least one field is required",
@@ -87,6 +92,21 @@ export async function PATCH(
     }
     if (parsed.data.note !== undefined) {
       patch.note = parsed.data.note;
+    }
+    if (parsed.data.price_alert_enabled !== undefined) {
+      patch.priceAlertEnabled = parsed.data.price_alert_enabled ? 1 : 0;
+    }
+    if (parsed.data.price_drop_threshold_pct !== undefined) {
+      patch.priceDropThresholdPct = parsed.data.price_drop_threshold_pct;
+    }
+    if (parsed.data.price_drop_threshold_cents !== undefined) {
+      patch.priceDropThresholdCents = parsed.data.price_drop_threshold_cents;
+    }
+    if (parsed.data.price_notify_interval_min !== undefined) {
+      patch.priceNotifyIntervalMin = parsed.data.price_notify_interval_min;
+    }
+    if (parsed.data.price_alert_while_oos !== undefined) {
+      patch.priceAlertWhileOos = parsed.data.price_alert_while_oos ? 1 : 0;
     }
     if (parsed.data.enabled !== undefined) {
       const newEnabled = parsed.data.enabled ? 1 : 0;
