@@ -34,6 +34,7 @@ module.exports = {
       name: 'inventory-worker',
       cwd: __dirname,
       script: 'node_modules/.bin/tsx',
+      interpreter: 'bash',
       args: 'src/worker/index.ts',
       env: {
         NODE_ENV: 'production',
