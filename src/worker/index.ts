@@ -16,7 +16,8 @@ import { and, asc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
 
 import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
-import { fetchProducts } from '@/lib/bestbuy';
+import { fetchProducts, isMissingFromPriceBlocks } from '@/lib/bestbuy';
+import { scrapePdpForSku } from '@/lib/bestbuy-headless';
 import { applyCheckResult } from '@/lib/checker';
 
 const TICK_MS = 1000;
@@ -124,6 +125,17 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
 
   const skus = dueItems.map((i) => i.sku);
   const fetchMap = await fetchProducts(skus);
+
+  // For SKUs that the priceBlocks index doesn't carry (newer-catalog items like
+  // 6663816), fall back to the headless PDP scraper one at a time.
+  const headlessSkus = skus.filter((sku) => {
+    const r = fetchMap.get(sku);
+    return r && !r.ok && isMissingFromPriceBlocks(r.error);
+  });
+  for (const sku of headlessSkus) {
+    const headlessResult = await scrapePdpForSku(sku);
+    fetchMap.set(sku, headlessResult);
+  }
 
   let errorCount = 0;
   for (const item of dueItems) {

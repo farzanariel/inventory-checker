@@ -11,7 +11,8 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { getDb } from "@/lib/db/client";
 import { items, type Item } from "@/lib/db/schema";
-import { fetchProducts } from "@/lib/bestbuy";
+import { fetchProducts, isMissingFromPriceBlocks } from "@/lib/bestbuy";
+import { scrapePdpForSku } from "@/lib/bestbuy-headless";
 import { applyCheckResult } from "@/lib/checker";
 
 function parseId(raw: string): number | null {
@@ -44,7 +45,14 @@ export async function POST(
 
     // Network fetch happens OUTSIDE any DB lock (SPEC §7.5).
     const results = await fetchProducts([existing.sku]);
-    const result = results.get(existing.sku);
+    let result = results.get(existing.sku);
+
+    // Newer-catalog SKUs (e.g. 6663816) return ProductNotFoundException from
+    // priceBlocks; fall back to the headless PDP scraper.
+    if (result && !result.ok && isMissingFromPriceBlocks(result.error)) {
+      result = await scrapePdpForSku(existing.sku);
+    }
+
     if (!result) {
       return NextResponse.json(
         { error: "No result returned from upstream" },

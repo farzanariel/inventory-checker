@@ -11,6 +11,7 @@ import {
   imageUrlForSku,
   isMissingFromPriceBlocks,
 } from "@/lib/bestbuy";
+import { scrapePdpForSku } from "@/lib/bestbuy-headless";
 import { resolveSkuFromInput } from "@/lib/parse-input";
 
 const LookupSchema = z.object({
@@ -66,10 +67,27 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // priceBlocks miss → try v2 catalog endpoint for metadata so the user can
-  // still add the item. Stock + price will be filled in by the worker once
-  // the headless fallback is enabled there.
+  // priceBlocks miss → try headless scraper for full price+stock.
+  // Fall further back to v2 catalog metadata if headless fails too.
   if (result && !result.ok && isMissingFromPriceBlocks(result.error)) {
+    const headless = await scrapePdpForSku(skuParse.sku);
+    if (headless.ok) {
+      return NextResponse.json({
+        sku: headless.sku,
+        name: headless.name,
+        brand: headless.brand ?? null,
+        image_url: imageUrlForSku(headless.sku),
+        product_url: headless.canonicalUrl,
+        current_price_cents: headless.currentPriceCents,
+        regular_price_cents: null,
+        button_state: headless.buttonState,
+        purchasable: headless.purchasable,
+        stock_source: "headless" as const,
+      });
+    }
+
+    // Headless failed — return metadata so the user can still add the item.
+    // Stock + price will be populated by the worker on the next check cycle.
     const meta = await fetchProductMetaV2(skuParse.sku);
     if (meta.ok) {
       return NextResponse.json({
