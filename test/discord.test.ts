@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   formatPrice,
+  sendCombinedAlert,
+  sendPriceDropAlert,
   sendReminder,
   sendRestockAlert,
   sendTestAlert,
   type AlertContext,
+  type PriceDropContext,
 } from "@/lib/discord";
 
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1234/abcd";
@@ -303,5 +306,137 @@ describe("sendTestAlert", () => {
     fetchMock.mockResolvedValueOnce(mockOkResponse(204));
     const result = await sendTestAlert(WEBHOOK_URL);
     expect(result).toEqual({ ok: true, status: 204 });
+  });
+});
+
+const priceCtx: PriceDropContext = {
+  ...baseCtx,
+  currentPriceCents: 12999,
+  baselinePriceCents: 15999,
+};
+
+describe("sendPriceDropAlert", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn().mockResolvedValue(mockOkResponse());
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("uses '💰 PRICE DROP —' title prefix with product name", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.embeds[0].title).toBe(`💰 PRICE DROP — ${priceCtx.name}`);
+  });
+
+  it("uses blue color 0x3b82f6 (3,901,179 decimal)", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.embeds[0].color).toBe(0x3b82f6);
+  });
+
+  it("renders price-delta field as '$old → $new (▼ N%, save $X.XX)'", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
+    expect(priceField?.value).toBe("$159.99 → $129.99 (▼ 19%, save $30.00)");
+  });
+
+  it("rounds percent and computes exact save amount for representative inputs", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, {
+      ...priceCtx,
+      baselinePriceCents: 100000,
+      currentPriceCents: 90000,
+    });
+    const body = getCallBody(fetchMock) as PayloadShape;
+    const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
+    expect(priceField?.value).toBe("$1,000.00 → $900.00 (▼ 10%, save $100.00)");
+  });
+
+  it("includes inline Baseline and SKU fields", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    const baseline = body.embeds[0].fields.find((f) => f.name === "Baseline");
+    const sku = body.embeds[0].fields.find((f) => f.name === "SKU");
+    expect(baseline?.value).toBe("$159.99");
+    expect(baseline?.inline).toBe(true);
+    expect(sku?.value).toBe(priceCtx.sku);
+    expect(sku?.inline).toBe(true);
+  });
+
+  it("sets content to ctx.cartUrl for unfurl", async () => {
+    await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.content).toBe(priceCtx.cartUrl);
+  });
+
+  it("returns { ok: true, status } on 2xx", async () => {
+    fetchMock.mockResolvedValueOnce(mockOkResponse(204));
+    const result = await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    expect(result).toEqual({ ok: true, status: 204 });
+  });
+
+  it("returns { ok: false, error } on network rejection", async () => {
+    fetchMock.mockRejectedValueOnce(new TypeError("network error"));
+    const result = await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe("sendCombinedAlert", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn().mockResolvedValue(mockOkResponse());
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("uses '🟢💰 IN STOCK + PRICE DROP —' title prefix", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.embeds[0].title).toBe(`🟢💰 IN STOCK + PRICE DROP — ${priceCtx.name}`);
+  });
+
+  it("stays green (primary) for the embed color", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.embeds[0].color).toBe(5763719);
+  });
+
+  it("includes the price-delta as an inline field", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    const priceField = body.embeds[0].fields.find((f) => f.name === "Price");
+    expect(priceField?.value).toBe("$159.99 → $129.99 (▼ 19%, save $30.00)");
+    expect(priceField?.inline).toBe(true);
+  });
+
+  it("includes SKU and State inline fields", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    const sku = body.embeds[0].fields.find((f) => f.name === "SKU");
+    const state = body.embeds[0].fields.find((f) => f.name === "State");
+    expect(sku?.inline).toBe(true);
+    expect(state?.value).toBe(priceCtx.buttonState);
+    expect(state?.inline).toBe(true);
+  });
+
+  it("fires exactly one webhook (no double-ping)", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("sets content to ctx.cartUrl", async () => {
+    await sendCombinedAlert(WEBHOOK_URL, priceCtx);
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.content).toBe(priceCtx.cartUrl);
   });
 });

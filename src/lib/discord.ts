@@ -43,6 +43,17 @@ type WebhookPayload = {
 const WEBHOOK_TIMEOUT_MS = 5000;
 const COLOR_GREEN = 5763719;
 const COLOR_AMBER = 16766720;
+const COLOR_BLUE = 0x3b82f6;
+
+export type PriceDropContext = AlertContext & {
+  baselinePriceCents: number;
+};
+
+function formatPriceDeltaValue(baselineCents: number, currentCents: number): string {
+  const saveCents = baselineCents - currentCents;
+  const pct = Math.round((saveCents / baselineCents) * 100);
+  return `${formatDollars(baselineCents)} → ${formatDollars(currentCents)} (▼ ${pct}%, save ${formatDollars(saveCents)})`;
+}
 
 /**
  * Format a cents amount as a USD price string with thousands separators.
@@ -145,6 +156,70 @@ export async function sendReminder(
     COLOR_GREEN,
     username,
   );
+  return postWebhook(webhookUrl, payload);
+}
+
+export async function sendPriceDropAlert(
+  webhookUrl: string,
+  ctx: PriceDropContext,
+  username: string = DEFAULT_USERNAME,
+): Promise<SendResult> {
+  const priceDelta = formatPriceDeltaValue(ctx.baselinePriceCents, ctx.currentPriceCents);
+  const fields: EmbedField[] = [
+    { name: "Price", value: priceDelta, inline: false },
+    { name: "Baseline", value: formatDollars(ctx.baselinePriceCents), inline: true },
+    { name: "SKU", value: ctx.sku, inline: true },
+  ];
+  if (ctx.note) {
+    fields.push({ name: "Note", value: ctx.note, inline: false });
+  }
+  const payload: WebhookPayload = {
+    username,
+    content: ctx.cartUrl,
+    embeds: [
+      {
+        title: `💰 PRICE DROP — ${ctx.name}`,
+        url: ctx.productUrl,
+        color: COLOR_BLUE,
+        thumbnail: { url: ctx.imageUrl },
+        fields,
+        footer: { text: "Tap title to open • Add-to-cart link below" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+  return postWebhook(webhookUrl, payload);
+}
+
+export async function sendCombinedAlert(
+  webhookUrl: string,
+  ctx: PriceDropContext,
+  username: string = DEFAULT_USERNAME,
+): Promise<SendResult> {
+  const priceDelta = formatPriceDeltaValue(ctx.baselinePriceCents, ctx.currentPriceCents);
+  const fields: EmbedField[] = [
+    { name: "Price", value: priceDelta, inline: true },
+    { name: "SKU", value: ctx.sku, inline: true },
+    { name: "State", value: ctx.buttonState, inline: true },
+  ];
+  if (ctx.note) {
+    fields.push({ name: "Note", value: ctx.note, inline: false });
+  }
+  const payload: WebhookPayload = {
+    username,
+    content: ctx.cartUrl,
+    embeds: [
+      {
+        title: `🟢💰 IN STOCK + PRICE DROP — ${ctx.name}`,
+        url: ctx.productUrl,
+        color: COLOR_GREEN,
+        thumbnail: { url: ctx.imageUrl },
+        fields,
+        footer: { text: "Tap title to open • Add-to-cart link below" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
   return postWebhook(webhookUrl, payload);
 }
 
