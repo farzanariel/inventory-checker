@@ -9,6 +9,7 @@
 
 ## 0. Changelog
 
+- **v4 (2026-05-11):** Added §19 Price Change Alerts (NEC-10). Schema gains 10 columns on `items` for per-item price-alert config + baseline + stale-price guard. `stock_events.status` gains `'PRICE_DROP'`. §9.1 retention table extended to include `PRICE_DROP` (significant event) and document `NOTIFIED` rows (already in code, now formalized). §16 test list adds three new test files. §18 backlog moves "Price drop alerts" out (shipped) and adds the `'any'` direction toggle + open-box price tracking as new phase-2 items. CEO confirmation accepted 2026-05-11 (NEC-10 interaction `e6bb58f2-3f0b…`); Codex round-1 review (NEC-12) `approve-with-edits` folded in: baseline-update decision table, sharpened stale-price guard, `'any'` direction dropped from v1 scope.
 - **v3 (2026-05-10):** Codex round-2 patches applied. §6.4 clarifies we use `buttonState`, not `purchasable` (and SKU 6587182 currently maps to OUT_OF_STOCK, not IN_STOCK). §7.4 renamed delivery contract from "at-least-once" to "best-effort with reminder recovery" — true at-least-once needs an outbox (Phase 2). §7.5 rewritten so the Best Buy fetch happens BEFORE the SQLite write lock; transaction scope is now read-decide-write only. Added `PRAGMA busy_timeout`. §13/§7 split into `fetchProducts(skus[])` (pure HTTP) and `applyCheckResult(itemId, result)` (DB transaction) so batching and check-now share one transactional path. §9 added explicit retention semantics for `stock_events` — transitions, errors, and notification attempts only, NOT every poll. §16 manual verification corrected for SKU 6587182's actual current state.
 - **v2 (2026-05-10):** Codex round-1 review incorporated. §6 rewritten with proven endpoint. §7 notification state machine clarified (UNKNOWN handling, concurrency, delivery contract). §9 data model split status into stock vs health. §10 added URL parser for both formats. §14/§15 softened proxy language; documented TLS-fingerprint dependency. Added worker heartbeat. Added tests section. Project-local CLAUDE.md overrides global Vercel/Supabase preset.
 
@@ -394,7 +395,8 @@ CREATE INDEX idx_items_due ON items(enabled, next_check_due_at);
 |---|---|---|
 | State transition | `last_stock_status` changes (UNKNOWN→IN_STOCK, IN_STOCK→OUT_OF_STOCK, etc.) | The new status |
 | Error event | Network/timeout/non-200 OR invalid response shape | `ERROR` (with `message` populated) |
-| Notification attempt | After every Discord webhook fire (alert or reminder) | `NOTIFIED` (with `message = 'alert' \| 'reminder' \| 'failed'`) |
+| Price drop fired | `baseline_price_cents` advances after a price-drop alert fires (§19) | `PRICE_DROP` (with `price_cents` = new lower price, `message = "<oldCents> -> <newCents>"`) |
+| Notification attempt | After every Discord webhook fire (stock alert, reminder, price drop, or combined) | `NOTIFIED` (with `message = 'alert' \| 'reminder' \| 'price_drop' \| 'combined' \| 'failed: <reason>'`) |
 
 **Do NOT insert** an event for steady-state polls (e.g. checking an item that stays IN_STOCK between reminder windows). At 25 items × 30s checks, naive logging would write ~72k rows/day — useless noise. Transition-based logging keeps the table small and the audit trail meaningful.
 
@@ -548,9 +550,10 @@ inventory-checker/
 |---|---|
 | `parse-input.test.ts` | New URL, old URL, raw SKU, invalid input. Both URL formats from §6.7 |
 | `interpret-stock.test.ts` | Every documented `buttonState` maps correctly; missing fields → UNKNOWN |
-| `checker.test.ts` (mocked fetch) | UNKNOWN → IN_STOCK fires alert; out → in fires alert; in → in within reminder window does NOT fire; in → in past reminder window fires reminder; in → out resets `last_notified_at`; ERROR doesn't change stock state; restart with state=IN_STOCK and `last_notified_at` set does not duplicate first alert |
+| `checker.test.ts` (mocked fetch) | UNKNOWN → IN_STOCK fires alert; out → in fires alert; in → in within reminder window does NOT fire; in → in past reminder window fires reminder; in → out resets `last_notified_at`; ERROR doesn't change stock state; restart with state=IN_STOCK and `last_notified_at` set does not duplicate first alert; **price-alert decision table from §19.4 (all six rows); combined stock+price tick fires exactly one webhook; baseline advances only on fire; stale-price guard requires 2 same-candidate hits; different-lower-price resets count to 1 for new candidate; cooldown blocks fire** |
 | `checker.concurrency.test.ts` | Two simultaneous `checkOneItem(id)` calls produce exactly one alert (in-process via Promise.all) |
-| `notification.test.ts` | Webhook payload shape matches §8 for alert, reminder, test |
+| `interpret-price-change.test.ts` | Pure threshold check: below threshold, at threshold, well above, increase, equal-to-baseline, `pct` wins, `cents` wins, baseline-not-set returns no-op |
+| `notification.test.ts` | Webhook payload shape matches §8 for alert, reminder, test; **price-drop embed shape matches §19.6; combined embed shape matches §19.6** |
 
 Manual verification before declaring v1 done:
 1. Add SKU 6587182. See it appear with name "Acer - Chromebook 311…", price $159, **OUT_OF_STOCK** (its actual state at spike time was `buttonState: CHECK_STORES` despite `purchasable: true` — confirms §6.4 logic).
@@ -576,12 +579,110 @@ Manual verification before declaring v1 done:
 
 - Per-item Discord webhook overrides
 - Open-box / pre-order / store-pickup state alerts
-- Price drop alerts (we already store regular vs current)
 - Multi-retailer adapter pattern (Amazon, Target, Walmart)
 - External uptime monitor pinging `/api/health`
 - Mobile-optimized view
 - Historical charts (in-stock duration patterns, restock frequency)
 - Notification outbox for exactly-once delivery (if at-least-once becomes a real annoyance)
+- **`price_alert_direction = 'any'` toggle** — fire on price increases too. Deferred from §19 v1 per Codex round-1 (NEC-12); needs explicit "price increase" semantics + tests before shipping.
+- **Open-box / 3rd-party seller price tracking** (`priceBlocks.productOptions.multipleSellers[]`) — track condition-tagged prices, optionally as a separate alert class.
+- **"Baseline forming" tooltip** during the first 24h after add (UXDesigner NEC-11 §10).
+- **Per-item absolute price floor** ("ping me when this dips below $X").
+
+## 19. Price Change Alerts (v1)
+
+Issue: NEC-10. CEO confirmed defaults 2026-05-11; Codex round-1 review (NEC-12) folded in; UI design at NEC-11.
+
+### 19.1 Goal
+
+A second class of Discord alert that fires when the **current price** of a watched Best Buy SKU drops by a meaningful amount, distinct from but coexisting with the existing stock-back alerts (§7).
+
+### 19.2 Trigger semantics
+
+- **Direction:** drops only. (Phase 2 introduces an `'any'` toggle — §18.)
+- **Threshold:** `(baseline - candidate) >= max(round(baseline * pct / 100), cents)`. Defaults: `pct = 5`, `cents = 1000` ($10).
+- **Baseline:** `baseline_price_cents` is initialized to the first observed `currentPrice`. It advances **only** after a successful price-drop alert fires (see §19.4). Rationale: keeps comparisons honest — we don't silently lose ground to repeated tiny drops below threshold.
+- **Cooldown:** per-item `price_notify_interval_min` (default 60). Within the cooldown window, the threshold is still computed but the fire is suppressed; baseline is **not** advanced.
+- **Stale-price guard:** require the candidate price to be observed on **two consecutive** checks at the **same** value before firing. A different (still-lower) candidate seen on the second check resets the pending counter to 1 for the new candidate. Defends against API flicker.
+- **While OOS:** per-item `price_alert_while_oos` toggle (default ON). When OFF, price drops during OOS are silently tracked (baseline-eligible) but no Discord ping.
+
+### 19.3 Schema additions (`items`, migration `0002_price_alerts.sql`)
+
+```sql
+ALTER TABLE items ADD COLUMN price_alert_enabled        INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE items ADD COLUMN price_drop_threshold_pct   INTEGER NOT NULL DEFAULT 5;   -- 1..99
+ALTER TABLE items ADD COLUMN price_drop_threshold_cents INTEGER NOT NULL DEFAULT 1000; -- $10
+ALTER TABLE items ADD COLUMN price_notify_interval_min  INTEGER NOT NULL DEFAULT 60;
+ALTER TABLE items ADD COLUMN last_price_notified_at     INTEGER;
+ALTER TABLE items ADD COLUMN baseline_price_cents       INTEGER;
+ALTER TABLE items ADD COLUMN baseline_set_at            INTEGER;
+ALTER TABLE items ADD COLUMN price_alert_while_oos      INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE items ADD COLUMN pending_lower_price_cents  INTEGER;
+ALTER TABLE items ADD COLUMN pending_lower_seen_count   INTEGER NOT NULL DEFAULT 0;
+```
+
+`stock_events.status` gains `'PRICE_DROP'` (see §9.1 retention table).
+
+### 19.4 Decision table (the contract checker.ts must implement)
+
+Inside `decide()`, after the stock decision, compute the price decision from the fresh row + just-fetched result:
+
+| Condition | Baseline action | Pending fields | Fire? | `priceNotification` |
+|---|---|---|---|---|
+| Baseline not yet set (first successful check) | Set `baseline_price_cents = currentPrice`, `baseline_set_at = now`. | Clear | No | `null` |
+| `candidate >= baseline` (no drop) | No change | Clear | No | `null` |
+| `candidate < baseline`, threshold NOT met | No change | Track candidate (rule below) | No | `null` |
+| `candidate < baseline`, threshold met, cooldown active | No change | Track candidate | No | `null` |
+| `candidate < baseline`, threshold met, cooldown clear, `pending != candidate` | No change | `pending_lower_price_cents = candidate`, `pending_lower_seen_count = 1` | No | `null` |
+| `candidate < baseline`, threshold met, cooldown clear, `pending == candidate`, count would reach 2 | **`baseline_price_cents = candidate`, `baseline_set_at = now`** | Clear | **Yes** | `'price_drop'` |
+| `price_alert_enabled = 0` | No change to baseline/pending; tracking suspended | Clear | No | `null` |
+| `price_alert_while_oos = 0` AND stock is OOS | Track normally; fire suppressed at dispatch (treated like cooldown) | Track candidate | No | `null` |
+
+"Track candidate" means: if `pending_lower_price_cents != candidate`, replace it with `candidate` and set count to 1. If equal, increment count.
+
+### 19.5 Concurrency (preserves §7.5 invariants)
+
+The fetch-outside-lock + `BEGIN IMMEDIATE` + re-read + decide + commit ordering is **unchanged**. The price branch reads from the same fresh row as the stock branch, so a second concurrent `applyCheckResult` observes the first caller's `baseline_price_cents` and `last_price_notified_at` and correctly downgrades to no-op. No new locks, no new races.
+
+### 19.6 Discord embed
+
+Price-drop alert:
+
+```
+💰 PRICE DROP — {product name}
+$159.99 → $129.99 (▼ 19%, save $30.00)
+SKU 6587182 · baseline $159.99
+{thumbnail}
+{cart URL in content for unfurl}
+```
+
+Color: `0x3b82f6` (blue). Token: `--status-pricedrop` (UI side, NEC-11 §1).
+
+Combined embed (stock-back + price-drop in same tick): title prefix `🟢💰 IN STOCK + PRICE DROP — {name}`, color stays green for primary, blue inline field for the price delta. Exactly **one** webhook fires; logged as `NOTIFIED` with `message='combined'`.
+
+### 19.7 API surface
+
+`PATCH /api/items/:id` accepts the new fields (server validation per §19.2 ranges):
+
+- `price_alert_enabled` (boolean)
+- `price_drop_threshold_pct` (int, 1–99)
+- `price_drop_threshold_cents` (int, ≥ 0)
+- `price_notify_interval_min` (int, 1–10080)
+- `price_alert_while_oos` (boolean)
+
+No new top-level route. Price-drop events flow through `GET /api/items/:id/events` because they're rows in `stock_events`.
+
+### 19.8 UI
+
+Implementation contract: [NEC-11#document-design](/NEC/issues/NEC-11#document-design) §9.
+
+- New token `--status-pricedrop` in `globals.css` + `@theme inline`.
+- Add/Edit dialogs gain a collapsible "Price alert" group; header is the master switch.
+- Threshold inputs render inline as `5 % or 10 $` with "whichever is greater" subhead.
+- ItemRow shows `▼-N%` chip in the price cluster when `currentPriceCents < baseline_price_cents`.
+- ItemHistoryDialog renders `PRICE_DROP` rows via the existing 5-column grid; `statusColor()` / `statusLabel()` extended.
+
+Direction toggle (`'any'`) is omitted from v1 UI per §18 phase-2 deferral.
 
 ---
 
