@@ -36,7 +36,7 @@ import { Label } from "@/components/ui/label";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { createItem, lookupProduct, type ProductLookup } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
-import { parseUrlOrSku } from "@/lib/parse-input";
+import { looksResolvableBestBuyInput } from "@/lib/parse-input";
 
 type Props = {
   open: boolean;
@@ -72,8 +72,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     if (!open) return;
 
     const trimmed = input.trim();
-    const parsed = parseUrlOrSku(trimmed);
-    if (!parsed.ok) {
+    if (!looksResolvableBestBuyInput(trimmed)) {
       return;
     }
 

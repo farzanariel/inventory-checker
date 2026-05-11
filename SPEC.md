@@ -9,6 +9,7 @@
 
 ## 0. Changelog
 
+- **v4.1 (2026-05-11):** §6.7 extended for NEC-13. Best Buy publishes a fourth URL form from ad/search landing pages (`bestbuy.com/product/{slug}/{ALPHANUMERIC_PRODUCT_CODE}`) where no numeric SKU appears in the URL. `parseUrlOrSku` remains sync and pattern-only; a new async `resolveSkuFromInput` falls back to fetching the page and reading `<link rel="canonical">` / `og:url` / JSON-LD `sku`. Wired into `POST /api/items` and `POST /api/products/lookup`; AddItemDialog uses `looksResolvableBestBuyInput` for preview debounce.
 - **v4 (2026-05-11):** Added §19 Price Change Alerts (NEC-10). Schema gains 10 columns on `items` for per-item price-alert config + baseline + stale-price guard. `stock_events.status` gains `'PRICE_DROP'`. §9.1 retention table extended to include `PRICE_DROP` (significant event) and document `NOTIFIED` rows (already in code, now formalized). §16 test list adds three new test files. §18 backlog moves "Price drop alerts" out (shipped) and adds the `'any'` direction toggle + open-box price tracking as new phase-2 items. CEO confirmation accepted 2026-05-11 (NEC-10 interaction `e6bb58f2-3f0b…`); Codex round-1 review (NEC-12) `approve-with-edits` folded in: baseline-update decision table, sharpened stale-price guard, `'any'` direction dropped from v1 scope.
 - **v3 (2026-05-10):** Codex round-2 patches applied. §6.4 clarifies we use `buttonState`, not `purchasable` (and SKU 6587182 currently maps to OUT_OF_STOCK, not IN_STOCK). §7.4 renamed delivery contract from "at-least-once" to "best-effort with reminder recovery" — true at-least-once needs an outbox (Phase 2). §7.5 rewritten so the Best Buy fetch happens BEFORE the SQLite write lock; transaction scope is now read-decide-write only. Added `PRAGMA busy_timeout`. §13/§7 split into `fetchProducts(skus[])` (pure HTTP) and `applyCheckResult(itemId, result)` (DB transaction) so batching and check-now share one transactional path. §9 added explicit retention semantics for `stock_events` — transitions, errors, and notification attempts only, NOT every poll. §16 manual verification corrected for SKU 6587182's actual current state.
 - **v2 (2026-05-10):** Codex round-1 review incorporated. §6 rewritten with proven endpoint. §7 notification state machine clarified (UNKNOWN handling, concurrency, delivery contract). §9 data model split status into stock vs health. §10 added URL parser for both formats. §14/§15 softened proxy language; documented TLS-fingerprint dependency. Added worker heartbeat. Added tests section. Project-local CLAUDE.md overrides global Vercel/Supabase preset.
@@ -178,12 +179,20 @@ Accepts ANY of these and extracts SKU:
 
 | Input format | Example | Extract |
 |---|---|---|
-| New URL | `https://www.bestbuy.com/product/acer-chromebook/sku/6587182` | `/sku/(\d{6,8})` |
+| New URL (numeric) | `https://www.bestbuy.com/product/acer-chromebook/sku/6587182` | `/sku/(\d{6,8})` |
 | Old URL | `https://www.bestbuy.com/site/.../6587182.p?skuId=6587182` | `(\d{6,8})\.p` OR `skuId=(\d{6,8})` |
 | Raw SKU | `6587182` | `^\d{6,8}$` |
+| Ad landing page (alphanumeric) | `https://www.bestbuy.com/product/{slug}/JJ8V8H8627?utm_account=...` | fetch the page; read `<link rel="canonical">` / `og:url` / JSON-LD `sku` |
 | Anything else | `gibberish` | reject with friendly error |
 
-Implemented as `parseUrlOrSku(input: string): { ok: true, sku: string } | { ok: false, error: string }`. Unit-tested (§16).
+Implemented as two functions in `src/lib/parse-input.ts`:
+
+- `parseUrlOrSku(input): { ok, sku } | { ok: false, error }` — **synchronous, pattern-only**. Used wherever a SKU can be derived from the string alone (worker logs, sync UI gates).
+- `resolveSkuFromInput(input, { fetchImpl?, timeoutMs? }): Promise<...>` — async. Tries `parseUrlOrSku` first; only if the input is shaped like `bestbuy.com/product/{slug}/{ALPHANUMERIC}` does it issue a single GET with the same browser-like headers as §6 and scrape the response for the SKU. Used by `POST /api/items` and `POST /api/products/lookup`.
+
+`looksResolvableBestBuyInput(input): boolean` is the cheap UI predicate (sync) that returns `true` when either `parseUrlOrSku` would succeed or the input is a Best Buy `/product/...` URL — used to debounce the AddItemDialog preview lookup without firing on every keystroke.
+
+Unit-tested (§16) including the NEC-13 ad-URL fixture.
 
 ## 7. Notification Logic
 

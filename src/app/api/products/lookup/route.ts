@@ -6,7 +6,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { fetchProducts, imageUrlForSku } from "@/lib/bestbuy";
-import { parseUrlOrSku } from "@/lib/parse-input";
+import { resolveSkuFromInput } from "@/lib/parse-input";
 
 const LookupSchema = z.object({
   input: z.string().min(1, "input is required"),
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const skuParse = parseUrlOrSku(parsed.data.input);
+  const skuParse = await resolveSkuFromInput(parsed.data.input);
   if (!skuParse.ok) {
     return NextResponse.json({ error: skuParse.error }, { status: 400 });
   }
