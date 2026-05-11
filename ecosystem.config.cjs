@@ -15,12 +15,13 @@ module.exports = {
       name: 'inventory-app',
       cwd: __dirname,
       script: 'node_modules/next/dist/bin/next',
-      // Bind to localhost; expect a reverse-proxy / Cloudflare Tunnel in front.
-      // Override with HOSTNAME=0.0.0.0 if a different setup is needed.
-      args: ['start', '-H', process.env.HOSTNAME || '127.0.0.1'],
+      // Bind to Docker bridge IP so Traefik (Docker) can reach via host.docker.internal.
+      // 10.0.0.1 is docker0 — not publicly exposed, only reachable from containers on this host.
+      // PORT 3002 avoids conflict with Paperclip server on 3100 (Next.js binds PORT+100 internally).
+      args: ['start', '-H', '10.0.0.1'],
       env: {
         NODE_ENV: 'production',
-        PORT: process.env.PORT || '3000',
+        PORT: '3002',
       },
       out_file: path.join(__dirname, 'logs', 'app.out.log'),
       error_file: path.join(__dirname, 'logs', 'app.err.log'),
