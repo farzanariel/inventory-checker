@@ -77,12 +77,31 @@ export function productUrlForSku(sku: string): string {
 interface RawSkuEntry {
   sku?: {
     skuId?: string;
+    error?: string;
     brand?: { brand?: string };
     buttonState?: { buttonState?: string; purchasable?: boolean; skuId?: string };
     names?: { short?: string };
     price?: { currentPrice?: number; regularPrice?: number };
     url?: string;
   };
+}
+
+/**
+ * Best Buy's priceBlocks payload sometimes includes a verbose `sku.error` field
+ * (e.g. wrapping a `ProductNotFoundException` from their internal catalog).
+ * Boil it down to a short, user-facing reason. Keeps the upstream message
+ * around as a fallback if we don't recognise the shape.
+ */
+function summarizeBestBuyError(raw: string): string {
+  if (/ProductNotFoundException|product not found/i.test(raw)) {
+    return "Best Buy's price API doesn't recognize this SKU. The product page may use Best Buy's newer /product/{code} catalog, which isn't exposed via priceBlocks. Try the SKU shown on the product page itself (labeled \"SKU:\" near the title) — that may differ from the digits in the URL.";
+  }
+  const statusMatch = raw.match(/status:\s*(\d{3})/i);
+  if (statusMatch) {
+    return `Best Buy returned HTTP ${statusMatch[1]} for this SKU`;
+  }
+  const trimmed = raw.length > 200 ? `${raw.slice(0, 200)}…` : raw;
+  return `Best Buy: ${trimmed}`;
 }
 
 /**
@@ -156,6 +175,15 @@ export async function fetchProducts(
       continue;
     }
 
+    if (typeof skuObj.error === "string" && skuObj.error.length > 0) {
+      results.set(skuId, {
+        ok: false,
+        sku: skuId,
+        error: summarizeBestBuyError(skuObj.error),
+      });
+      continue;
+    }
+
     const buttonState = skuObj.buttonState?.buttonState;
     const purchasable = skuObj.buttonState?.purchasable;
     const name = skuObj.names?.short;
@@ -211,4 +239,98 @@ export async function fetchProducts(
   }
 
   return results;
+}
+
+// ---------------------------------------------------------------------------
+// /api/v2/product/{sku} — catalog-only fallback (no price, no buttonState)
+// ---------------------------------------------------------------------------
+//
+// priceBlocks is the legacy index. SKUs that BB has migrated to its newer
+// catalog (the `/product/{slug}/{BSIN}/sku/{sku}` URL family) come back as
+// `ProductNotFoundException` from priceBlocks even though they're live on
+// the storefront. The v2 product endpoint, by contrast, returns rich
+// metadata for *every* SKU we've tested — but only metadata. No
+// `buttonState`, no `price`. Use it when you just need name/brand/url to
+// surface the item in the dashboard; live stock detection for these SKUs
+// is the headless scraper's job.
+
+export type ProductMeta = {
+  ok: true;
+  sku: string;
+  name: string;
+  brand?: string;
+  canonicalUrl: string;
+} | { ok: false; sku: string; error: string };
+
+interface RawV2Product {
+  skuId?: string;
+  brand?: string;
+  names?: { short?: string; title?: string };
+  links?: {
+    skuSpecificUrl?: { href?: string };
+    seoPdpUrl?: { href?: string };
+  };
+}
+
+export async function fetchProductMetaV2(sku: string): Promise<ProductMeta> {
+  const url = `${BESTBUY_ORIGIN}/api/v2/product/${encodeURIComponent(sku)}`;
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept: "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: "https://www.bestbuy.com/",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      sku,
+      error: err instanceof Error ? err.message : "Network error",
+    };
+  }
+
+  if (!response.ok) {
+    return { ok: false, sku, error: `v2 HTTP ${response.status}` };
+  }
+
+  let payload: RawV2Product;
+  try {
+    payload = (await response.json()) as RawV2Product;
+  } catch {
+    return { ok: false, sku, error: "v2: invalid JSON" };
+  }
+
+  const name = payload.names?.short ?? payload.names?.title;
+  if (typeof name !== "string" || name.length === 0) {
+    return { ok: false, sku, error: "v2: missing product name" };
+  }
+
+  const canonical =
+    payload.links?.skuSpecificUrl?.href ??
+    payload.links?.seoPdpUrl?.href ??
+    productUrlForSku(sku);
+
+  const result: ProductMeta = {
+    ok: true,
+    sku,
+    name,
+    canonicalUrl: canonical,
+  };
+  if (typeof payload.brand === "string" && payload.brand.length > 0) {
+    result.brand = payload.brand;
+  }
+  return result;
+}
+
+/** True when a priceBlocks failure looks like "BB has the SKU but the
+ * legacy pricing index doesn't" — i.e. exactly the case where the v2
+ * metadata fallback is worth trying. */
+export function isMissingFromPriceBlocks(error: string): boolean {
+  return /ProductNotFoundException|product not found|ProductInactiveException|PRODUCT_SKU_INACTIVE|doesn't recognize this SKU|does not recognize this SKU/i.test(
+    error,
+  );
 }

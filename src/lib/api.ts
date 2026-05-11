@@ -75,10 +75,14 @@ export type ProductLookup = {
   brand: string | null;
   image_url: string;
   product_url: string;
-  current_price_cents: number;
+  current_price_cents: number | null;
   regular_price_cents: number | null;
-  button_state: string;
-  purchasable: boolean;
+  button_state: string | null;
+  purchasable: boolean | null;
+  /** Where the price/stock fields came from. `metadata-only` means BB's
+   *  legacy priceBlocks index doesn't have this SKU; the worker will fill
+   *  in price + stock once it's been checked. */
+  stock_source: "priceblocks" | "metadata-only";
 };
 
 export async function lookupProduct(

@@ -5,6 +5,8 @@ import {
   cartUrlForSku,
   productUrlForSku,
   fetchProducts,
+  fetchProductMetaV2,
+  isMissingFromPriceBlocks,
 } from "@/lib/bestbuy";
 
 describe("interpretStock", () => {
@@ -341,6 +343,67 @@ describe("fetchProducts", () => {
       expect(entry.canonicalUrl).toBe(
         "https://www.bestbuy.com/site/-/6587182.p?skuId=6587182"
       );
+    }
+  });
+
+  it("surfaces a concise error when priceBlocks returns ProductNotFoundException", async () => {
+    const body = [
+      {
+        sku: {
+          skuId: "6587182",
+          error: "com.bestbuy.api.exceptions.ProductNotFoundException: product not found",
+        },
+      },
+    ];
+
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      new Response(JSON.stringify(body), { status: 200 })
+    );
+
+    const result = await fetchProducts(["6587182"]);
+    const entry = result.get("6587182");
+    expect(entry?.ok).toBe(false);
+    if (entry && !entry.ok) {
+      expect(isMissingFromPriceBlocks(entry.error)).toBe(true);
+      expect(entry.error).toContain("doesn't recognize this SKU");
+    }
+  });
+});
+
+describe("fetchProductMetaV2", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("returns metadata when v2 endpoint includes required fields", async () => {
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          skuId: "1234567",
+          brand: "BrandX",
+          names: { short: "Widget Pro" },
+          links: {
+            skuSpecificUrl: {
+              href: "https://www.bestbuy.com/site/widget-pro/1234567.p?skuId=1234567",
+            },
+          },
+        }),
+        { status: 200 }
+      )
+    );
+
+    const result = await fetchProductMetaV2("1234567");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.sku).toBe("1234567");
+      expect(result.name).toBe("Widget Pro");
+      expect(result.brand).toBe("BrandX");
+      expect(result.canonicalUrl).toContain("bestbuy.com/site/widget-pro");
     }
   });
 });

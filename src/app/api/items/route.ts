@@ -12,9 +12,11 @@ import { z } from "zod";
 import { getDb } from "@/lib/db/client";
 import { items } from "@/lib/db/schema";
 import {
+  fetchProductMetaV2,
   fetchProducts,
   imageUrlForSku,
   interpretStock,
+  isMissingFromPriceBlocks,
   productUrlForSku,
 } from "@/lib/bestbuy";
 import { resolveSkuFromInput } from "@/lib/parse-input";
@@ -83,15 +85,24 @@ export async function POST(req: NextRequest) {
   const productResult = productResults.get(skuParse.sku);
   const product = productResult?.ok ? productResult : null;
 
+  // priceBlocks miss → grab name/brand/canonicalUrl from /api/v2/product so
+  // the saved row isn't a SKU-only stub. Stock + price stay null until the
+  // worker (with headless fallback) fills them in.
+  let metaFallback: Awaited<ReturnType<typeof fetchProductMetaV2>> | null = null;
+  if (!product && productResult && !productResult.ok && isMissingFromPriceBlocks(productResult.error)) {
+    metaFallback = await fetchProductMetaV2(skuParse.sku);
+  }
+  const meta = metaFallback?.ok ? metaFallback : null;
+
   try {
     const db = getDb();
     const inserted = db
       .insert(items)
       .values({
         sku: skuParse.sku,
-        name: product?.name ?? null,
-        brand: product?.brand ?? null,
-        productUrl: product?.canonicalUrl ?? productUrlForSku(skuParse.sku),
+        name: product?.name ?? meta?.name ?? null,
+        brand: product?.brand ?? meta?.brand ?? null,
+        productUrl: product?.canonicalUrl ?? meta?.canonicalUrl ?? productUrlForSku(skuParse.sku),
         imageUrl: imageUrlForSku(skuParse.sku),
         currentPriceCents: product?.currentPriceCents ?? null,
         regularPriceCents: product?.regularPriceCents ?? null,

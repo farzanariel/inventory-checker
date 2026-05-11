@@ -198,11 +198,23 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                   {lookup.brand ? <span className="truncate">{lookup.brand}</span> : null}
                   {lookup.brand ? <span aria-hidden="true">·</span> : null}
                   <span className="tabular-nums">
-                    {formatPrice(lookup.current_price_cents)}
+                    {lookup.current_price_cents !== null
+                      ? formatPrice(lookup.current_price_cents)
+                      : "—"}
                   </span>
                   <span aria-hidden="true">·</span>
-                  <span className="truncate">{lookup.button_state.replaceAll("_", " ")}</span>
+                  <span className="truncate">
+                    {lookup.button_state
+                      ? lookup.button_state.replaceAll("_", " ")
+                      : "stock pending"}
+                  </span>
                 </div>
+                {lookup.stock_source === "metadata-only" ? (
+                  <p className="font-mono text-[10px] leading-snug text-muted-foreground break-words">
+                    Best Buy&apos;s pricing API doesn&apos;t index this SKU yet.
+                    Item will be added now; price + stock fill in on the next worker check.
+                  </p>
+                ) : null}
               </div>
             </div>
           ) : null}
