@@ -154,6 +154,33 @@ export function ItemRow({ item, onChanged }: Props) {
       : null;
 
   const priceLabel = formatPrice(item.currentPriceCents);
+  const priceDrop =
+    item.currentPriceCents != null &&
+    item.baselinePriceCents != null &&
+    item.currentPriceCents < item.baselinePriceCents
+      ? {
+          pct: Math.round(
+            ((item.baselinePriceCents - item.currentPriceCents) /
+              item.baselinePriceCents) *
+              100,
+          ),
+          savingCents: item.baselinePriceCents - item.currentPriceCents,
+        }
+      : null;
+  const dropChip = priceDrop ? (
+    <span
+      className="font-mono text-[10px] md:text-[11px] tabular-nums tracking-tight"
+      style={{ color: "var(--color-status-pricedrop)" }}
+      aria-label={`Price dropped ${priceDrop.pct}% from baseline`}
+      title={
+        item.baselinePriceCents != null
+          ? `Baseline ${formatPrice(item.baselinePriceCents)} · saving ${formatPrice(priceDrop.savingCents)}`
+          : undefined
+      }
+    >
+      ▼-{priceDrop.pct}%
+    </span>
+  ) : null;
   const intervalLabel = formatInterval(item.checkIntervalMin);
   const relativeLabel = formatRelativeTime(item.lastCheckedAt);
 
@@ -213,8 +240,9 @@ export function ItemRow({ item, onChanged }: Props) {
               {item.name ?? `SKU ${item.sku}`}
             </span>
             {/* Desktop only: price + status pill on line 1, right-aligned. */}
-            <span className="ml-auto hidden md:inline font-mono text-sm tabular-nums text-foreground">
+            <span className="ml-auto hidden md:flex items-baseline gap-1.5 font-mono text-sm tabular-nums text-foreground">
               {priceLabel}
+              {dropChip}
             </span>
             <span
               className="hidden md:inline font-mono text-[11px] uppercase tracking-wider w-[5.5rem] text-right"
@@ -230,6 +258,7 @@ export function ItemRow({ item, onChanged }: Props) {
             <span className="md:hidden font-mono text-xs tabular-nums text-foreground">
               {priceLabel}
             </span>
+            {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
             <span
               className="md:hidden font-mono text-[10px] uppercase tracking-wider"
               style={{ color: badgeColorVar(item) }}

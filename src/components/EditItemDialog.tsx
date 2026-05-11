@@ -35,6 +35,10 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PriceAlertSection,
+  type PriceAlertValues,
+} from "@/components/PriceAlertSection";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { patchItem } from "@/lib/api";
 import type { Item } from "@/lib/db/schema";
@@ -62,6 +66,13 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
     String(item.restockNotifyIntervalMin),
   );
   const [note, setNote] = useState(item.note ?? "");
+  const [priceAlert, setPriceAlert] = useState<PriceAlertValues>({
+    enabled: item.priceAlertEnabled === 1,
+    thresholdPct: String(item.priceDropThresholdPct),
+    thresholdCents: String(item.priceDropThresholdCents),
+    notifyIntervalMin: String(item.priceNotifyIntervalMin),
+    whileOos: item.priceAlertWhileOos === 1,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,6 +87,14 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
         restock_notify_interval_min:
           Number.parseInt(restockInterval, 10) || 10,
         note: note.trim() || null,
+        price_alert_enabled: priceAlert.enabled,
+        price_drop_threshold_pct:
+          Number.parseInt(priceAlert.thresholdPct, 10) || 5,
+        price_drop_threshold_cents:
+          Number.parseInt(priceAlert.thresholdCents, 10) || 1000,
+        price_notify_interval_min:
+          Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
+        price_alert_while_oos: priceAlert.whileOos,
       });
       toast.success("Saved changes");
       onSaved?.();
@@ -176,6 +195,13 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
         <p className="text-xs text-muted-foreground -mt-1">
           Recommend 1–2 min for check, 10+ min for re-notify.
         </p>
+
+        <PriceAlertSection
+          idPrefix="edit"
+          values={priceAlert}
+          onChange={setPriceAlert}
+          disabled={submitting}
+        />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="edit-note">Note (optional)</Label>

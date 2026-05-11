@@ -52,6 +52,8 @@ function statusColor(status: string): string {
       return "var(--color-status-error)";
     case "NOTIFIED":
       return "var(--color-status-degraded)";
+    case "PRICE_DROP":
+      return "var(--color-status-pricedrop)";
     default:
       return "var(--color-status-out)";
   }
@@ -67,9 +69,33 @@ function statusLabel(status: string): string {
       return "ERROR";
     case "NOTIFIED":
       return "NOTIFIED";
+    case "PRICE_DROP":
+      return "PRICE DROP";
     default:
       return status;
   }
+}
+
+/**
+ * Parse `"<oldCents> -> <newCents>"` (from checker.ts §19) into structured
+ * price-drop data. Returns null if the message isn't in that shape.
+ */
+function parsePriceDropMessage(message: string | null): {
+  oldCents: number;
+  newCents: number;
+  diffCents: number;
+  pct: number;
+} | null {
+  if (!message) return null;
+  const match = /^(\d+)\s*->\s*(\d+)$/.exec(message.trim());
+  if (!match) return null;
+  const oldCents = Number.parseInt(match[1], 10);
+  const newCents = Number.parseInt(match[2], 10);
+  if (!Number.isFinite(oldCents) || !Number.isFinite(newCents)) return null;
+  if (oldCents <= 0 || newCents >= oldCents) return null;
+  const diffCents = oldCents - newCents;
+  const pct = Math.round((diffCents / oldCents) * 100);
+  return { oldCents, newCents, diffCents, pct };
 }
 
 function HistoryPanel({ item }: { item: Item }) {
@@ -139,65 +165,110 @@ function HistoryPanel({ item }: { item: Item }) {
         <span className="text-right">Price</span>
         <span>Message</span>
       </div>
-      {events.map((ev) => (
-        <div key={ev.id} className="px-2 py-2 md:py-1.5">
-          {/* Desktop: 5-column grid */}
-          <div className="hidden md:grid grid-cols-[10rem_5.5rem_8rem_5.5rem_1fr] gap-3 text-sm">
-            <span
-              className="font-mono text-xs tabular-nums text-muted-foreground"
-              title={formatAbsoluteTime(ev.ts)}
-            >
-              {formatRelativeTime(ev.ts)}
+      {events.map((ev) => {
+        const drop =
+          ev.status === "PRICE_DROP" ? parsePriceDropMessage(ev.message) : null;
+        const priceCellDesktop = drop ? (
+          <span className="font-mono text-xs text-right tabular-nums">
+            <span className="text-muted-foreground line-through">
+              {formatPrice(drop.oldCents)}
             </span>
-            <span
-              className="font-mono text-[11px] uppercase tracking-wider"
-              style={{ color: statusColor(ev.status) }}
-            >
-              {statusLabel(ev.status)}
+            <span className="mx-1 text-muted-foreground" aria-hidden="true">
+              →
             </span>
-            <span className="font-mono text-xs text-muted-foreground truncate">
-              {ev.buttonState ?? "—"}
+            <span style={{ color: "var(--color-status-pricedrop)" }}>
+              {formatPrice(drop.newCents)}
             </span>
-            <span className="font-mono text-xs text-right tabular-nums">
-              {formatPrice(ev.priceCents)}
+          </span>
+        ) : (
+          <span className="font-mono text-xs text-right tabular-nums">
+            {formatPrice(ev.priceCents)}
+          </span>
+        );
+        const messageCell = drop ? (
+          <span
+            className="font-mono text-xs tabular-nums truncate"
+            style={{ color: "var(--color-status-pricedrop)" }}
+          >
+            ▼-{drop.pct}% · −{formatPrice(drop.diffCents)}
+          </span>
+        ) : (
+          <span
+            className={`text-xs truncate ${ev.message ? "italic text-muted-foreground" : "text-muted-foreground/40"}`}
+          >
+            {ev.message ?? ""}
+          </span>
+        );
+        const priceCellMobile = drop ? (
+          <span className="tabular-nums">
+            <span className="line-through">{formatPrice(drop.oldCents)}</span>
+            <span className="mx-1" aria-hidden="true">→</span>
+            <span style={{ color: "var(--color-status-pricedrop)" }}>
+              {formatPrice(drop.newCents)}
             </span>
-            <span
-              className={`text-xs truncate ${ev.message ? "italic text-muted-foreground" : "text-muted-foreground/40"}`}
-            >
-              {ev.message ?? ""}
-            </span>
-          </div>
-
-          {/* Mobile: stacked */}
-          <div className="md:hidden flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2">
-              <span
-                className="font-mono text-[11px] uppercase tracking-wider"
-                style={{ color: statusColor(ev.status) }}
-              >
-                {statusLabel(ev.status)}
-              </span>
+          </span>
+        ) : (
+          <span className="tabular-nums">{formatPrice(ev.priceCents)}</span>
+        );
+        return (
+          <div key={ev.id} className="px-2 py-2 md:py-1.5">
+            {/* Desktop: 5-column grid */}
+            <div className="hidden md:grid grid-cols-[10rem_5.5rem_8rem_5.5rem_1fr] gap-3 text-sm">
               <span
                 className="font-mono text-xs tabular-nums text-muted-foreground"
                 title={formatAbsoluteTime(ev.ts)}
               >
                 {formatRelativeTime(ev.ts)}
               </span>
-            </div>
-            <div className="flex items-center justify-between gap-2 font-mono text-xs text-muted-foreground">
-              <span className="truncate">{ev.buttonState ?? "—"}</span>
-              <span className="tabular-nums">
-                {formatPrice(ev.priceCents)}
+              <span
+                className="font-mono text-[11px] uppercase tracking-wider"
+                style={{ color: statusColor(ev.status) }}
+              >
+                {statusLabel(ev.status)}
               </span>
+              <span className="font-mono text-xs text-muted-foreground truncate">
+                {ev.buttonState ?? "—"}
+              </span>
+              {priceCellDesktop}
+              {messageCell}
             </div>
-            {ev.message ? (
-              <p className="text-xs italic text-muted-foreground">
-                {ev.message}
-              </p>
-            ) : null}
+
+            {/* Mobile: stacked */}
+            <div className="md:hidden flex flex-col gap-1">
+              <div className="flex items-center justify-between gap-2">
+                <span
+                  className="font-mono text-[11px] uppercase tracking-wider"
+                  style={{ color: statusColor(ev.status) }}
+                >
+                  {statusLabel(ev.status)}
+                </span>
+                <span
+                  className="font-mono text-xs tabular-nums text-muted-foreground"
+                  title={formatAbsoluteTime(ev.ts)}
+                >
+                  {formatRelativeTime(ev.ts)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 font-mono text-xs text-muted-foreground">
+                <span className="truncate">{ev.buttonState ?? "—"}</span>
+                {priceCellMobile}
+              </div>
+              {drop ? (
+                <p
+                  className="font-mono text-xs tabular-nums"
+                  style={{ color: "var(--color-status-pricedrop)" }}
+                >
+                  ▼-{drop.pct}% · −{formatPrice(drop.diffCents)}
+                </p>
+              ) : ev.message ? (
+                <p className="text-xs italic text-muted-foreground">
+                  {ev.message}
+                </p>
+              ) : null}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

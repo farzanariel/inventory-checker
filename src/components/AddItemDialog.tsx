@@ -33,6 +33,11 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PRICE_ALERT_DEFAULTS,
+  PriceAlertSection,
+  type PriceAlertValues,
+} from "@/components/PriceAlertSection";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { createItem, lookupProduct, type ProductLookup } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
@@ -50,6 +55,8 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
   const [checkInterval, setCheckInterval] = useState("1");
   const [restockInterval, setRestockInterval] = useState("10");
   const [note, setNote] = useState("");
+  const [priceAlert, setPriceAlert] =
+    useState<PriceAlertValues>(PRICE_ALERT_DEFAULTS);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lookup, setLookup] = useState<ProductLookup | null>(null);
@@ -61,6 +68,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     setCheckInterval("1");
     setRestockInterval("10");
     setNote("");
+    setPriceAlert(PRICE_ALERT_DEFAULTS);
     setError(null);
     setLookup(null);
     setLookupError(null);
@@ -114,6 +122,14 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
         restock_notify_interval_min:
           Number.parseInt(restockInterval, 10) || 10,
         note: note.trim() || undefined,
+        price_alert_enabled: priceAlert.enabled,
+        price_drop_threshold_pct:
+          Number.parseInt(priceAlert.thresholdPct, 10) || 5,
+        price_drop_threshold_cents:
+          Number.parseInt(priceAlert.thresholdCents, 10) || 1000,
+        price_notify_interval_min:
+          Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
+        price_alert_while_oos: priceAlert.whileOos,
       });
       toast.success(`Added: ${created.name ?? `SKU ${created.sku}`}`);
       onAdded?.();
@@ -242,6 +258,13 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
       <p className="text-xs text-muted-foreground -mt-1">
         Recommend 1–2 min for check, 10+ min for re-notify.
       </p>
+
+      <PriceAlertSection
+        idPrefix="add"
+        values={priceAlert}
+        onChange={setPriceAlert}
+        disabled={submitting}
+      />
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="add-note">Note (optional)</Label>
