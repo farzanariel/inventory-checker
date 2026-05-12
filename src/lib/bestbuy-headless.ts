@@ -50,7 +50,8 @@ const fpInjector = new FingerprintInjector();
 export interface HeadlessOptions {
   /** `host:port` or `host:port:user:pass`. */
   proxy?: string;
-  /** Per-navigation timeout. Default 25s — warm calls finish in 2–5s. */
+  /** Per-navigation timeout. Default 45s — first-paint via residential
+   * proxy consistently takes 15–20s, so 25s leaves no margin. */
   timeoutMs?: number;
   /** Force headed Chromium (debugging only). */
   headed?: boolean;
@@ -212,8 +213,12 @@ export async function scrapePdpForSku(
   sku: string,
   options: HeadlessOptions = {},
 ): Promise<ProductResult> {
-  const timeoutMs = options.timeoutMs ?? 25_000;
-  const pool = await getPool(options);
+  const resolved: HeadlessOptions = {
+    ...options,
+    proxy: options.proxy ?? process.env.BB_PROXY ?? undefined,
+  };
+  const timeoutMs = resolved.timeoutMs ?? 45_000;
+  const pool = await getPool(resolved);
   const page = await pool.context.newPage();
   page.setDefaultTimeout(timeoutMs);
   page.setDefaultNavigationTimeout(timeoutMs);
