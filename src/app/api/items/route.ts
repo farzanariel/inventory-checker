@@ -18,19 +18,30 @@ import {
   interpretStock,
   isMissingFromPriceBlocks,
   productUrlForSku,
+  type ProductResult,
 } from "@/lib/bestbuy";
+import { scrapePdpForSku } from "@/lib/bestbuy-headless";
 import { resolveSkuFromInput } from "@/lib/parse-input";
 
-const CreateItemSchema = z.object({
-  input: z.string().min(1, "input is required"),
-  check_interval_min: z.number().int().min(1).max(60).optional(),
-  restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
-  note: z.string().max(500).optional(),
-  price_alert_enabled: z.boolean().optional(),
-  target_price_cents: z.number().int().min(1).optional(),
-  price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
-  price_alert_while_oos: z.boolean().optional(),
-});
+const CreateItemSchema = z
+  .object({
+    input: z.string().min(1, "input is required"),
+    check_interval_min: z.number().int().min(1).max(60).optional(),
+    restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
+    note: z.string().max(500).optional(),
+    stock_alert_enabled: z.boolean().optional(),
+    stock_notify_mode: z.enum(["once", "repeat"]).optional(),
+    price_alert_enabled: z.boolean().optional(),
+    target_price_cents: z.number().int().min(1).optional(),
+    price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
+    price_notify_mode: z.enum(["once", "repeat"]).optional(),
+    price_alert_while_oos: z.boolean().optional(),
+  })
+  .refine(
+    (obj) =>
+      obj.stock_alert_enabled !== false || obj.price_alert_enabled !== false,
+    { message: "At least one of stock or price alerts must be enabled" },
+  );
 
 function firstZodIssue(err: z.ZodError): string {
   const issue = err.issues[0];
@@ -83,14 +94,21 @@ export async function POST(req: NextRequest) {
     parsed.data.restock_notify_interval_min ?? 10;
   const productResults = await fetchProducts([skuParse.sku]);
   const productResult = productResults.get(skuParse.sku);
-  const product = productResult?.ok ? productResult : null;
+  let product: Extract<ProductResult, { ok: true }> | null = productResult?.ok
+    ? productResult
+    : null;
 
-  // priceBlocks miss → grab name/brand/canonicalUrl from /api/v2/product so
-  // the saved row isn't a SKU-only stub. Stock + price stay null until the
-  // worker (with headless fallback) fills them in.
+  // priceBlocks miss → run the headless PDP scraper once at save time so the
+  // first row has real price/stock. If headless fails too, fall back to v2
+  // metadata (name/brand only) and let the worker retry on its interval.
   let metaFallback: Awaited<ReturnType<typeof fetchProductMetaV2>> | null = null;
   if (!product && productResult && !productResult.ok && isMissingFromPriceBlocks(productResult.error)) {
-    metaFallback = await fetchProductMetaV2(skuParse.sku);
+    const headless = await scrapePdpForSku(skuParse.sku);
+    if (headless.ok) {
+      product = headless;
+    } else {
+      metaFallback = await fetchProductMetaV2(skuParse.sku);
+    }
   }
   const meta = metaFallback?.ok ? metaFallback : null;
 
@@ -110,8 +128,17 @@ export async function POST(req: NextRequest) {
         restockNotifyIntervalMin,
         enabled: 1,
         note: parsed.data.note ?? null,
+        ...(parsed.data.stock_alert_enabled !== undefined && {
+          stockAlertEnabled: parsed.data.stock_alert_enabled ? 1 : 0,
+        }),
+        ...(parsed.data.stock_notify_mode !== undefined && {
+          stockNotifyMode: parsed.data.stock_notify_mode,
+        }),
         ...(parsed.data.price_alert_enabled !== undefined && {
           priceAlertEnabled: parsed.data.price_alert_enabled ? 1 : 0,
+        }),
+        ...(parsed.data.price_notify_mode !== undefined && {
+          priceNotifyMode: parsed.data.price_notify_mode,
         }),
         ...(parsed.data.target_price_cents !== undefined && {
           targetPriceCents: parsed.data.target_price_cents,

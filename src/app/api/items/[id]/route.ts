@@ -18,9 +18,12 @@ const UpdateItemSchema = z
     restock_notify_interval_min: z.number().int().min(1).max(1440).optional(),
     enabled: z.boolean().optional(),
     note: z.string().max(500).nullable().optional(),
+    stock_alert_enabled: z.boolean().optional(),
+    stock_notify_mode: z.enum(["once", "repeat"]).optional(),
     price_alert_enabled: z.boolean().optional(),
     target_price_cents: z.number().int().min(1).nullable().optional(),
     price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
+    price_notify_mode: z.enum(["once", "repeat"]).optional(),
     price_alert_while_oos: z.boolean().optional(),
   })
   .refine((obj) => Object.keys(obj).length > 0, {
@@ -92,8 +95,24 @@ export async function PATCH(
     if (parsed.data.note !== undefined) {
       patch.note = parsed.data.note;
     }
+    if (parsed.data.stock_alert_enabled !== undefined) {
+      patch.stockAlertEnabled = parsed.data.stock_alert_enabled ? 1 : 0;
+    }
+    if (parsed.data.stock_notify_mode !== undefined) {
+      patch.stockNotifyMode = parsed.data.stock_notify_mode;
+    }
     if (parsed.data.price_alert_enabled !== undefined) {
       patch.priceAlertEnabled = parsed.data.price_alert_enabled ? 1 : 0;
+    }
+    if (
+      parsed.data.price_notify_mode !== undefined &&
+      parsed.data.price_notify_mode !== existing.priceNotifyMode
+    ) {
+      patch.priceNotifyMode = parsed.data.price_notify_mode;
+      // Reset the once-mode "already fired" gate so the new mode starts fresh.
+      patch.lastPriceNotifiedAt = null;
+      patch.pendingHitPriceCents = null;
+      patch.pendingHitSeenCount = 0;
     }
     if (parsed.data.target_price_cents !== undefined) {
       patch.targetPriceCents = parsed.data.target_price_cents;
@@ -106,6 +125,16 @@ export async function PATCH(
     }
     if (parsed.data.price_alert_while_oos !== undefined) {
       patch.priceAlertWhileOos = parsed.data.price_alert_while_oos ? 1 : 0;
+    }
+    const resultingStock =
+      parsed.data.stock_alert_enabled ?? existing.stockAlertEnabled === 1;
+    const resultingPrice =
+      parsed.data.price_alert_enabled ?? existing.priceAlertEnabled === 1;
+    if (!resultingStock && !resultingPrice) {
+      return NextResponse.json(
+        { error: "At least one of stock or price alerts must be enabled" },
+        { status: 400 },
+      );
     }
     if (parsed.data.enabled !== undefined) {
       const newEnabled = parsed.data.enabled ? 1 : 0;

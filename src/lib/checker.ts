@@ -197,8 +197,16 @@ export function decidePriceAlert(
   };
 
   const cooldownMs = item.priceNotifyIntervalMin * 60_000;
+  // In 'once' mode, a prior fire silences further price notifications
+  // permanently — until the user reconfigures the alert (PATCH clears
+  // lastPriceNotifiedAt? no — they'd toggle mode back to repeat, or change
+  // target which already resets pending-hit guards; that's a deliberate
+  // trade-off for the simpler mental model).
+  const onceModeAlreadyFired =
+    item.priceNotifyMode === "once" && item.lastPriceNotifiedAt != null;
   const inCooldown =
-    item.lastPriceNotifiedAt != null && now - item.lastPriceNotifiedAt < cooldownMs;
+    onceModeAlreadyFired ||
+    (item.lastPriceNotifiedAt != null && now - item.lastPriceNotifiedAt < cooldownMs);
   const suppressWhileOos =
     item.priceAlertWhileOos !== 1 && newStockStatus === "OUT_OF_STOCK";
 
@@ -283,22 +291,26 @@ function decideStock(
     updatedAt: now,
   };
 
+  const stockAlertsOn = item.stockAlertEnabled === 1;
+
   if (prev === "UNKNOWN" && newStockStatus === "IN_STOCK") {
     patch.lastStockStatus = "IN_STOCK";
     patch.lastInStockAt = now;
-    patch.lastNotifiedAt = now;
+    if (stockAlertsOn) patch.lastNotifiedAt = now;
     return {
       patch,
       newStockStatus,
       transitioned: true,
-      stockNotification: "alert",
+      stockNotification: stockAlertsOn ? "alert" : null,
       insideTxnEvent: {
         kind: "transition",
         status: "IN_STOCK",
         buttonState: result.buttonState,
         priceCents: result.currentPriceCents,
       },
-      reason: "UNKNOWN -> IN_STOCK (first-seen alert)",
+      reason: stockAlertsOn
+        ? "UNKNOWN -> IN_STOCK (first-seen alert)"
+        : "UNKNOWN -> IN_STOCK (stock alerts off)",
     };
   }
 
@@ -322,26 +334,30 @@ function decideStock(
   if (prev === "OUT_OF_STOCK" && newStockStatus === "IN_STOCK") {
     patch.lastStockStatus = "IN_STOCK";
     patch.lastInStockAt = now;
-    patch.lastNotifiedAt = now;
+    if (stockAlertsOn) patch.lastNotifiedAt = now;
     return {
       patch,
       newStockStatus,
       transitioned: true,
-      stockNotification: "alert",
+      stockNotification: stockAlertsOn ? "alert" : null,
       insideTxnEvent: {
         kind: "transition",
         status: "IN_STOCK",
         buttonState: result.buttonState,
         priceCents: result.currentPriceCents,
       },
-      reason: "OUT_OF_STOCK -> IN_STOCK (restock alert)",
+      reason: stockAlertsOn
+        ? "OUT_OF_STOCK -> IN_STOCK (restock alert)"
+        : "OUT_OF_STOCK -> IN_STOCK (stock alerts off)",
     };
   }
 
   if (prev === "IN_STOCK" && newStockStatus === "IN_STOCK") {
     const intervalMs = item.restockNotifyIntervalMin * 60_000;
     const last = item.lastNotifiedAt;
-    const dueForReminder = last == null || now - last >= intervalMs;
+    const remindersOn = stockAlertsOn && item.stockNotifyMode === "repeat";
+    const dueForReminder =
+      remindersOn && (last == null || now - last >= intervalMs);
 
     if (dueForReminder) {
       patch.lastNotifiedAt = now;

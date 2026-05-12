@@ -38,6 +38,11 @@ import {
   PriceAlertSection,
   type PriceAlertValues,
 } from "@/components/PriceAlertSection";
+import {
+  STOCK_ALERT_DEFAULTS,
+  StockAlertSection,
+  type StockAlertValues,
+} from "@/components/StockAlertSection";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { createItem, lookupProduct, type ProductLookup } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
@@ -52,8 +57,8 @@ type Props = {
 export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
   const isDesktop = useIsDesktop();
   const [input, setInput] = useState("");
-  const [checkInterval, setCheckInterval] = useState("1");
-  const [restockInterval, setRestockInterval] = useState("10");
+  const [stockAlert, setStockAlert] =
+    useState<StockAlertValues>(STOCK_ALERT_DEFAULTS);
   const [note, setNote] = useState("");
   const [priceAlert, setPriceAlert] =
     useState<PriceAlertValues>(PRICE_ALERT_DEFAULTS);
@@ -65,8 +70,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
 
   function reset() {
     setInput("");
-    setCheckInterval("1");
-    setRestockInterval("10");
+    setStockAlert(STOCK_ALERT_DEFAULTS);
     setNote("");
     setPriceAlert(PRICE_ALERT_DEFAULTS);
     setError(null);
@@ -114,6 +118,11 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     e.preventDefault();
     if (submitting) return;
     setError(null);
+    if (!stockAlert.enabled && !priceAlert.enabled) {
+      setError("Enable stock alerts, price alerts, or both.");
+      setSubmitting(false);
+      return;
+    }
     setSubmitting(true);
     try {
       const targetDollarsNum = Number.parseFloat(priceAlert.targetDollars);
@@ -123,14 +132,17 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           : undefined;
       const created = await createItem({
         input: input.trim(),
-        check_interval_min: Number.parseInt(checkInterval, 10) || 1,
+        check_interval_min: Number.parseInt(stockAlert.checkIntervalMin, 10) || 1,
         restock_notify_interval_min:
-          Number.parseInt(restockInterval, 10) || 10,
+          Number.parseInt(stockAlert.restockIntervalMin, 10) || 10,
         note: note.trim() || undefined,
+        stock_alert_enabled: stockAlert.enabled,
+        stock_notify_mode: stockAlert.notifyMode,
         price_alert_enabled: priceAlert.enabled,
         ...(targetCents !== undefined && { target_price_cents: targetCents }),
         price_notify_interval_min:
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
+        price_notify_mode: priceAlert.notifyMode,
         price_alert_while_oos: priceAlert.whileOos,
       });
       toast.success(`Added: ${created.name ?? `SKU ${created.sku}`}`);
@@ -235,43 +247,12 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="check-interval">Check every (min)</Label>
-          <Input
-            id="check-interval"
-            type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            min={1}
-            max={60}
-            step={1}
-            value={checkInterval}
-            onChange={(e) => setCheckInterval(e.target.value)}
-            className="font-mono tabular-nums text-base sm:text-sm"
-            disabled={submitting}
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="restock-interval">Re-notify every (min)</Label>
-          <Input
-            id="restock-interval"
-            type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            min={1}
-            max={1440}
-            step={1}
-            value={restockInterval}
-            onChange={(e) => setRestockInterval(e.target.value)}
-            className="font-mono tabular-nums text-base sm:text-sm"
-            disabled={submitting}
-          />
-        </div>
-      </div>
-      <p className="text-xs text-muted-foreground -mt-1">
-        Recommend 1–2 min for check, 10+ min for re-notify.
-      </p>
+      <StockAlertSection
+        idPrefix="add"
+        values={stockAlert}
+        onChange={setStockAlert}
+        disabled={submitting}
+      />
 
       <PriceAlertSection
         idPrefix="add"

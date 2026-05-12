@@ -49,14 +49,19 @@ export async function fetchHealth(
   return JSON.parse(text) as HealthResponse;
 }
 
+export type NotifyMode = "once" | "repeat";
+
 export type CreateItemInput = {
   input: string;
   check_interval_min?: number;
   restock_notify_interval_min?: number;
   note?: string;
+  stock_alert_enabled?: boolean;
+  stock_notify_mode?: NotifyMode;
   price_alert_enabled?: boolean;
   target_price_cents?: number;
   price_notify_interval_min?: number;
+  price_notify_mode?: NotifyMode;
   price_alert_while_oos?: boolean;
 };
 
@@ -103,9 +108,12 @@ export type PatchItemInput = {
   restock_notify_interval_min?: number;
   enabled?: boolean;
   note?: string | null;
+  stock_alert_enabled?: boolean;
+  stock_notify_mode?: NotifyMode;
   price_alert_enabled?: boolean;
   target_price_cents?: number | null;
   price_notify_interval_min?: number;
+  price_notify_mode?: NotifyMode;
   price_alert_while_oos?: boolean;
 };
 

@@ -25,6 +25,12 @@ export const items = sqliteTable(
     restockNotifyIntervalMin: integer('restock_notify_interval_min')
       .notNull()
       .default(10),
+    // Stock-alert config. `stockAlertEnabled` toggles the whole stock-watch
+    // feature for an item (mirrors `priceAlertEnabled`). `stockNotifyMode`:
+    //   'repeat' — re-ping every restockNotifyIntervalMin while in stock
+    //   'once'   — fire on the OOS→IN_STOCK transition only, no reminders
+    stockAlertEnabled: integer('stock_alert_enabled').notNull().default(1),
+    stockNotifyMode: text('stock_notify_mode').notNull().default('repeat'),
     enabled: integer('enabled').notNull().default(1),
     note: text('note'),
     // separated status fields (per Codex round-1)
@@ -44,6 +50,9 @@ export const items = sqliteTable(
     priceNotifyIntervalMin: integer('price_notify_interval_min')
       .notNull()
       .default(60),
+    // 'repeat' — re-ping every priceNotifyIntervalMin while the hit holds
+    // 'once'   — fire on the first confirmed hit, then go quiet
+    priceNotifyMode: text('price_notify_mode').notNull().default('repeat'),
     lastPriceNotifiedAt: integer('last_price_notified_at'),
     priceAlertWhileOos: integer('price_alert_while_oos').notNull().default(1),
     // Stale-price guard — kept; same flicker defense as v4 but keyed off "at or below target"

@@ -33,12 +33,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   PriceAlertSection,
   type PriceAlertValues,
 } from "@/components/PriceAlertSection";
+import {
+  StockAlertSection,
+  type StockAlertValues,
+} from "@/components/StockAlertSection";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { patchItem } from "@/lib/api";
 import type { Item } from "@/lib/db/schema";
@@ -59,12 +62,12 @@ type FormProps = {
 };
 
 function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
-  const [checkInterval, setCheckInterval] = useState(
-    String(item.checkIntervalMin),
-  );
-  const [restockInterval, setRestockInterval] = useState(
-    String(item.restockNotifyIntervalMin),
-  );
+  const [stockAlert, setStockAlert] = useState<StockAlertValues>({
+    enabled: item.stockAlertEnabled === 1,
+    checkIntervalMin: String(item.checkIntervalMin),
+    restockIntervalMin: String(item.restockNotifyIntervalMin),
+    notifyMode: (item.stockNotifyMode as "once" | "repeat") ?? "repeat",
+  });
   const [note, setNote] = useState(item.note ?? "");
   const [priceAlert, setPriceAlert] = useState<PriceAlertValues>({
     enabled: item.priceAlertEnabled === 1,
@@ -73,6 +76,7 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
         ? (item.targetPriceCents / 100).toFixed(2)
         : "",
     notifyIntervalMin: String(item.priceNotifyIntervalMin),
+    notifyMode: (item.priceNotifyMode as "once" | "repeat") ?? "repeat",
     whileOos: item.priceAlertWhileOos === 1,
   });
   const [submitting, setSubmitting] = useState(false);
@@ -82,6 +86,10 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
     e.preventDefault();
     if (submitting) return;
     setError(null);
+    if (!stockAlert.enabled && !priceAlert.enabled) {
+      setError("Enable stock alerts, price alerts, or both.");
+      return;
+    }
     setSubmitting(true);
     try {
       const targetDollarsNum = Number.parseFloat(priceAlert.targetDollars);
@@ -90,14 +98,17 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           ? Math.round(targetDollarsNum * 100)
           : null;
       await patchItem(item.id, {
-        check_interval_min: Number.parseInt(checkInterval, 10) || 1,
+        check_interval_min: Number.parseInt(stockAlert.checkIntervalMin, 10) || 1,
         restock_notify_interval_min:
-          Number.parseInt(restockInterval, 10) || 10,
+          Number.parseInt(stockAlert.restockIntervalMin, 10) || 10,
         note: note.trim() || null,
+        stock_alert_enabled: stockAlert.enabled,
+        stock_notify_mode: stockAlert.notifyMode,
         price_alert_enabled: priceAlert.enabled,
         target_price_cents: targetCents,
         price_notify_interval_min:
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
+        price_notify_mode: priceAlert.notifyMode,
         price_alert_while_oos: priceAlert.whileOos,
       });
       toast.success("Saved changes");
@@ -161,44 +172,12 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="edit-check-interval">Check every (min)</Label>
-            <Input
-              id="edit-check-interval"
-              autoFocus
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              min={1}
-              max={60}
-              step={1}
-              value={checkInterval}
-              onChange={(e) => setCheckInterval(e.target.value)}
-              className="font-mono tabular-nums text-base sm:text-sm"
-              disabled={submitting}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="edit-restock-interval">Re-notify every (min)</Label>
-            <Input
-              id="edit-restock-interval"
-              type="number"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              min={1}
-              max={1440}
-              step={1}
-              value={restockInterval}
-              onChange={(e) => setRestockInterval(e.target.value)}
-              className="font-mono tabular-nums text-base sm:text-sm"
-              disabled={submitting}
-            />
-          </div>
-        </div>
-        <p className="text-xs text-muted-foreground -mt-1">
-          Recommend 1–2 min for check, 10+ min for re-notify.
-        </p>
+        <StockAlertSection
+          idPrefix="edit"
+          values={stockAlert}
+          onChange={setStockAlert}
+          disabled={submitting}
+        />
 
         <PriceAlertSection
           idPrefix="edit"

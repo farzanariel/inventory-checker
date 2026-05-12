@@ -17,11 +17,14 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { formatPrice } from "@/lib/format";
 
+export type NotifyMode = "once" | "repeat";
+
 export type PriceAlertValues = {
   enabled: boolean;
   /** Target price as a user-entered dollar string (e.g. "129.99"). Empty = no target set. */
   targetDollars: string;
   notifyIntervalMin: string;
+  notifyMode: NotifyMode;
   whileOos: boolean;
 };
 
@@ -145,24 +148,56 @@ export function PriceAlertSection({
               </p>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor={`${idPrefix}-price-interval`} className="text-xs">
-                Re-notify on price drops every (min)
-              </Label>
-              <Input
-                id={`${idPrefix}-price-interval`}
-                type="number"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                min={1}
-                max={10080}
-                step={1}
-                value={values.notifyIntervalMin}
-                onChange={(e) => set("notifyIntervalMin", e.target.value)}
-                className="w-28 font-mono tabular-nums text-base sm:text-sm"
-                disabled={disabled || !values.enabled}
-              />
-            </div>
+            <fieldset className="flex flex-col gap-1.5" disabled={disabled || !values.enabled}>
+              <legend className="text-xs">Notify mode</legend>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-1.5 text-sm select-none">
+                  <input
+                    type="radio"
+                    name={`${idPrefix}-price-mode`}
+                    value="once"
+                    checked={values.notifyMode === "once"}
+                    onChange={() => set("notifyMode", "once")}
+                    disabled={disabled || !values.enabled}
+                    className="size-4 cursor-pointer accent-foreground"
+                  />
+                  Once
+                </label>
+                <label className="flex items-center gap-1.5 text-sm select-none">
+                  <input
+                    type="radio"
+                    name={`${idPrefix}-price-mode`}
+                    value="repeat"
+                    checked={values.notifyMode === "repeat"}
+                    onChange={() => set("notifyMode", "repeat")}
+                    disabled={disabled || !values.enabled}
+                    className="size-4 cursor-pointer accent-foreground"
+                  />
+                  Keep notifying
+                </label>
+              </div>
+            </fieldset>
+
+            {values.notifyMode === "repeat" ? (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor={`${idPrefix}-price-interval`} className="text-xs">
+                  Re-notify on price drops every (min)
+                </Label>
+                <Input
+                  id={`${idPrefix}-price-interval`}
+                  type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  min={1}
+                  max={10080}
+                  step={1}
+                  value={values.notifyIntervalMin}
+                  onChange={(e) => set("notifyIntervalMin", e.target.value)}
+                  className="w-28 font-mono tabular-nums text-base sm:text-sm"
+                  disabled={disabled || !values.enabled}
+                />
+              </div>
+            ) : null}
 
             <label className="flex items-center gap-2 text-sm select-none">
               <input
@@ -185,5 +220,6 @@ export const PRICE_ALERT_DEFAULTS: PriceAlertValues = {
   enabled: true,
   targetDollars: "",
   notifyIntervalMin: "60",
+  notifyMode: "repeat",
   whileOos: true,
 };
