@@ -186,7 +186,7 @@ export function ItemRow({ item, onChanged }: Props) {
             setEditOpen(true);
           }
         }}
-        className={`group relative flex items-center gap-3 px-1 py-2.5 min-h-12 cursor-pointer transition-colors duration-150 hover:bg-white/[0.02] active:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
+        className={`group relative flex items-center gap-3 px-1 py-2.5 min-h-12 cursor-pointer transition-colors duration-150 hover:bg-foreground/[0.03] active:bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
           flashing ? "row-flash" : ""
         } ${isPaused ? "opacity-60" : ""}`}
       >

@@ -54,11 +54,58 @@
 }
 
 /*
- * SPEC §11 dark, dense, ops-tool palette.
- * Both :root and .dark resolve to the same dark palette — the app is forced
- * dark, no light mode.
+ * SPEC §11 dark, dense, ops-tool palette is the primary surface.
+ * Light mode (NEC-23) mirrors the same semantic structure on a near-white
+ * canvas; status hues are darkened just enough to clear WCAG AA on light bg.
  */
-:root,
+:root {
+  --background: oklch(0.985 0 0);           /* #f7f7f7 page */
+  --foreground: oklch(0.18 0 0);            /* near-black primary text */
+  --card: oklch(1 0 0);                     /* #ffffff raised surface */
+  --card-foreground: oklch(0.18 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0 0);
+  --primary: oklch(0.18 0 0);               /* dark button bg */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0 0);
+  --secondary-foreground: oklch(0.18 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.44 0 0);      /* AA: ~5.0:1 on bg */
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.18 0 0);
+  --destructive: oklch(0.55 0.225 26.42);   /* darker red for AA on light */
+  --border: oklch(0.91 0 0);                /* hairline */
+  --input: oklch(0.91 0 0);
+  --ring: oklch(0.65 0 0);
+  --chart-1: oklch(0.55 0.158 162.5);
+  --chart-2: oklch(0.62 0.166 64.8);
+  --chart-3: oklch(0.55 0.225 26.42);
+  --chart-4: oklch(0.62 0 0);
+  --chart-5: oklch(0.82 0 0);
+  --radius: 0.5rem;
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.18 0 0);
+  --sidebar-primary: oklch(0.55 0.158 162.5);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.95 0 0);
+  --sidebar-accent-foreground: oklch(0.18 0 0);
+  --sidebar-border: oklch(0.91 0 0);
+  --sidebar-ring: oklch(0.65 0 0);
+
+  /* Status colors — darkened to clear WCAG AA (4.5:1) as text on light bg */
+  --status-in: oklch(0.50 0.158 162.5);     /* green ~4.8:1 */
+  --status-out: oklch(0.44 0 0);            /* muted gray */
+  --status-error: oklch(0.55 0.225 26.42);  /* red 5.2:1 */
+  --status-degraded: oklch(0.55 0.166 64.8); /* amber */
+  --status-pricedrop: oklch(0.50 0.19 252); /* blue */
+
+  /* Mode-aware accents reused by inline keyframes / row-flash / skeleton. */
+  --row-flash-color: oklch(0.18 0 0 / 0.07);
+  --skeleton-bg: oklch(0.92 0 0);
+  --header-scrolled-border: oklch(0.86 0 0);
+  --overlay-scrim: oklch(0.18 0 0 / 0.35);
+}
+
 .dark {
   --background: oklch(0.06 0 0);            /* #0a0a0a page */
   --foreground: oklch(0.92 0 0);            /* #e5e5e5 primary text */
@@ -99,6 +146,11 @@
   --status-error: oklch(0.65 0.236 26.42);  /* ~#ef4444 red */
   --status-degraded: oklch(0.74 0.166 64.8); /* ~#f59e0b amber */
   --status-pricedrop: oklch(0.62 0.19 252);  /* blue — price-drop alerts (NEC-11 §9) */
+
+  --row-flash-color: oklch(0.18 0 0 / 0.55);
+  --skeleton-bg: oklch(0.18 0 0);
+  --header-scrolled-border: oklch(0.22 0 0);
+  --overlay-scrim: oklch(0 0 0 / 0.5);
 }
 
 /*
@@ -158,19 +210,17 @@
  * Row-flash — one-shot subtle background pulse when a row's underlying data
  * changes (driven by a key on lastCheckedAt in ItemRow).
  */
-@keyframes row-flash {
-  0% { background-color: oklch(0.18 0 0 / 0); }
-  20% { background-color: oklch(0.18 0 0 / 0.55); }
-  100% { background-color: oklch(0.18 0 0 / 0); }
-}
-
 .row-flash {
   animation: row-flash 900ms ease-out 1;
+}
+@keyframes row-flash {
+  0%, 100% { background-color: transparent; }
+  20% { background-color: var(--row-flash-color); }
 }
 
 /* Skeleton placeholder block — slightly darker than card, gentle pulse. */
 .skeleton {
-  background-color: oklch(0.18 0 0);
+  background-color: var(--skeleton-bg);
   animation: skeleton-pulse 1.4s ease-in-out infinite;
   border-radius: 4px;
 }
@@ -181,7 +231,7 @@
 
 /* Header scroll-state border — bumped opacity once content is below the fold. */
 .header-scrolled {
-  border-bottom-color: oklch(0.22 0 0);
+  border-bottom-color: var(--header-scrolled-border);
 }
 
 @media (prefers-reduced-motion: reduce) {

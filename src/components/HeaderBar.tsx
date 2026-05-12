@@ -13,7 +13,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { BellIcon, PlusIcon, SettingsIcon } from "lucide-react";
+import { BellIcon, MoonIcon, PlusIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -46,6 +47,9 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [scrolled, setScrolled] = useState(false);
   const isDesktop = useIsDesktop();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [themeMounted, setThemeMounted] = useState(false);
+  useEffect(() => setThemeMounted(true), []);
 
   // Poll /api/health every 10s
   useEffect(() => {
@@ -152,7 +156,7 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
         }`}
       >
         <div className="mx-auto flex max-w-[960px] min-h-14 items-center gap-3 px-4 py-3 md:gap-4 md:px-6 md:py-4">
-          <div className="flex items-baseline gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-base font-medium tracking-tight text-foreground">
               <span className="md:hidden">Inventory</span>
               <span className="hidden md:inline">Inventory Monitor</span>
@@ -213,6 +217,27 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
                 )
               ) : (
                 <BellIcon className="size-4" aria-hidden="true" />
+              )}
+            </Button>
+
+            {/* Theme toggle. Renders neutral placeholder pre-mount to avoid hydration flicker. */}
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
+              aria-label={
+                themeMounted
+                  ? `Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`
+                  : "Toggle theme"
+              }
+              className="active:scale-[0.97]"
+            >
+              {themeMounted && resolvedTheme === "dark" ? (
+                <SunIcon className="size-4" aria-hidden="true" />
+              ) : (
+                <MoonIcon className="size-4" aria-hidden="true" />
               )}
             </Button>
 
