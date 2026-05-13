@@ -47,7 +47,7 @@ const baseItem = {
   pendingHitSeenCount: 0,
   createdAt: NOW - 3600_000,
   updatedAt: NOW - 3600_000,
-} as const;
+};
 
 const inStockResult: ProductResult = {
   ok: true,

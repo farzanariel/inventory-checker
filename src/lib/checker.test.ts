@@ -50,7 +50,7 @@ const baseItemValues = {
   pendingHitSeenCount: 0,
   createdAt: NOW - 3600_000,
   updatedAt: NOW - 3600_000,
-} as const;
+};
 
 const okResult = (overrides: Partial<Extract<ProductResult, { ok: true }>> = {}): ProductResult => ({
   ok: true,
@@ -72,7 +72,7 @@ const errResult = (error = "HTTP 403"): ProductResult => ({
 
 async function insertItem(
   db: TestDb,
-  overrides: Partial<typeof baseItemValues> = {},
+  overrides: Record<string, unknown> = {},
 ): Promise<number> {
   const row = await db
     .insert(items)

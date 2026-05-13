@@ -185,11 +185,10 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     const tlsMap = await fetchProductsViaTls(tlsFallbackSkus);
     for (const [sku, result] of tlsMap) {
       if (result.ok) {
+        console.log(`[worker] sku=${sku} fetch_path=tls`);
         fetchMap.set(sku, result);
       } else if (needsHeadlessFallback(result.error)) {
-        // Keep the original error in fetchMap — headless will pick it up
-        // below. But update the error to indicate TLS was exhausted.
-        // Don't overwrite because undici's original error is more useful.
+        // Keep the original error in fetchMap — headless will pick it up below.
       } else {
         // TLS failed with a non-403 error — keep the original undici error.
       }
@@ -221,6 +220,9 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
       },
     );
     for (const { sku, result } of results) {
+      if (result.ok) {
+        console.log(`[worker] sku=${sku} fetch_path=headless`);
+      }
       fetchMap.set(sku, result);
     }
   }
