@@ -14,8 +14,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { BellIcon, MoonIcon, PlusIcon, SettingsIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
-
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useIsDesktop } from "@/hooks/use-media-query";
@@ -47,9 +45,24 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
   const [now, setNow] = useState(() => Date.now());
   const [scrolled, setScrolled] = useState(false);
   const isDesktop = useIsDesktop();
-  const { resolvedTheme, setTheme } = useTheme();
+  // Read the dark-class on <html> that next-themes manages, so we don't
+  // import next-themes statically (which puts it in the SSR bundle and causes
+  // a useContext(null) crash during the static-generation build phase).
+  const [isDark, setIsDark] = useState(false);
   const [themeMounted, setThemeMounted] = useState(false);
-  useEffect(() => setThemeMounted(true), []);
+  useEffect(() => {
+    const html = document.documentElement;
+    // Sync with DOM state on mount; sync setState in effect is intentional here
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsDark(html.classList.contains("dark"));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setThemeMounted(true);
+    const obs = new MutationObserver(() =>
+      setIsDark(html.classList.contains("dark"))
+    );
+    obs.observe(html, { attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   // Poll /api/health every 10s
   useEffect(() => {
@@ -224,17 +237,21 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
             <Button
               variant="outline"
               size="icon-sm"
-              onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
-              }
+              onClick={() => {
+                const newTheme = isDark ? "light" : "dark";
+                document.documentElement.classList.toggle("dark", newTheme === "dark");
+                try {
+                  localStorage.setItem("theme", newTheme);
+                } catch { /* ignore quota errors */ }
+              }}
               aria-label={
                 themeMounted
-                  ? `Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`
+                  ? `Switch to ${isDark ? "light" : "dark"} mode`
                   : "Toggle theme"
               }
               className="active:scale-[0.97]"
             >
-              {themeMounted && resolvedTheme === "dark" ? (
+              {themeMounted && isDark ? (
                 <SunIcon className="size-4" aria-hidden="true" />
               ) : (
                 <MoonIcon className="size-4" aria-hidden="true" />

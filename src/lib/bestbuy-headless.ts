@@ -167,7 +167,7 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     ],
   });
 
-  let contextOptions: Parameters<typeof browser.newContext>[0] = {
+  const contextOptions: Parameters<typeof browser.newContext>[0] = {
     userAgent: fp.fingerprint.navigator.userAgent,
     viewport: {
       width: fp.fingerprint.screen.width,
@@ -273,6 +273,28 @@ async function getPool(opts: HeadlessOptions): Promise<PoolState> {
     });
   }
   return pool;
+}
+
+/**
+ * Public accessor for the shared patchright BrowserContext. Used by other
+ * retailer modules (e.g. `microcenter.ts`) that want to ride on the same
+ * pool, proxy, and resource-blocking setup. Skips the BB-specific Akamai
+ * warm-up; callers that need a warm `_abck` cookie should keep using
+ * `scrapePdpForSku` (or call `warmSession` themselves).
+ */
+export async function getHeadlessContext(
+  options: HeadlessOptions = {},
+): Promise<BrowserContext> {
+  const resolved: HeadlessOptions = {
+    ...options,
+    proxy: options.proxy ?? process.env.BB_PROXY ?? undefined,
+    storageStatePath:
+      options.storageStatePath ??
+      process.env.BB_STORAGE_STATE ??
+      undefined,
+  };
+  const pool = await getPool(resolved);
+  return pool.context;
 }
 
 export async function closePool(): Promise<void> {

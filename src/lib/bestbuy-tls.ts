@@ -231,6 +231,21 @@ async function curlFetch(
   return { stdout: body, stderr, statusCode };
 }
 
+/**
+ * GET a JSON URL via the TLS-impersonating client, warming the session jar
+ * first. Returned shape mirrors curlFetch; caller parses the body. Used by
+ * non-priceBlocks JSON endpoints (e.g. /api/v2/product/{sku}) that also sit
+ * behind Akamai's TLS fingerprinting.
+ */
+export async function tlsJsonGet(
+  url: string,
+  timeoutMs = 12_000,
+): Promise<{ body: string; statusCode: number }> {
+  const cookieJar = await warmSession();
+  const r = await curlFetch(url, cookieJar, timeoutMs);
+  return { body: r.stdout, statusCode: r.statusCode };
+}
+
 // ---------------------------------------------------------------------------
 // PriceBlocks via TLS client
 // ---------------------------------------------------------------------------

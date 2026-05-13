@@ -17,7 +17,9 @@ const NOW = 1_700_000_000_000;
 function makeItem(overrides: Partial<Item> = {}): Item {
   return {
     id: 1,
+    retailer: "bestbuy",
     sku: "6587182",
+    mcProductId: null,
     name: "Test Product",
     brand: null,
     imageUrl: null,

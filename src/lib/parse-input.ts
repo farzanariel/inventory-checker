@@ -62,6 +62,53 @@ export function parseUrlOrSku(
 const BESTBUY_PRODUCT_URL_RE =
   /^https?:\/\/(?:www\.)?bestbuy\.com\/product\/[^\s]+/i;
 const BESTBUY_ANY_URL_RE = /^https?:\/\/(?:www\.)?bestbuy\.com\//i;
+const MICROCENTER_URL_RE =
+  /^https?:\/\/(?:www\.)?microcenter\.com\/product\/(\d{4,7})\b/i;
+
+/**
+ * Parse a MicroCenter product URL into a product ID (SPEC §21.3).
+ *
+ * URL shape: `https://www.microcenter.com/product/{productId}/{slug}`.
+ * The `{productId}` is the 6-digit numeric ID in the path — NOT the retail
+ * SKU (which appears in JSON-LD on the page). Bare numeric input is NOT
+ * accepted: collisions with Best Buy SKUs make it ambiguous.
+ */
+export function parseMicroCenterUrl(
+  input: string
+): { ok: true; mcProductId: string } | { ok: false; error: string } {
+  if (typeof input !== "string") {
+    return { ok: false, error: "Input must be a string" };
+  }
+  const m = input.trim().match(MICROCENTER_URL_RE);
+  if (!m) {
+    return {
+      ok: false,
+      error:
+        "Could not extract a MicroCenter product ID. Paste the full PDP URL (e.g. https://www.microcenter.com/product/688173/...).",
+    };
+  }
+  return { ok: true, mcProductId: m[1] };
+}
+
+export type ProductInput =
+  | { ok: true; retailer: "bestbuy"; sku: string }
+  | { ok: true; retailer: "microcenter"; mcProductId: string }
+  | { ok: false; error: string };
+
+/**
+ * Cheap synchronous dispatcher across retailers. Tries MC first (URL must
+ * contain `microcenter.com`), then falls through to the BB parser.
+ */
+export function parseProductInput(input: string): ProductInput {
+  if (typeof input === "string" && /microcenter\.com/i.test(input)) {
+    const mc = parseMicroCenterUrl(input);
+    if (mc.ok) return { ok: true, retailer: "microcenter", mcProductId: mc.mcProductId };
+    return mc;
+  }
+  const bb = parseUrlOrSku(input);
+  if (bb.ok) return { ok: true, retailer: "bestbuy", sku: bb.sku };
+  return bb;
+}
 
 /**
  * Cheap synchronous check: does this input look like something we *might* be
@@ -76,6 +123,19 @@ export function looksResolvableBestBuyInput(input: string): boolean {
   const trimmed = input.trim();
   if (trimmed.length === 0) return false;
   if (parseUrlOrSku(trimmed).ok) return true;
+  return BESTBUY_PRODUCT_URL_RE.test(trimmed);
+}
+
+/**
+ * Same shape as `looksResolvableBestBuyInput` but cross-retailer. Used by
+ * the AddItemDialog to gate the preview-fetch debounce.
+ */
+export function looksResolvableProductInput(input: string): boolean {
+  if (typeof input !== "string") return false;
+  const trimmed = input.trim();
+  if (trimmed.length === 0) return false;
+  if (parseProductInput(trimmed).ok) return true;
+  // Network-fallback shapes: BB /product/ ad URLs.
   return BESTBUY_PRODUCT_URL_RE.test(trimmed);
 }
 
@@ -112,6 +172,26 @@ export interface ResolveOptions {
  */
 const AD_URL_RECOVERY_HINT =
   "Best Buy doesn't expose the SKU in this ad/landing URL and blocks server-side resolution. Open the link in your browser, then either paste the new URL from the address bar (it'll contain `.p?skuId=...`) or paste the SKU number directly (visible on the product page).";
+
+/**
+ * Async cross-retailer dispatcher. Recognizes MicroCenter URLs synchronously
+ * (no network fallback for MC — must be a parseable URL); for Best Buy,
+ * delegates to `resolveSkuFromInput` which handles the ad/landing-page
+ * fallback fetch.
+ */
+export async function resolveProductInput(
+  input: string,
+  options: ResolveOptions = {}
+): Promise<ProductInput> {
+  if (typeof input === "string" && /microcenter\.com/i.test(input)) {
+    const mc = parseMicroCenterUrl(input);
+    if (mc.ok) return { ok: true, retailer: "microcenter", mcProductId: mc.mcProductId };
+    return mc;
+  }
+  const bb = await resolveSkuFromInput(input, options);
+  if (bb.ok) return { ok: true, retailer: "bestbuy", sku: bb.sku };
+  return bb;
+}
 
 export async function resolveSkuFromInput(
   input: string,

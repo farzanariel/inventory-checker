@@ -274,17 +274,15 @@ interface RawV2Product {
 
 export async function fetchProductMetaV2(sku: string): Promise<ProductMeta> {
   const url = `${BESTBUY_ORIGIN}/api/v2/product/${encodeURIComponent(sku)}`;
-  let response: Response;
+  let body: string;
+  let statusCode: number;
   try {
-    response = await fetch(url, {
-      headers: {
-        "User-Agent": USER_AGENT,
-        Accept: "application/json",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: "https://www.bestbuy.com/",
-      },
-      signal: AbortSignal.timeout(10000),
-    });
+    // v2/product sits behind the same Akamai TLS fingerprinting as priceBlocks,
+    // so route through the curl-impersonate client (warmed session jar).
+    const { tlsJsonGet } = await import("./bestbuy-tls");
+    const r = await tlsJsonGet(url, 12_000);
+    body = r.body;
+    statusCode = r.statusCode;
   } catch (err) {
     return {
       ok: false,
@@ -293,13 +291,13 @@ export async function fetchProductMetaV2(sku: string): Promise<ProductMeta> {
     };
   }
 
-  if (!response.ok) {
-    return { ok: false, sku, error: `v2 HTTP ${response.status}` };
+  if (statusCode < 200 || statusCode >= 300) {
+    return { ok: false, sku, error: `v2 HTTP ${statusCode}` };
   }
 
   let payload: RawV2Product;
   try {
-    payload = (await response.json()) as RawV2Product;
+    payload = JSON.parse(body) as RawV2Product;
   } catch {
     return { ok: false, sku, error: "v2: invalid JSON" };
   }

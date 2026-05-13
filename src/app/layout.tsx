@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { ResponsiveToaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,11 +23,21 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f7f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-  ],
+  themeColor: "#0a0a0a",
 };
+
+// Theme init script: runs synchronously before paint so there's no flash.
+// Reads 'theme' from localStorage (set by HeaderBar's toggle), falling back
+// to the OS dark-mode preference. next-themes is not used in the layout to
+// avoid pulling it into the SSR bundle (causes useContext(null) crash in
+// Next.js 16's /_global-error prerender worker).
+const themeScript = `
+  try {
+    var t = localStorage.getItem('theme');
+    var dark = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', dark);
+  } catch(e) {}
+`;
 
 export default function RootLayout({
   children,
@@ -41,11 +50,12 @@ export default function RootLayout({
       className={`${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full bg-background text-foreground">
-        <ThemeProvider>
-          {children}
-          <ResponsiveToaster />
-        </ThemeProvider>
+        {children}
+        <ResponsiveToaster />
       </body>
     </html>
   );

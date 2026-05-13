@@ -371,31 +371,27 @@ describe("fetchProducts", () => {
 });
 
 describe("fetchProductMetaV2", () => {
-  beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn());
-  });
-
   afterEach(() => {
-    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
   it("returns metadata when v2 endpoint includes required fields", async () => {
-    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          skuId: "1234567",
-          brand: "BrandX",
-          names: { short: "Widget Pro" },
-          links: {
-            skuSpecificUrl: {
-              href: "https://www.bestbuy.com/site/widget-pro/1234567.p?skuId=1234567",
-            },
+    // v2/product is now routed through the TLS-impersonate client (curl_chrome116),
+    // so mock that boundary rather than global fetch.
+    const tlsMod = await import("@/lib/bestbuy-tls");
+    vi.spyOn(tlsMod, "tlsJsonGet").mockResolvedValueOnce({
+      body: JSON.stringify({
+        skuId: "1234567",
+        brand: "BrandX",
+        names: { short: "Widget Pro" },
+        links: {
+          skuSpecificUrl: {
+            href: "https://www.bestbuy.com/site/widget-pro/1234567.p?skuId=1234567",
           },
-        }),
-        { status: 200 }
-      )
-    );
+        },
+      }),
+      statusCode: 200,
+    });
 
     const result = await fetchProductMetaV2("1234567");
     expect(result.ok).toBe(true);

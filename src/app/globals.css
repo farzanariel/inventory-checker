@@ -59,7 +59,7 @@
  * canvas; status hues are darkened just enough to clear WCAG AA on light bg.
  */
 :root {
-  --background: oklch(0.985 0 0);           /* #f7f7f7 page */
+  --background: oklch(0.955 0 0);           /* page — pulled darker so white cards visibly raise */
   --foreground: oklch(0.18 0 0);            /* near-black primary text */
   --card: oklch(1 0 0);                     /* #ffffff raised surface */
   --card-foreground: oklch(0.18 0 0);
@@ -74,8 +74,8 @@
   --accent: oklch(0.95 0 0);
   --accent-foreground: oklch(0.18 0 0);
   --destructive: oklch(0.55 0.225 26.42);   /* darker red for AA on light */
-  --border: oklch(0.91 0 0);                /* hairline */
-  --input: oklch(0.91 0 0);
+  --border: oklch(0.87 0 0);                /* hairline — strengthened so card edges read on bg */
+  --input: oklch(0.87 0 0);
   --ring: oklch(0.65 0 0);
   --chart-1: oklch(0.55 0.158 162.5);
   --chart-2: oklch(0.62 0.166 64.8);
@@ -104,14 +104,20 @@
   --skeleton-bg: oklch(0.92 0 0);
   --header-scrolled-border: oklch(0.86 0 0);
   --overlay-scrim: oklch(0.18 0 0 / 0.35);
+
+  /* Surface used for section groups *inside* dialogs/popovers. Sits one notch
+   * darker than the page bg so it reads as recessed against the elevated
+   * white modal surface (popover = #fff). */
+  --surface-recessed: oklch(0.93 0 0);
+  --surface-recessed-border: oklch(0.84 0 0);
 }
 
 .dark {
   --background: oklch(0.06 0 0);            /* #0a0a0a page */
   --foreground: oklch(0.92 0 0);            /* #e5e5e5 primary text */
-  --card: oklch(0.10 0 0);                  /* #111111 raised surface */
+  --card: oklch(0.155 0 0);                 /* raised surface — bumped from 0.10 so it reads as elevated */
   --card-foreground: oklch(0.92 0 0);
-  --popover: oklch(0.10 0 0);
+  --popover: oklch(0.155 0 0);
   --popover-foreground: oklch(0.92 0 0);
   --primary: oklch(0.92 0 0);               /* primary button bg = light text */
   --primary-foreground: oklch(0.10 0 0);
@@ -122,8 +128,8 @@
   --accent: oklch(0.15 0 0);
   --accent-foreground: oklch(0.92 0 0);
   --destructive: oklch(0.65 0.236 26.42);   /* ~#ef4444 */
-  --border: oklch(0.18 0 0);                /* #1f1f1f */
-  --input: oklch(0.18 0 0);
+  --border: oklch(0.24 0 0);                /* strengthened so card edges read on near-black bg */
+  --input: oklch(0.24 0 0);
   --ring: oklch(0.45 0 0);
   --chart-1: oklch(0.69 0.158 162.5);
   --chart-2: oklch(0.74 0.166 64.8);
@@ -151,6 +157,12 @@
   --skeleton-bg: oklch(0.18 0 0);
   --header-scrolled-border: oklch(0.22 0 0);
   --overlay-scrim: oklch(0 0 0 / 0.5);
+
+  /* Recessed section surface inside dialogs — clearly darker than popover
+   * (0.155) and the page bg (0.06) so section groups read as distinct
+   * fieldsets, not noise. */
+  --surface-recessed: oklch(0.095 0 0);
+  --surface-recessed-border: oklch(0.28 0 0);
 }
 
 /*

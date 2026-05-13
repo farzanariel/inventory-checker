@@ -6,17 +6,22 @@
  * `ProductResult` does to one `items` row.
  */
 
-import { eq } from "drizzle-orm";
-import { items, stockEvents, type Item } from "./db/schema";
+import { and, eq } from "drizzle-orm";
+import { itemStores, items, stockEvents, type Item, type ItemStore } from "./db/schema";
 import { getDb } from "./db/client";
 import {
   imageUrlForSku,
   interpretStock,
+  isMissingFromPriceBlocks,
   productUrlForSku,
   cartUrlForSku,
   type ProductResult,
   type StockStatus,
 } from "./bestbuy";
+import {
+  microcenterPdpUrl,
+  type McProductResult,
+} from "./microcenter";
 import {
   type PriceDropContext,
   sendCombinedAlert,
@@ -60,6 +65,7 @@ export function computeNextCheckDueAt(
 type TxnEvent =
   | { kind: "transition"; status: StockStatus; buttonState?: string; priceCents?: number }
   | { kind: "error"; message: string }
+  | { kind: "info"; status: string; message: string }
   | null;
 
 type DecisionOutput = {
@@ -278,8 +284,8 @@ function decideStock(
   const patch: Partial<Item> = {
     name: result.name,
     brand: result.brand ?? null,
-    imageUrl: imageUrlForSku(item.sku),
-    productUrl: result.canonicalUrl ?? productUrlForSku(item.sku),
+    imageUrl: imageUrlForSku(item.sku ?? ""),
+    productUrl: result.canonicalUrl ?? productUrlForSku(item.sku ?? ""),
     currentPriceCents: result.currentPriceCents,
     regularPriceCents: result.regularPriceCents ?? null,
     lastButtonState: result.buttonState,
@@ -481,10 +487,56 @@ function errorDecision(
   };
 }
 
+/**
+ * Decision for SKUs that priceBlocks doesn't index (e.g. items migrated to
+ * Best Buy's J-ID commerce platform). These are not failures — the SKU is
+ * still live on bestbuy.com, just not addressable via the legacy pricing
+ * API. We keep retrying priceBlocks on the normal interval so the item
+ * resumes live tracking the moment BB re-indexes it, without spamming
+ * ERROR events into the history.
+ */
+function pendingReindexDecision(
+  item: Item,
+  errorMessage: string,
+  now: number,
+): DecisionOutput {
+  const transitioning = item.healthStatus !== "PENDING_REINDEX";
+
+  const patch: Partial<Item> = {
+    consecutiveErrors: 0,
+    lastCheckedAt: now,
+    nextCheckDueAt: computeNextCheckDueAt(now, item.checkIntervalMin),
+    updatedAt: now,
+    healthStatus: "PENDING_REINDEX",
+    lastHealthMessage: errorMessage,
+  };
+
+  return {
+    patch,
+    newStockStatus: item.lastStockStatus as StockStatus,
+    transitioned: false,
+    stockNotification: null,
+    priceNotification: null,
+    notification: null,
+    // Write one event the first time we enter PENDING_REINDEX; stay quiet on
+    // subsequent ticks until the SKU either re-indexes or transitions out.
+    insideTxnEvent: transitioning
+      ? { kind: "info", status: "PENDING_REINDEX", message: errorMessage }
+      : null,
+    priceEvent: null,
+    reason: transitioning
+      ? `PENDING_REINDEX entered: ${errorMessage}`
+      : `PENDING_REINDEX steady: ${errorMessage}`,
+  };
+}
+
 function decide(item: Item, result: ProductResult, now: number): DecisionOutput {
   const nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin);
 
   if (!result.ok) {
+    if (isMissingFromPriceBlocks(result.error)) {
+      return pendingReindexDecision(item, result.error, now);
+    }
     return errorDecision(item, result.error, now);
   }
 
@@ -566,14 +618,26 @@ export async function applyCheckResult(
       tx.update(items).set(dec.patch).where(eq(items.id, itemId)).run();
 
       if (dec.insideTxnEvent) {
-        if (dec.insideTxnEvent.kind === "transition") {
+        const ev = dec.insideTxnEvent;
+        if (ev.kind === "transition") {
           tx.insert(stockEvents)
             .values({
               itemId,
-              status: dec.insideTxnEvent.status,
-              buttonState: dec.insideTxnEvent.buttonState ?? null,
-              priceCents: dec.insideTxnEvent.priceCents ?? null,
+              status: ev.status,
+              buttonState: ev.buttonState ?? null,
+              priceCents: ev.priceCents ?? null,
               message: null,
+              ts: now,
+            })
+            .run();
+        } else if (ev.kind === "info") {
+          tx.insert(stockEvents)
+            .values({
+              itemId,
+              status: ev.status,
+              buttonState: null,
+              priceCents: null,
+              message: ev.message,
               ts: now,
             })
             .run();
@@ -584,7 +648,7 @@ export async function applyCheckResult(
               status: "ERROR",
               buttonState: null,
               priceCents: null,
-              message: dec.insideTxnEvent.message,
+              message: ev.message,
               ts: now,
             })
             .run();
@@ -750,18 +814,552 @@ export async function applyCheckResult(
 }
 
 function buildAlertContext(item: Item): AlertContext {
+  // BB-only path: callers guard on retailer='bestbuy' upstream. sku is
+  // guaranteed non-null for BB rows by the partial unique index.
+  const sku = item.sku ?? "";
   const ctx: AlertContext = {
-    sku: item.sku,
-    name: item.name ?? `SKU ${item.sku}`,
+    sku,
+    name: item.name ?? `SKU ${sku}`,
     currentPriceCents: item.currentPriceCents ?? 0,
     targetPriceCents: item.targetPriceCents ?? undefined,
     buttonState: item.lastButtonState ?? "ADD_TO_CART",
-    imageUrl: item.imageUrl ?? imageUrlForSku(item.sku),
+    imageUrl: item.imageUrl ?? imageUrlForSku(sku),
     productUrl: item.productUrl,
-    cartUrl: cartUrlForSku(item.sku),
+    cartUrl: cartUrlForSku(sku),
   };
   if (item.brand) ctx.brand = item.brand;
   if (item.regularPriceCents != null) ctx.regularPriceCents = item.regularPriceCents;
+  if (item.note) ctx.note = item.note;
+  return ctx;
+}
+
+// ─── MicroCenter (per-store) check pipeline (SPEC §21.5) ────────────────────
+
+type StorePatch = Partial<ItemStore> & { id: number };
+
+type StoreDecision = {
+  storePatch: StorePatch;
+  transitioned: boolean;
+  notification: "alert" | "reminder" | null;
+  /** Audit row to insert (transition only — steady states write nothing). */
+  event:
+    | { storeNumber: string; status: "IN_STOCK" | "OUT_OF_STOCK"; qoh: number }
+    | null;
+  /** Snapshot needed to fire a webhook AFTER the txn commits. */
+  notifyCtx:
+    | { storeNumber: string; storeName: string; qoh: number; kind: "alert" | "reminder" }
+    | null;
+  reason: string;
+};
+
+function decideStoreStock(
+  item: Item,
+  store: ItemStore,
+  qoh: number,
+  now: number,
+): StoreDecision {
+  const prev = store.lastStockStatus as StockStatus;
+  const newStatus: StockStatus = qoh > 0 ? "IN_STOCK" : "OUT_OF_STOCK";
+
+  const base: StorePatch = {
+    id: store.id,
+    lastQoh: qoh,
+    updatedAt: now,
+  };
+
+  const stockAlertsOn = item.stockAlertEnabled === 1 && store.alertEnabled === 1;
+  const evt = (status: "IN_STOCK" | "OUT_OF_STOCK") => ({
+    storeNumber: store.storeNumber,
+    status,
+    qoh,
+  });
+
+  if (prev === "UNKNOWN" && newStatus === "IN_STOCK") {
+    base.lastStockStatus = "IN_STOCK";
+    base.lastInStockAt = now;
+    if (stockAlertsOn) base.lastNotifiedAt = now;
+    return {
+      storePatch: base,
+      transitioned: true,
+      notification: stockAlertsOn ? "alert" : null,
+      event: evt("IN_STOCK"),
+      notifyCtx: stockAlertsOn
+        ? { storeNumber: store.storeNumber, storeName: store.storeName, qoh, kind: "alert" }
+        : null,
+      reason: stockAlertsOn
+        ? `${store.storeNumber}: UNKNOWN -> IN_STOCK (first-seen alert)`
+        : `${store.storeNumber}: UNKNOWN -> IN_STOCK (alerts off)`,
+    };
+  }
+
+  if (prev === "UNKNOWN" && newStatus === "OUT_OF_STOCK") {
+    base.lastStockStatus = "OUT_OF_STOCK";
+    return {
+      storePatch: base,
+      transitioned: true,
+      notification: null,
+      event: evt("OUT_OF_STOCK"),
+      notifyCtx: null,
+      reason: `${store.storeNumber}: UNKNOWN -> OUT_OF_STOCK`,
+    };
+  }
+
+  if (prev === "OUT_OF_STOCK" && newStatus === "IN_STOCK") {
+    base.lastStockStatus = "IN_STOCK";
+    base.lastInStockAt = now;
+    if (stockAlertsOn) base.lastNotifiedAt = now;
+    return {
+      storePatch: base,
+      transitioned: true,
+      notification: stockAlertsOn ? "alert" : null,
+      event: evt("IN_STOCK"),
+      notifyCtx: stockAlertsOn
+        ? { storeNumber: store.storeNumber, storeName: store.storeName, qoh, kind: "alert" }
+        : null,
+      reason: stockAlertsOn
+        ? `${store.storeNumber}: OUT_OF_STOCK -> IN_STOCK (restock)`
+        : `${store.storeNumber}: OUT_OF_STOCK -> IN_STOCK (alerts off)`,
+    };
+  }
+
+  if (prev === "IN_STOCK" && newStatus === "IN_STOCK") {
+    const intervalMs = item.restockNotifyIntervalMin * 60_000;
+    const last = store.lastNotifiedAt;
+    const remindersOn = stockAlertsOn && item.stockNotifyMode === "repeat";
+    const dueForReminder = remindersOn && (last == null || now - last >= intervalMs);
+    if (dueForReminder) {
+      base.lastNotifiedAt = now;
+      base.lastInStockAt = now;
+      return {
+        storePatch: base,
+        transitioned: false,
+        notification: "reminder",
+        event: null,
+        notifyCtx: { storeNumber: store.storeNumber, storeName: store.storeName, qoh, kind: "reminder" },
+        reason: `${store.storeNumber}: IN_STOCK steady (reminder)`,
+      };
+    }
+    base.lastInStockAt = now;
+    return {
+      storePatch: base,
+      transitioned: false,
+      notification: null,
+      event: null,
+      notifyCtx: null,
+      reason: `${store.storeNumber}: IN_STOCK steady`,
+    };
+  }
+
+  if (prev === "IN_STOCK" && newStatus === "OUT_OF_STOCK") {
+    base.lastStockStatus = "OUT_OF_STOCK";
+    base.lastNotifiedAt = null;
+    return {
+      storePatch: base,
+      transitioned: true,
+      notification: null,
+      event: evt("OUT_OF_STOCK"),
+      notifyCtx: null,
+      reason: `${store.storeNumber}: IN_STOCK -> OUT_OF_STOCK`,
+    };
+  }
+
+  return {
+    storePatch: base,
+    transitioned: false,
+    notification: null,
+    event: null,
+    notifyCtx: null,
+    reason: `${store.storeNumber}: OUT_OF_STOCK steady`,
+  };
+}
+
+/**
+ * Apply a single MicroCenter check result for one item.
+ *
+ * Iterates each store entry in the result, applies the per-store state
+ * machine (mirrors §7 but keyed on `(item_id, store_number)`), rolls up
+ * the item-level `lastStockStatus` from enabled-store states, applies
+ * the shared price-alert logic at the item level, then fires per-store
+ * webhooks AFTER the DB transaction commits.
+ */
+export async function applyMicroCenterCheckResult(
+  itemId: number,
+  result: McProductResult,
+  opts: ApplyOptions = {},
+): Promise<CheckOutcome> {
+  const db = opts.db ?? getDb();
+  const now = opts.now ?? Date.now();
+  const resolved =
+    opts.webhookUrl !== undefined && opts.webhookUsername !== undefined
+      ? { discordWebhookUrl: opts.webhookUrl, discordUsername: opts.webhookUsername }
+      : getSettings(db);
+  const webhookUrl = opts.webhookUrl ?? resolved.discordWebhookUrl;
+  const webhookUsername = opts.webhookUsername ?? resolved.discordUsername;
+  const suppressWebhook = opts.suppressWebhook === true;
+
+  // ─── Error path: bubble through the item-level error decision ────────────
+  if (!result.ok) {
+    const errOutcome = await applyItemLevelError(itemId, result.error, now, db);
+    return errOutcome;
+  }
+
+  type Notify = {
+    storeNumber: string;
+    storeName: string;
+    qoh: number;
+    kind: "alert" | "reminder";
+  };
+  let updatedItem: Item | null = null;
+  let storeDecs: StoreDecision[] = [];
+  let priceDec: ReturnType<typeof decidePriceAlert> | null = null;
+  let priceEvent:
+    | {
+        kind: "price_drop";
+        mode: "target" | "drop";
+        oldPriceCents: number;
+        newPriceCents: number;
+      }
+    | null = null;
+  let anyEnabledInStock = false;
+
+  db.transaction(
+    (tx) => {
+      const fresh = tx
+        .select()
+        .from(items)
+        .where(eq(items.id, itemId))
+        .get() as Item | undefined;
+      if (!fresh) return;
+
+      const existing = tx
+        .select()
+        .from(itemStores)
+        .where(eq(itemStores.itemId, itemId))
+        .all() as ItemStore[];
+      const byStore = new Map(existing.map((s) => [s.storeNumber, s]));
+
+      const decisions: StoreDecision[] = [];
+      for (const incoming of result.stores) {
+        let store = byStore.get(incoming.storeNumber);
+        if (!store) {
+          // First time we've seen this store for this item — auto-create.
+          // alertEnabled defaults to 1 (user can opt out via UI).
+          const isOnline = incoming.storeNumber === "029" ? 1 : 0;
+          tx.insert(itemStores)
+            .values({
+              itemId,
+              storeNumber: incoming.storeNumber,
+              storeName: incoming.storeName,
+              isOnline,
+              alertEnabled: 1,
+              lastStockStatus: "UNKNOWN",
+              createdAt: now,
+              updatedAt: now,
+            })
+            .run();
+          store = tx
+            .select()
+            .from(itemStores)
+            .where(
+              and(
+                eq(itemStores.itemId, itemId),
+                eq(itemStores.storeNumber, incoming.storeNumber),
+              ),
+            )
+            .get() as ItemStore;
+          byStore.set(incoming.storeNumber, store);
+        }
+        const dec = decideStoreStock(fresh, store, incoming.qoh, now);
+        decisions.push(dec);
+
+        tx.update(itemStores)
+          .set(dec.storePatch)
+          .where(eq(itemStores.id, store.id))
+          .run();
+
+        if (dec.event) {
+          tx.insert(stockEvents)
+            .values({
+              itemId,
+              status: dec.event.status,
+              buttonState: null,
+              priceCents: result.currentPriceCents,
+              message: null,
+              storeNumber: dec.event.storeNumber,
+              ts: now,
+            })
+            .run();
+        }
+      }
+
+      // Roll-up: item.lastStockStatus = IN_STOCK if any enabled store has stock.
+      // Compute against the just-updated state.
+      const refreshed = tx
+        .select()
+        .from(itemStores)
+        .where(eq(itemStores.itemId, itemId))
+        .all() as ItemStore[];
+      anyEnabledInStock = refreshed.some(
+        (s) => s.alertEnabled === 1 && s.lastStockStatus === "IN_STOCK",
+      );
+      const rolledStock: StockStatus = anyEnabledInStock ? "IN_STOCK" : "OUT_OF_STOCK";
+
+      // Item-level price-alert decision (shared with BB).
+      const pd = decidePriceAlert(fresh, result.currentPriceCents, rolledStock, now);
+      priceDec = pd;
+      const ipatch: Partial<Item> = {
+        name: result.name,
+        brand: result.brand ?? null,
+        imageUrl: result.imageUrl ?? null,
+        productUrl: result.canonicalUrl,
+        currentPriceCents: result.currentPriceCents,
+        lastStockStatus: rolledStock,
+        lastCheckedAt: now,
+        nextCheckDueAt: computeNextCheckDueAt(now, fresh.checkIntervalMin),
+        consecutiveErrors: 0,
+        healthStatus: "OK",
+        lastHealthMessage: null,
+        updatedAt: now,
+        ...pd.patch,
+      };
+      if (anyEnabledInStock) ipatch.lastInStockAt = now;
+
+      tx.update(items).set(ipatch).where(eq(items.id, itemId)).run();
+
+      if (pd.event) {
+        priceEvent = {
+          kind: "price_drop",
+          mode: pd.event.mode,
+          oldPriceCents: pd.event.oldPriceCents,
+          newPriceCents: pd.event.newPriceCents,
+        };
+        tx.insert(stockEvents)
+          .values({
+            itemId,
+            status: "PRICE_DROP",
+            buttonState: null,
+            priceCents: pd.event.newPriceCents,
+            message: `${pd.event.oldPriceCents} -> ${pd.event.newPriceCents}`,
+            storeNumber: null,
+            ts: now,
+          })
+          .run();
+      }
+
+      updatedItem = tx.select().from(items).where(eq(items.id, itemId)).get() as Item;
+      storeDecs = decisions;
+    },
+    { behavior: "immediate" },
+  );
+
+  if (!updatedItem) {
+    return { transitioned: false, notification: null, webhookOk: null, reason: "Item not found" };
+  }
+
+  const notifications: Notify[] = storeDecs
+    .map((d) => d.notifyCtx)
+    .filter((n): n is Notify => n !== null);
+  const anyStoreNotif = notifications.length > 0;
+  const anyTransition = storeDecs.some((d) => d.transitioned);
+  const reason = storeDecs.map((d) => d.reason).join("; ");
+
+  if (!anyStoreNotif && priceEvent == null) {
+    return {
+      transitioned: anyTransition,
+      notification: null,
+      webhookOk: null,
+      reason,
+    };
+  }
+
+  const aggregateKind: NotificationKind = anyStoreNotif && priceEvent
+    ? "combined"
+    : anyStoreNotif
+      ? (storeDecs.some((d) => d.notification === "alert") ? "alert" : "reminder")
+      : "price_drop";
+
+  if (suppressWebhook) {
+    return {
+      transitioned: anyTransition,
+      notification: aggregateKind,
+      webhookOk: null,
+      reason: `${reason} (webhook suppressed)`,
+    };
+  }
+
+  const item: Item = updatedItem;
+  let allOk: boolean | null = null;
+  const sends: Array<{ kind: string; ok: boolean; error?: string }> = [];
+
+  if (!webhookUrl) {
+    console.warn(`[checker mc] item ${itemId}: notifications skipped — no DISCORD_WEBHOOK_URL configured`);
+  } else {
+    // Fire per-store stock notifications.
+    for (const n of notifications) {
+      const ctx = buildMicroCenterAlertContext(item, n.storeNumber, n.storeName, n.qoh);
+      const send = n.kind === "alert"
+        ? await sendRestockAlert(webhookUrl, ctx, webhookUsername)
+        : await sendReminder(webhookUrl, ctx, webhookUsername);
+      sends.push({
+        kind: `${n.kind}:${n.storeNumber}`,
+        ok: send.ok,
+        error: send.ok ? undefined : send.error,
+      });
+    }
+    // Fire item-level price-drop (independent of per-store stock).
+    // TS doesn't track closure mutations, so re-widen the captured value.
+    type PEvt = { kind: "price_drop"; mode: "target" | "drop"; oldPriceCents: number; newPriceCents: number };
+    const pevt = priceEvent as PEvt | null;
+    if (pevt != null) {
+      const baseCtx = buildMicroCenterAlertContext(item);
+      const priceCtx: PriceDropContext = {
+        ...baseCtx,
+        priceAlertMode: pevt.mode,
+        oldPriceCents: pevt.oldPriceCents,
+        currentPriceCents: pevt.newPriceCents,
+      };
+      const send = anyStoreNotif
+        ? await sendCombinedAlert(webhookUrl, priceCtx, webhookUsername)
+        : await sendPriceDropAlert(webhookUrl, priceCtx, webhookUsername);
+      sends.push({ kind: "price_drop", ok: send.ok, error: send.ok ? undefined : send.error });
+    }
+    allOk = sends.every((s) => s.ok);
+  }
+
+  // NOTIFIED audit rows + degraded marker on failure.
+  db.transaction(
+    (tx) => {
+      for (const s of sends) {
+        tx.insert(stockEvents)
+          .values({
+            itemId,
+            status: "NOTIFIED",
+            buttonState: null,
+            priceCents: null,
+            message: s.ok ? s.kind : `failed: ${s.error ?? "unknown"} (${s.kind})`,
+            storeNumber: null,
+            ts: now,
+          })
+          .run();
+      }
+      if (allOk === false) {
+        const fresh = tx.select().from(items).where(eq(items.id, itemId)).get() as Item | undefined;
+        if (fresh && fresh.healthStatus !== "ERROR") {
+          tx.update(items)
+            .set({
+              healthStatus: "DEGRADED",
+              lastHealthMessage: `webhook: one or more sends failed`,
+              updatedAt: now,
+            })
+            .where(eq(items.id, itemId))
+            .run();
+        }
+      }
+    },
+    { behavior: "immediate" },
+  );
+
+  return {
+    transitioned: anyTransition,
+    notification: aggregateKind,
+    webhookOk: allOk,
+    reason,
+  };
+}
+
+/**
+ * Item-level error decision for MC fetches. Mirrors the BB `errorDecision`
+ * shape but doesn't touch per-store rows (those stay at their last-known
+ * state — we don't have fresh data for them).
+ */
+async function applyItemLevelError(
+  itemId: number,
+  errorMessage: string,
+  now: number,
+  db: ReturnType<typeof getDb>,
+): Promise<CheckOutcome> {
+  let reason = "";
+  db.transaction(
+    (tx) => {
+      const fresh = tx.select().from(items).where(eq(items.id, itemId)).get() as Item | undefined;
+      if (!fresh) return;
+      const newConsecutive = fresh.consecutiveErrors + 1;
+      let healthStatus = fresh.healthStatus;
+      if (newConsecutive >= 5) healthStatus = "ERROR";
+      else if (newConsecutive >= 3) healthStatus = "DEGRADED";
+
+      const AUTO_DISABLE_THRESHOLD = 10;
+      const autoDisable = newConsecutive >= AUTO_DISABLE_THRESHOLD;
+      let nextCheckDueAt: number;
+      if (autoDisable) {
+        nextCheckDueAt = now + 7 * 24 * 60 * 60 * 1000;
+      } else if (newConsecutive >= 3) {
+        const mult = Math.min(2 ** (newConsecutive - 2), 16);
+        nextCheckDueAt = computeNextCheckDueAt(now, fresh.checkIntervalMin * mult);
+      } else {
+        nextCheckDueAt = computeNextCheckDueAt(now, fresh.checkIntervalMin);
+      }
+
+      const patch: Partial<Item> = {
+        consecutiveErrors: newConsecutive,
+        lastCheckedAt: now,
+        nextCheckDueAt,
+        updatedAt: now,
+        healthStatus,
+        lastHealthMessage: errorMessage,
+      };
+      if (newConsecutive >= 5) patch.lastStockStatus = "UNKNOWN";
+      if (autoDisable) {
+        patch.enabled = 0;
+        patch.healthStatus = "ERROR";
+        patch.lastHealthMessage = `Auto-disabled after ${newConsecutive} consecutive errors: ${errorMessage}`;
+      }
+      tx.update(items).set(patch).where(eq(items.id, itemId)).run();
+      tx.insert(stockEvents)
+        .values({
+          itemId,
+          status: "ERROR",
+          buttonState: null,
+          priceCents: null,
+          message: errorMessage,
+          storeNumber: null,
+          ts: now,
+        })
+        .run();
+      reason = `MC error: ${errorMessage} (consecutive=${newConsecutive}, health=${healthStatus})${autoDisable ? " — auto-disabled" : ""}`;
+    },
+    { behavior: "immediate" },
+  );
+  return { transitioned: false, notification: null, webhookOk: null, reason };
+}
+
+function buildMicroCenterAlertContext(
+  item: Item,
+  storeNumber?: string,
+  storeName?: string,
+  qoh?: number,
+): AlertContext {
+  const productId = item.mcProductId ?? "";
+  const deepLink = storeNumber
+    ? microcenterPdpUrl(productId, storeNumber)
+    : microcenterPdpUrl(productId);
+  const displayName = item.name ?? `MC ${productId}`;
+  const displayStoreName = storeName === "Shippable Items" ? "Online (Shippable)" : storeName;
+
+  const ctx: AlertContext = {
+    sku: productId,
+    name: displayName,
+    currentPriceCents: item.currentPriceCents ?? 0,
+    targetPriceCents: item.targetPriceCents ?? undefined,
+    buttonState: "MICROCENTER",
+    imageUrl: item.imageUrl ?? "",
+    productUrl: deepLink,
+    cartUrl: deepLink,
+    retailer: "microcenter",
+  };
+  if (displayStoreName) ctx.storeName = displayStoreName;
+  if (qoh != null) ctx.qoh = qoh;
+  if (item.brand) ctx.brand = item.brand;
   if (item.note) ctx.note = item.note;
   return ctx;
 }

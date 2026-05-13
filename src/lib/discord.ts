@@ -14,6 +14,12 @@ export type AlertContext = {
   productUrl: string;
   cartUrl: string;
   note?: string;
+  /** Retailer discriminator; controls field labelling. Default "bestbuy". */
+  retailer?: "bestbuy" | "microcenter";
+  /** For MC: the store name this alert is firing for ("TX - Dallas", "Shippable Items"). */
+  storeName?: string;
+  /** For MC: quantity on hand at the firing store. */
+  qoh?: number;
 };
 export type PriceDropContext = AlertContext & {
   // "target" = user set a target_price and it was hit;
@@ -89,10 +95,15 @@ function buildPayload(
   color: number,
   username: string = DEFAULT_USERNAME,
 ): WebhookPayload {
+  const isMc = ctx.retailer === "microcenter";
   const fields: EmbedField[] = [
     { name: "Price", value: formatPrice(ctx.currentPriceCents, ctx.regularPriceCents), inline: true },
-    { name: "SKU", value: ctx.sku, inline: true },
-    { name: "State", value: ctx.buttonState, inline: true },
+    isMc
+      ? { name: "Store", value: ctx.storeName ?? "MicroCenter", inline: true }
+      : { name: "SKU", value: ctx.sku, inline: true },
+    isMc
+      ? { name: "Qty", value: ctx.qoh != null ? String(ctx.qoh) : "—", inline: true }
+      : { name: "State", value: ctx.buttonState, inline: true },
   ];
   if (ctx.note) {
     fields.push({ name: "Note", value: ctx.note, inline: false });
@@ -124,10 +135,15 @@ function buildPriceDropPayload(
   const priceValue = isTarget
     ? formatTargetSummary(ctx.currentPriceCents, ctx.oldPriceCents)
     : formatDropSummary(ctx.oldPriceCents, ctx.currentPriceCents);
+  const isMc = ctx.retailer === "microcenter";
   const fields: EmbedField[] = [
     { name: "Price", value: priceValue, inline: true },
-    { name: "SKU", value: ctx.sku, inline: true },
-    { name: "State", value: ctx.buttonState, inline: true },
+    isMc
+      ? { name: "Store", value: ctx.storeName ?? "MicroCenter", inline: true }
+      : { name: "SKU", value: ctx.sku, inline: true },
+    isMc
+      ? { name: "Qty", value: ctx.qoh != null ? String(ctx.qoh) : "—", inline: true }
+      : { name: "State", value: ctx.buttonState, inline: true },
     {
       name: isTarget ? "Target" : "Was",
       value: formatDollars(ctx.oldPriceCents),

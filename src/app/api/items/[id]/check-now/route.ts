@@ -12,8 +12,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db/client";
 import { items, type Item } from "@/lib/db/schema";
 import { fetchProducts, isMissingFromPriceBlocks } from "@/lib/bestbuy";
-import { scrapePdpForSku } from "@/lib/bestbuy-headless";
-import { applyCheckResult } from "@/lib/checker";
+import { fetchProductsViaPdp } from "@/lib/bestbuy-pdp";
+import { applyCheckResult, applyMicroCenterCheckResult } from "@/lib/checker";
+import { fetchMicroCenterProduct } from "@/lib/microcenter";
 
 function parseId(raw: string): number | null {
   const n = Number.parseInt(raw, 10);
@@ -44,25 +45,44 @@ export async function POST(
     }
 
     // Network fetch happens OUTSIDE any DB lock (SPEC §7.5).
-    const results = await fetchProducts([existing.sku]);
-    let result = results.get(existing.sku);
-
-    // Newer-catalog SKUs (e.g. 6663816) return ProductNotFoundException from
-    // priceBlocks; fall back to the headless PDP scraper.
-    if (result && !result.ok && isMissingFromPriceBlocks(result.error)) {
-      result = await scrapePdpForSku(existing.sku);
+    let outcome;
+    if (existing.retailer === "microcenter") {
+      if (!existing.mcProductId) {
+        return NextResponse.json(
+          { error: "MicroCenter item missing mc_product_id" },
+          { status: 500 },
+        );
+      }
+      const mcResult = await fetchMicroCenterProduct(existing.mcProductId);
+      outcome = await applyMicroCenterCheckResult(existing.id, mcResult, {
+        webhookUrl: process.env.DISCORD_WEBHOOK_URL,
+      });
+    } else {
+      if (!existing.sku) {
+        return NextResponse.json(
+          { error: "Best Buy item missing sku" },
+          { status: 500 },
+        );
+      }
+      const sku: string = existing.sku;
+      const results = await fetchProducts([sku]);
+      let result = results.get(sku);
+      // Newer-catalog SKUs (e.g. 6663816) return ProductNotFoundException from
+      // priceBlocks; fall back to the curl+proxy PDP scraper (NEC-44).
+      if (result && !result.ok && isMissingFromPriceBlocks(result.error)) {
+        const pdpMap = await fetchProductsViaPdp([sku]);
+        result = pdpMap.get(sku) ?? result;
+      }
+      if (!result) {
+        return NextResponse.json(
+          { error: "No result returned from upstream" },
+          { status: 502 },
+        );
+      }
+      outcome = await applyCheckResult(existing.id, result, {
+        webhookUrl: process.env.DISCORD_WEBHOOK_URL,
+      });
     }
-
-    if (!result) {
-      return NextResponse.json(
-        { error: "No result returned from upstream" },
-        { status: 502 },
-      );
-    }
-
-    const outcome = await applyCheckResult(existing.id, result, {
-      webhookUrl: process.env.DISCORD_WEBHOOK_URL,
-    });
 
     const updated = db
       .select()

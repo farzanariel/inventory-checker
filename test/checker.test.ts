@@ -48,7 +48,8 @@ function insertItem(
     ...overrides,
   };
   db.insert(schema.items).values(base).run();
-  return db.select().from(schema.items).where(eq(schema.items.sku, base.sku)).get() as Item;
+  const sku = base.sku as string;
+  return db.select().from(schema.items).where(eq(schema.items.sku, sku)).get() as Item;
 }
 
 function okResult(overrides: Partial<Extract<ProductResult, { ok: true }>> = {}): ProductResult {

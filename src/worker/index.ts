@@ -18,11 +18,14 @@ import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
 import { fetchProducts, isMissingFromPriceBlocks } from '@/lib/bestbuy';
 import { fetchProductsViaPdp } from '@/lib/bestbuy-pdp';
-import { applyCheckResult } from '@/lib/checker';
+import { applyCheckResult, applyMicroCenterCheckResult } from '@/lib/checker';
+import { fetchMicroCenterProduct } from '@/lib/microcenter';
 import {
   fetchProductsViaTls,
   needsHeadlessFallback,
 } from '@/lib/bestbuy-tls';
+
+const MC_CONCURRENCY = 3;
 
 const TICK_MS = 1000;
 const PRUNE_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
@@ -152,8 +155,13 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
 
   quietTickCount = 0;
 
-  const skus = dueItems.map((i) => i.sku);
-  const fetchMap = await fetchProducts(skus);
+  // Split by retailer. BB items use the 3-tier batched fetch; MC items
+  // are fetched individually via the headless pool.
+  const bbItems = dueItems.filter((i) => i.retailer !== 'microcenter' && i.sku != null);
+  const mcItems = dueItems.filter((i) => i.retailer === 'microcenter' && i.mcProductId != null);
+
+  const skus = bbItems.map((i) => i.sku as string);
+  const fetchMap = skus.length > 0 ? await fetchProducts(skus) : new Map();
 
   // --- Layer 1: TLS-impersonating HTTP client ---
   // For SKUs that failed via undici (non-missing errors like 403/timeout),
@@ -184,15 +192,14 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   }
 
   // --- Layer 2: PDP proxy scraper (NEC-44) ---
-  // For SKUs that the priceBlocks index doesn't carry (newer-catalog items
-  // like 6663816) OR that exceeded the TLS 403 budget, fall back to a
-  // residential-proxy curl scrape of the product page. Concurrency is
-  // managed internally by fetchProductsViaPdp (MAX_CONCURRENT=2).
+  // Only used when Layer 1 returned a 403-budget-exceeded error. We deliberately
+  // do NOT route ProductNotFoundException ("migrated to J-ID platform") SKUs
+  // here — Akamai currently blocks PDP requests across every fingerprint we
+  // can produce, so it just spams ERROR events. Those SKUs are now handled as
+  // PENDING_REINDEX in checker.ts and we keep retrying priceBlocks every tick.
   const pdpSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
-    return (
-      r && !r.ok && (isMissingFromPriceBlocks(r.error) || needsHeadlessFallback(r.error))
-    );
+    return r && !r.ok && needsHeadlessFallback(r.error);
   });
   if (pdpSkus.length > 0) {
     const pdpMap = await fetchProductsViaPdp(pdpSkus);
@@ -205,13 +212,29 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   }
 
   let errorCount = 0;
-  for (const item of dueItems) {
+  // BB path: apply each result sequentially (each is its own short txn).
+  for (const item of bbItems) {
     if (shouldStop) break;
+    const sku = item.sku as string;
     const result =
-      fetchMap.get(item.sku) ??
-      ({ ok: false, sku: item.sku, error: 'Missing from batch response' } as const);
+      fetchMap.get(sku) ??
+      ({ ok: false, sku, error: 'Missing from batch response' } as const);
     const outcome = await applyCheckResult(item.id, result);
     if (outcome.webhookOk === false || result.ok === false) errorCount++;
+  }
+
+  // MC path: fetch + apply per item, capped concurrency.
+  if (mcItems.length > 0 && !shouldStop) {
+    const outcomes = await runConcurrent(mcItems, MC_CONCURRENCY, async (item) => {
+      if (shouldStop) return null;
+      const result = await fetchMicroCenterProduct(item.mcProductId as string);
+      return applyMicroCenterCheckResult(item.id, result);
+    });
+    for (const outcome of outcomes) {
+      if (outcome && (outcome.webhookOk === false || outcome.notification === null && outcome.reason.startsWith('MC error'))) {
+        errorCount++;
+      }
+    }
   }
 
   const tickEnd = Date.now();

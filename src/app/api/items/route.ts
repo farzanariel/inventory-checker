@@ -20,8 +20,10 @@ import {
   productUrlForSku,
   type ProductResult,
 } from "@/lib/bestbuy";
-import { scrapePdpForSku } from "@/lib/bestbuy-headless";
-import { resolveSkuFromInput } from "@/lib/parse-input";
+import { fetchProductsViaPdp } from "@/lib/bestbuy-pdp";
+import { resolveProductInput } from "@/lib/parse-input";
+import { fetchMicroCenterProduct, microcenterPdpUrl } from "@/lib/microcenter";
+import { itemStores } from "@/lib/db/schema";
 
 const CreateItemSchema = z
   .object({
@@ -36,6 +38,9 @@ const CreateItemSchema = z
     price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
     price_notify_mode: z.enum(["once", "repeat"]).optional(),
     price_alert_while_oos: z.boolean().optional(),
+    // MicroCenter: subset of store numbers (e.g. ["029","131","055"]) to
+    // alert on. Omitted ⇒ default to all stores. Ignored for BB items.
+    enabled_store_numbers: z.array(z.string().regex(/^\d{3}$/)).optional(),
   })
   .refine(
     (obj) =>
@@ -83,29 +88,135 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const skuParse = await resolveSkuFromInput(parsed.data.input);
-  if (!skuParse.ok) {
-    return NextResponse.json({ error: skuParse.error }, { status: 400 });
+  const productInput = await resolveProductInput(parsed.data.input);
+  if (!productInput.ok) {
+    return NextResponse.json({ error: productInput.error }, { status: 400 });
   }
 
   const now = Date.now();
   const checkIntervalMin = parsed.data.check_interval_min ?? 1;
   const restockNotifyIntervalMin =
     parsed.data.restock_notify_interval_min ?? 10;
+
+  // ─── MicroCenter branch ───────────────────────────────────────────────────
+  if (productInput.retailer === "microcenter") {
+    const mcResult = await fetchMicroCenterProduct(productInput.mcProductId);
+    if (!mcResult.ok) {
+      return NextResponse.json({ error: `MicroCenter lookup failed: ${mcResult.error}` }, { status: 502 });
+    }
+    const enabledSet = parsed.data.enabled_store_numbers
+      ? new Set(parsed.data.enabled_store_numbers)
+      : null;
+    try {
+      const db = getDb();
+      const inserted = db
+        .insert(items)
+        .values({
+          retailer: "microcenter",
+          sku: null,
+          mcProductId: productInput.mcProductId,
+          name: mcResult.name,
+          brand: mcResult.brand ?? null,
+          productUrl: mcResult.canonicalUrl,
+          imageUrl: mcResult.imageUrl ?? null,
+          currentPriceCents: mcResult.currentPriceCents,
+          regularPriceCents: null,
+          checkIntervalMin,
+          restockNotifyIntervalMin,
+          enabled: 1,
+          note: parsed.data.note ?? null,
+          ...(parsed.data.stock_alert_enabled !== undefined && {
+            stockAlertEnabled: parsed.data.stock_alert_enabled ? 1 : 0,
+          }),
+          ...(parsed.data.stock_notify_mode !== undefined && {
+            stockNotifyMode: parsed.data.stock_notify_mode,
+          }),
+          ...(parsed.data.price_alert_enabled !== undefined && {
+            priceAlertEnabled: parsed.data.price_alert_enabled ? 1 : 0,
+          }),
+          ...(parsed.data.price_notify_mode !== undefined && {
+            priceNotifyMode: parsed.data.price_notify_mode,
+          }),
+          ...(parsed.data.target_price_cents !== undefined && {
+            targetPriceCents: parsed.data.target_price_cents,
+          }),
+          ...(parsed.data.price_notify_interval_min !== undefined && {
+            priceNotifyIntervalMin: parsed.data.price_notify_interval_min,
+          }),
+          ...(parsed.data.price_alert_while_oos !== undefined && {
+            priceAlertWhileOos: parsed.data.price_alert_while_oos ? 1 : 0,
+          }),
+          lastStockStatus: mcResult.stores.some(
+            (s) =>
+              s.qoh > 0 &&
+              (enabledSet == null || enabledSet.has(s.storeNumber)),
+          )
+            ? "IN_STOCK"
+            : "OUT_OF_STOCK",
+          lastButtonState: null,
+          healthStatus: "OK",
+          consecutiveErrors: 0,
+          nextCheckDueAt: now,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning()
+        .get();
+
+      // Hydrate item_stores from the freshly fetched inventory.
+      for (const s of mcResult.stores) {
+        const enabled = enabledSet ? (enabledSet.has(s.storeNumber) ? 1 : 0) : 1;
+        const isOnline = s.storeNumber === "029" ? 1 : 0;
+        db.insert(itemStores)
+          .values({
+            itemId: inserted.id,
+            storeNumber: s.storeNumber,
+            storeName: s.storeName,
+            isOnline,
+            alertEnabled: enabled,
+            lastQoh: s.qoh,
+            lastStockStatus: s.qoh > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
+            lastInStockAt: s.qoh > 0 ? now : null,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .run();
+      }
+
+      return NextResponse.json(inserted, { status: 201 });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (
+        message.includes("UNIQUE constraint failed") ||
+        message.includes("SQLITE_CONSTRAINT_UNIQUE")
+      ) {
+        return NextResponse.json(
+          { error: "Item with this MicroCenter product already exists" },
+          { status: 409 },
+        );
+      }
+      console.error("[POST /api/items mc]", err);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+  }
+
+  // ─── Best Buy branch (existing code, sku narrowed from parse) ─────────────
+  const skuParse = { sku: productInput.sku };
   const productResults = await fetchProducts([skuParse.sku]);
   const productResult = productResults.get(skuParse.sku);
   let product: Extract<ProductResult, { ok: true }> | null = productResult?.ok
     ? productResult
     : null;
 
-  // priceBlocks miss → run the headless PDP scraper once at save time so the
-  // first row has real price/stock. If headless fails too, fall back to v2
-  // metadata (name/brand only) and let the worker retry on its interval.
+  // priceBlocks miss → run the curl+proxy PDP scraper once at save time so
+  // the first row has real price/stock (NEC-44). If PDP fails too, fall back
+  // to v2 metadata (name/brand only) and let the worker retry on its interval.
   let metaFallback: Awaited<ReturnType<typeof fetchProductMetaV2>> | null = null;
   if (!product && productResult && !productResult.ok && isMissingFromPriceBlocks(productResult.error)) {
-    const headless = await scrapePdpForSku(skuParse.sku);
-    if (headless.ok) {
-      product = headless;
+    const pdpMap = await fetchProductsViaPdp([skuParse.sku]);
+    const pdpResult = pdpMap.get(skuParse.sku);
+    if (pdpResult?.ok) {
+      product = pdpResult;
     } else {
       metaFallback = await fetchProductMetaV2(skuParse.sku);
     }
@@ -117,7 +228,9 @@ export async function POST(req: NextRequest) {
     const inserted = db
       .insert(items)
       .values({
+        retailer: "bestbuy",
         sku: skuParse.sku,
+        mcProductId: null,
         name: product?.name ?? meta?.name ?? null,
         brand: product?.brand ?? meta?.brand ?? null,
         productUrl: product?.canonicalUrl ?? meta?.canonicalUrl ?? productUrlForSku(skuParse.sku),

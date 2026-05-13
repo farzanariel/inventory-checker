@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * PriceAlertSection — collapsible "Price alert" group used by Add + Edit.
- *
- * SPEC §19 v5 (NEC-10 follow-up): single dollar target. The master <Switch>
- * doubles as the group header; toggling it off collapses the body.
+ * PriceAlertSection — flat layout, no box. Toggle inline with the heading;
+ * target-price input is the primary control; notify-mode + re-notify
+ * interval + while-OOS are tucked behind an "Advanced" disclosure.
  *
  * Current-price-aware: when the dialog knows the current price, the target
- * input shows it as context ("Currently $159.99") and warns when the target
- * is at or above current (the alert would fire immediately, which is almost
- * certainly not what the user wanted).
+ * input shows it as context and warns when the target is at or above current.
  */
+
+import { useState } from "react";
+import { ChevronDownIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,10 +44,10 @@ export function PriceAlertSection({
   currentPriceCents,
   disabled,
 }: Props) {
-  const collapsed = !values.enabled;
   const headerId = `${idPrefix}-price-alert`;
   const bodyId = `${idPrefix}-price-alert-body`;
   const targetId = `${idPrefix}-price-target`;
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   function set<K extends keyof PriceAlertValues>(
     key: K,
@@ -69,7 +69,7 @@ export function PriceAlertSection({
   const targetBlank = values.targetDollars.trim() === "" && values.enabled;
 
   return (
-    <div className="rounded-lg border border-border bg-card/40 px-3 py-2.5">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3">
         <Label
           htmlFor={headerId}
@@ -89,21 +89,26 @@ export function PriceAlertSection({
 
       <div
         className="price-alert-collapsible"
-        data-collapsed={collapsed ? "true" : "false"}
-        aria-hidden={collapsed}
+        data-collapsed={values.enabled ? "false" : "true"}
+        aria-hidden={!values.enabled}
       >
         <div
           id={bodyId}
           className="price-alert-collapsible-inner"
-          inert={collapsed || undefined}
+          inert={!values.enabled || undefined}
         >
-          <div className="flex flex-col gap-3 pt-3">
+          <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor={targetId} className="text-xs">
+              <Label
+                htmlFor={targetId}
+                className="text-xs text-muted-foreground"
+              >
                 Alert when price drops to (optional)
               </Label>
               <div className="flex items-center gap-1.5">
-                <span className="font-mono text-base sm:text-sm text-muted-foreground">$</span>
+                <span className="font-mono text-base sm:text-sm text-muted-foreground">
+                  $
+                </span>
                 <Input
                   id={targetId}
                   type="number"
@@ -112,7 +117,7 @@ export function PriceAlertSection({
                   step="0.01"
                   placeholder={
                     currentPriceCents != null
-                      ? (currentPriceCents * 0.9 / 100).toFixed(2)
+                      ? ((currentPriceCents * 0.9) / 100).toFixed(2)
                       : "0.00"
                   }
                   value={values.targetDollars}
@@ -148,67 +153,93 @@ export function PriceAlertSection({
               </p>
             </div>
 
-            <fieldset className="flex flex-col gap-1.5" disabled={disabled || !values.enabled}>
-              <legend className="text-xs">Notify mode</legend>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-1.5 text-sm select-none">
-                  <input
-                    type="radio"
-                    name={`${idPrefix}-price-mode`}
-                    value="once"
-                    checked={values.notifyMode === "once"}
-                    onChange={() => set("notifyMode", "once")}
-                    disabled={disabled || !values.enabled}
-                    className="size-4 cursor-pointer accent-foreground"
-                  />
-                  Once
-                </label>
-                <label className="flex items-center gap-1.5 text-sm select-none">
-                  <input
-                    type="radio"
-                    name={`${idPrefix}-price-mode`}
-                    value="repeat"
-                    checked={values.notifyMode === "repeat"}
-                    onChange={() => set("notifyMode", "repeat")}
-                    disabled={disabled || !values.enabled}
-                    className="size-4 cursor-pointer accent-foreground"
-                  />
-                  Keep notifying
-                </label>
-              </div>
-            </fieldset>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              disabled={disabled || !values.enabled}
+              aria-expanded={showAdvanced}
+              className="flex items-center gap-1 self-start py-0.5 font-mono text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              <ChevronDownIcon
+                className={`size-3 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+              {showAdvanced ? "Hide advanced" : "Advanced"}
+            </button>
 
-            {values.notifyMode === "repeat" ? (
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`${idPrefix}-price-interval`} className="text-xs">
-                  Re-notify on price drops every (min)
-                </Label>
-                <Input
-                  id={`${idPrefix}-price-interval`}
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  min={1}
-                  max={10080}
-                  step={1}
-                  value={values.notifyIntervalMin}
-                  onChange={(e) => set("notifyIntervalMin", e.target.value)}
-                  className="w-28 font-mono tabular-nums text-base sm:text-sm"
+            {showAdvanced ? (
+              <div className="flex flex-col gap-3">
+                <fieldset
+                  className="flex flex-col gap-1.5"
                   disabled={disabled || !values.enabled}
-                />
+                >
+                  <legend className="text-xs text-muted-foreground">
+                    Notify mode
+                  </legend>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-1.5 text-sm select-none">
+                      <input
+                        type="radio"
+                        name={`${idPrefix}-price-mode`}
+                        value="once"
+                        checked={values.notifyMode === "once"}
+                        onChange={() => set("notifyMode", "once")}
+                        disabled={disabled || !values.enabled}
+                        className="size-4 cursor-pointer accent-foreground"
+                      />
+                      Once
+                    </label>
+                    <label className="flex items-center gap-1.5 text-sm select-none">
+                      <input
+                        type="radio"
+                        name={`${idPrefix}-price-mode`}
+                        value="repeat"
+                        checked={values.notifyMode === "repeat"}
+                        onChange={() => set("notifyMode", "repeat")}
+                        disabled={disabled || !values.enabled}
+                        className="size-4 cursor-pointer accent-foreground"
+                      />
+                      Keep notifying
+                    </label>
+                  </div>
+                </fieldset>
+
+                {values.notifyMode === "repeat" ? (
+                  <div className="flex flex-col gap-1.5">
+                    <Label
+                      htmlFor={`${idPrefix}-price-interval`}
+                      className="text-xs text-muted-foreground"
+                    >
+                      Re-notify on price drops every (min)
+                    </Label>
+                    <Input
+                      id={`${idPrefix}-price-interval`}
+                      type="number"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      min={1}
+                      max={10080}
+                      step={1}
+                      value={values.notifyIntervalMin}
+                      onChange={(e) => set("notifyIntervalMin", e.target.value)}
+                      className="w-28 font-mono tabular-nums text-base sm:text-sm"
+                      disabled={disabled || !values.enabled}
+                    />
+                  </div>
+                ) : null}
+
+                <label className="flex items-center gap-2 text-sm select-none">
+                  <input
+                    type="checkbox"
+                    checked={values.whileOos}
+                    onChange={(e) => set("whileOos", e.target.checked)}
+                    disabled={disabled || !values.enabled}
+                    className="size-4 cursor-pointer rounded border-border bg-input/60 accent-foreground"
+                  />
+                  <span>Alert on price drops while out of stock</span>
+                </label>
               </div>
             ) : null}
-
-            <label className="flex items-center gap-2 text-sm select-none">
-              <input
-                type="checkbox"
-                checked={values.whileOos}
-                onChange={(e) => set("whileOos", e.target.checked)}
-                disabled={disabled || !values.enabled}
-                className="size-4 cursor-pointer rounded border-border bg-input/60 accent-foreground"
-              />
-              <span>Alert on price drops while out of stock</span>
-            </label>
           </div>
         </div>
       </div>

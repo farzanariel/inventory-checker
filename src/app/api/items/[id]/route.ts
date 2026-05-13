@@ -5,12 +5,12 @@
  * resets next_check_due_at so the worker picks it up immediately.
  */
 
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, notInArray } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/lib/db/client";
-import { items, type Item } from "@/lib/db/schema";
+import { itemStores, items, type Item, type ItemStore } from "@/lib/db/schema";
 
 const UpdateItemSchema = z
   .object({
@@ -25,6 +25,8 @@ const UpdateItemSchema = z
     price_notify_interval_min: z.number().int().min(1).max(10080).optional(),
     price_notify_mode: z.enum(["once", "repeat"]).optional(),
     price_alert_while_oos: z.boolean().optional(),
+    // MicroCenter-only: which store_numbers should fire alerts.
+    enabled_store_numbers: z.array(z.string().regex(/^\d{3}$/)).optional(),
   })
   .refine((obj) => Object.keys(obj).length > 0, {
     message: "At least one field is required",
@@ -41,6 +43,43 @@ function parseId(raw: string): number | null {
   const n = Number.parseInt(raw, 10);
   if (Number.isNaN(n) || n <= 0) return null;
   return n;
+}
+
+export async function GET(
+  _req: NextRequest,
+  ctx: RouteContext<"/api/items/[id]">,
+) {
+  const { id: rawId } = await ctx.params;
+  const id = parseId(rawId);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+  try {
+    const db = getDb();
+    const item = db
+      .select()
+      .from(items)
+      .where(eq(items.id, id))
+      .get() as Item | undefined;
+    if (!item) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+    if (item.retailer === "microcenter") {
+      const stores = db
+        .select()
+        .from(itemStores)
+        .where(eq(itemStores.itemId, id))
+        .all() as ItemStore[];
+      return NextResponse.json({ ...item, stores });
+    }
+    return NextResponse.json(item);
+  } catch (err) {
+    console.error("[GET /api/items/:id]", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function PATCH(
@@ -151,6 +190,41 @@ export async function PATCH(
       .where(eq(items.id, id))
       .returning()
       .get();
+
+    // MicroCenter per-store alert toggles. Diff against current state.
+    if (
+      parsed.data.enabled_store_numbers !== undefined &&
+      existing.retailer === "microcenter"
+    ) {
+      const targetSet = new Set(parsed.data.enabled_store_numbers);
+      const enableList = [...targetSet];
+      if (enableList.length > 0) {
+        db.update(itemStores)
+          .set({ alertEnabled: 1, updatedAt: now })
+          .where(
+            and(
+              eq(itemStores.itemId, id),
+              inArray(itemStores.storeNumber, enableList),
+            ),
+          )
+          .run();
+        db.update(itemStores)
+          .set({ alertEnabled: 0, updatedAt: now })
+          .where(
+            and(
+              eq(itemStores.itemId, id),
+              notInArray(itemStores.storeNumber, enableList),
+            ),
+          )
+          .run();
+      } else {
+        // Empty list ⇒ disable all stores for this item.
+        db.update(itemStores)
+          .set({ alertEnabled: 0, updatedAt: now })
+          .where(eq(itemStores.itemId, id))
+          .run();
+      }
+    }
 
     return NextResponse.json(updated);
   } catch (err) {

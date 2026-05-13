@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * StockAlertSection — flat layout, no box. Toggle inline with the heading,
+ * primary inputs visible when enabled, notify-mode radios behind "Advanced".
+ */
+
+import { useState } from "react";
+import { ChevronDownIcon } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -19,19 +27,30 @@ type Props = {
   disabled?: boolean;
 };
 
-export function StockAlertSection({ idPrefix, values, onChange, disabled }: Props) {
-  const collapsed = !values.enabled;
+export function StockAlertSection({
+  idPrefix,
+  values,
+  onChange,
+  disabled,
+}: Props) {
   const headerId = `${idPrefix}-stock-alert`;
   const bodyId = `${idPrefix}-stock-alert-body`;
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  function set<K extends keyof StockAlertValues>(key: K, value: StockAlertValues[K]) {
+  function set<K extends keyof StockAlertValues>(
+    key: K,
+    value: StockAlertValues[K],
+  ) {
     onChange({ ...values, [key]: value });
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card/40 px-3 py-2.5">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3">
-        <Label htmlFor={headerId} className="cursor-pointer text-sm font-medium">
+        <Label
+          htmlFor={headerId}
+          className="cursor-pointer text-sm font-medium"
+        >
           Stock alerts
         </Label>
         <Switch
@@ -46,18 +65,21 @@ export function StockAlertSection({ idPrefix, values, onChange, disabled }: Prop
 
       <div
         className="price-alert-collapsible"
-        data-collapsed={collapsed ? "true" : "false"}
-        aria-hidden={collapsed}
+        data-collapsed={values.enabled ? "false" : "true"}
+        aria-hidden={!values.enabled}
       >
         <div
           id={bodyId}
           className="price-alert-collapsible-inner"
-          inert={collapsed || undefined}
+          inert={!values.enabled || undefined}
         >
-          <div className="flex flex-col gap-3 pt-3">
+          <div className="flex flex-col gap-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor={`${idPrefix}-check-interval`} className="text-xs">
+                <Label
+                  htmlFor={`${idPrefix}-check-interval`}
+                  className="text-xs text-muted-foreground"
+                >
                   Check every (min)
                 </Label>
                 <Input
@@ -76,7 +98,10 @@ export function StockAlertSection({ idPrefix, values, onChange, disabled }: Prop
               </div>
               {values.notifyMode === "repeat" ? (
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor={`${idPrefix}-restock-interval`} className="text-xs">
+                  <Label
+                    htmlFor={`${idPrefix}-restock-interval`}
+                    className="text-xs text-muted-foreground"
+                  >
                     Re-notify every (min)
                   </Label>
                   <Input
@@ -96,35 +121,56 @@ export function StockAlertSection({ idPrefix, values, onChange, disabled }: Prop
               ) : null}
             </div>
 
-            <fieldset className="flex flex-col gap-1.5" disabled={disabled || !values.enabled}>
-              <legend className="text-xs">Notify mode</legend>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-1.5 text-sm select-none">
-                  <input
-                    type="radio"
-                    name={`${idPrefix}-stock-mode`}
-                    value="once"
-                    checked={values.notifyMode === "once"}
-                    onChange={() => set("notifyMode", "once")}
-                    disabled={disabled || !values.enabled}
-                    className="size-4 cursor-pointer accent-foreground"
-                  />
-                  Once
-                </label>
-                <label className="flex items-center gap-1.5 text-sm select-none">
-                  <input
-                    type="radio"
-                    name={`${idPrefix}-stock-mode`}
-                    value="repeat"
-                    checked={values.notifyMode === "repeat"}
-                    onChange={() => set("notifyMode", "repeat")}
-                    disabled={disabled || !values.enabled}
-                    className="size-4 cursor-pointer accent-foreground"
-                  />
-                  Keep notifying
-                </label>
-              </div>
-            </fieldset>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              disabled={disabled || !values.enabled}
+              aria-expanded={showAdvanced}
+              className="flex items-center gap-1 self-start py-0.5 font-mono text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              <ChevronDownIcon
+                className={`size-3 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+              {showAdvanced ? "Hide advanced" : "Advanced"}
+            </button>
+
+            {showAdvanced ? (
+              <fieldset
+                className="flex flex-col gap-1.5"
+                disabled={disabled || !values.enabled}
+              >
+                <legend className="text-xs text-muted-foreground">
+                  Notify mode
+                </legend>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-1.5 text-sm select-none">
+                    <input
+                      type="radio"
+                      name={`${idPrefix}-stock-mode`}
+                      value="once"
+                      checked={values.notifyMode === "once"}
+                      onChange={() => set("notifyMode", "once")}
+                      disabled={disabled || !values.enabled}
+                      className="size-4 cursor-pointer accent-foreground"
+                    />
+                    Once
+                  </label>
+                  <label className="flex items-center gap-1.5 text-sm select-none">
+                    <input
+                      type="radio"
+                      name={`${idPrefix}-stock-mode`}
+                      value="repeat"
+                      checked={values.notifyMode === "repeat"}
+                      onChange={() => set("notifyMode", "repeat")}
+                      disabled={disabled || !values.enabled}
+                      className="size-4 cursor-pointer accent-foreground"
+                    />
+                    Keep notifying
+                  </label>
+                </div>
+              </fieldset>
+            ) : null}
           </div>
         </div>
       </div>
@@ -133,7 +179,7 @@ export function StockAlertSection({ idPrefix, values, onChange, disabled }: Prop
 }
 
 export const STOCK_ALERT_DEFAULTS: StockAlertValues = {
-  enabled: true,
+  enabled: false,
   checkIntervalMin: "1",
   restockIntervalMin: "10",
   notifyMode: "repeat",

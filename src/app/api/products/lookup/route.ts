@@ -11,7 +11,8 @@ import {
   imageUrlForSku,
   isMissingFromPriceBlocks,
 } from "@/lib/bestbuy";
-import { resolveSkuFromInput } from "@/lib/parse-input";
+import { resolveProductInput } from "@/lib/parse-input";
+import { fetchMicroCenterProduct } from "@/lib/microcenter";
 
 const LookupSchema = z.object({
   input: z.string().min(1, "input is required"),
@@ -43,16 +44,47 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const skuParse = await resolveSkuFromInput(parsed.data.input);
-  if (!skuParse.ok) {
-    return NextResponse.json({ error: skuParse.error }, { status: 400 });
+  const productInput = await resolveProductInput(parsed.data.input);
+  if (!productInput.ok) {
+    return NextResponse.json({ error: productInput.error }, { status: 400 });
   }
 
+  // ─── MicroCenter branch ────────────────────────────────────────────────
+  if (productInput.retailer === "microcenter") {
+    const mc = await fetchMicroCenterProduct(productInput.mcProductId);
+    if (!mc.ok) {
+      return NextResponse.json({ error: mc.error }, { status: 502 });
+    }
+    const inStockCount = mc.stores.filter((s) => s.qoh > 0).length;
+    return NextResponse.json({
+      retailer: "microcenter" as const,
+      mc_product_id: mc.mcProductId,
+      name: mc.name,
+      brand: mc.brand ?? null,
+      image_url: mc.imageUrl ?? null,
+      product_url: mc.canonicalUrl,
+      current_price_cents: mc.currentPriceCents,
+      regular_price_cents: null,
+      button_state: null,
+      purchasable: inStockCount > 0,
+      stock_source: "microcenter-pdp" as const,
+      stores: mc.stores.map((s) => ({
+        store_number: s.storeNumber,
+        store_name: s.storeName,
+        qoh: s.qoh,
+        is_online: s.storeNumber === "029",
+        in_stock: s.qoh > 0,
+      })),
+    });
+  }
+
+  const skuParse = { sku: productInput.sku };
   const results = await fetchProducts([skuParse.sku]);
   const result = results.get(skuParse.sku);
 
   if (result?.ok) {
     return NextResponse.json({
+      retailer: "bestbuy" as const,
       sku: result.sku,
       name: result.name,
       brand: result.brand ?? null,
@@ -74,6 +106,7 @@ export async function POST(req: NextRequest) {
     const meta = await fetchProductMetaV2(skuParse.sku);
     if (meta.ok) {
       return NextResponse.json({
+        retailer: "bestbuy" as const,
         sku: meta.sku,
         name: meta.name,
         brand: meta.brand ?? null,

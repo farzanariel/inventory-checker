@@ -3,7 +3,9 @@
  * minimum surface area and explicit polling.
  */
 
-import type { Item, StockEvent } from "@/lib/db/schema";
+import type { Item, ItemStore, StockEvent } from "@/lib/db/schema";
+
+export type ItemWithStores = Item & { stores?: ItemStore[] };
 
 async function jsonOrThrow<T>(res: Response): Promise<T> {
   const text = await res.text();
@@ -63,6 +65,8 @@ export type CreateItemInput = {
   price_notify_interval_min?: number;
   price_notify_mode?: NotifyMode;
   price_alert_while_oos?: boolean;
+  /** MicroCenter only: which 3-digit store numbers to alert on. Omitted ⇒ all. */
+  enabled_store_numbers?: string[];
 };
 
 export async function createItem(input: CreateItemInput): Promise<Item> {
@@ -74,21 +78,42 @@ export async function createItem(input: CreateItemInput): Promise<Item> {
   return jsonOrThrow<Item>(res);
 }
 
-export type ProductLookup = {
-  sku: string;
-  name: string;
-  brand: string | null;
-  image_url: string;
-  product_url: string;
-  current_price_cents: number | null;
-  regular_price_cents: number | null;
-  button_state: string | null;
-  purchasable: boolean | null;
-  /** Where the price/stock fields came from. `metadata-only` means BB's
-   *  legacy priceBlocks index doesn't have this SKU; the worker will fill
-   *  in price + stock once it's been checked. */
-  stock_source: "priceblocks" | "metadata-only";
+export type McStoreLookup = {
+  store_number: string;
+  store_name: string;
+  qoh: number;
+  is_online: boolean;
+  in_stock: boolean;
 };
+
+export type ProductLookup =
+  | {
+      retailer: "bestbuy";
+      sku: string;
+      name: string;
+      brand: string | null;
+      image_url: string;
+      product_url: string;
+      current_price_cents: number | null;
+      regular_price_cents: number | null;
+      button_state: string | null;
+      purchasable: boolean | null;
+      stock_source: "priceblocks" | "metadata-only";
+    }
+  | {
+      retailer: "microcenter";
+      mc_product_id: string;
+      name: string;
+      brand: string | null;
+      image_url: string | null;
+      product_url: string;
+      current_price_cents: number | null;
+      regular_price_cents: number | null;
+      button_state: null;
+      purchasable: boolean | null;
+      stock_source: "microcenter-pdp";
+      stores: McStoreLookup[];
+    };
 
 export async function lookupProduct(
   input: string,
@@ -115,6 +140,7 @@ export type PatchItemInput = {
   price_notify_interval_min?: number;
   price_notify_mode?: NotifyMode;
   price_alert_while_oos?: boolean;
+  enabled_store_numbers?: string[];
 };
 
 export async function patchItem(
@@ -127,6 +153,14 @@ export async function patchItem(
     body: JSON.stringify(input),
   });
   return jsonOrThrow<Item>(res);
+}
+
+export async function fetchItem(
+  id: number,
+  signal?: AbortSignal,
+): Promise<ItemWithStores> {
+  const res = await fetch(`/api/items/${id}`, { signal, cache: "no-store" });
+  return jsonOrThrow<ItemWithStores>(res);
 }
 
 export async function deleteItem(id: number): Promise<void> {

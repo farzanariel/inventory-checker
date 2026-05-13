@@ -9,6 +9,7 @@
 
 ## 0. Changelog
 
+- **v8 (2026-05-13, NEC-XX):** Added §21 MicroCenter adapter — first non-Best-Buy retailer. Endpoint spike proved that one fetch of `/product/{productId}/...?storeid=029` returns all 32 stores' stock in a single `var inventory = [{qoh, storeNumber, storeName, productId}, ...]` block embedded in the PDP HTML, plus the national price in `#pricing[content]` / JSON-LD offers. Price does not vary by store (confirmed by user). MicroCenter sits behind Cloudflare's managed JS challenge; the existing patchright + residential-proxy stack from §20 clears it. §3 amended: "Multi-retailer support" non-goal scoped down to "no general retailer plugin system" — Best Buy + MicroCenter are now in v1 scope. §9 gains an `item_stores` table for per-(item, store) state with a per-row `alert_enabled` flag. `items` gains `retailer` and `mc_product_id` columns. §11 add/edit modal grows a MicroCenter branch with a multi-select store dropdown (all 32 stores discovered on first fetch, all checked by default, with "All / In-store only / Online only / None" quick-actions; the Web Store `029` "Shippable Items" appears as a distinguished entry at the top labelled "Online (Shippable)"). §7 state machine generalizes: for MC items, transitions/reminders key on `(item_id, store_number)` instead of `item_id`, and notification fire is gated by `item_stores.alert_enabled`. §16 tests gain MC PDP parser + per-(item, store) state machine.
 - **v6 (2026-05-11):** Per-feature opt-in + once/repeat notify modes. Migration `0004_notify_modes.sql` adds `stock_alert_enabled` (default 1), `stock_notify_mode` ('once'|'repeat', default 'repeat'), and `price_notify_mode` ('once'|'repeat', default 'repeat'). Add/Edit modal now exposes Stock alerts and Price alerts as parallel collapsible sections — at least one must be on. `decideStock` skips alert+reminder paths when stock alerts are off; in 'once' mode the OOS→IN_STOCK transition fires but reminders are suppressed. `decidePriceAlert` in 'once' mode treats a non-null `last_price_notified_at` as permanent silence; PATCH clears that gate (and the pending-hit guard) when the mode is toggled.
 - **v5 (2026-05-11):** §19 rewritten as a target-price model after user feedback on the v4 threshold UI ("why is it in cents and not dollars? also, just let me input a target price instead"). Migration `0003_target_price.sql` drops the six unused threshold/baseline/pending-lower columns and adds `target_price_cents`, `pending_hit_price_cents`, `pending_hit_seen_count`. UI surfaces a single dollar input that's current-price-aware ("currently $X.XX" inline; soft-error when target ≥ current). Decision rule: fire when `currentPrice <= targetPrice` after two consecutive same-price observations and cooldown clear. The `'any'` direction toggle is dropped from §18 backlog (no longer meaningful under target model). §9.1 audit table: `PRICE_DROP` message format becomes `"<target> -> <current>"`. §16 tests rewritten accordingly.
 - **v4.1 (2026-05-11):** §6.7 extended for NEC-13. Best Buy publishes a fourth URL form from ad/search landing pages (`bestbuy.com/product/{slug}/{ALPHANUMERIC_PRODUCT_CODE}`) where no numeric SKU appears in the URL. `parseUrlOrSku` remains sync and pattern-only; a new async `resolveSkuFromInput` falls back to fetching the page and reading `<link rel="canonical">` / `og:url` / JSON-LD `sku`. Wired into `POST /api/items` and `POST /api/products/lookup`; AddItemDialog uses `looksResolvableBestBuyInput` for preview debounce.
@@ -36,7 +37,7 @@ I need a personal, self-hosted tool that watches a list of Best Buy SKUs and pin
 
 ## 3. Non-Goals
 
-- **Multi-retailer support.** Best Buy only for v1.
+- **General retailer plugin system.** v1 supports exactly two retailers — Best Buy (§6) and MicroCenter (§21). They share the §7 notification state machine and §9 data model but have separate fetchers. We do NOT build a pluggable adapter framework, abstract retailer interface, or DSL. Adding a third retailer is a Phase-2 conversation.
 - **Multi-user / accounts / app-level auth.** Single user. Cloudflare Access handles all auth at the edge.
 - **Auto-purchase / bot integration.** I'll trigger my bots manually from the alert.
 - **Price drop / open-box / store-pickup detection.** Just basic restock for v1.
@@ -780,3 +781,192 @@ BB_STORAGE_STATE=/root/inventory-checker/data/storage-state.json
 
 - TLS-impersonation HTTP client (sibling [NEC-33](/NEC/issues/NEC-33)).
 - Notification / UI changes — purely a fetcher upgrade.
+
+## 21. MicroCenter Adapter
+
+Issue: NEC-XX (TBD). MicroCenter is the second supported retailer. Unlike Best Buy, MicroCenter stock is **intrinsically per-store** — each product has independent quantity-on-hand at ~32 physical stores plus a "Shippable Items" web-fulfillment store (store number `029`). v1 watches all 32 stores per item with one HTTP fetch and lets the user opt out of stores they don't care about.
+
+### 21.1 Endpoint — PROVEN
+
+```
+GET https://www.microcenter.com/product/{productId}/{slug}?storeid=029
+```
+
+`{productId}` is the 6-digit numeric ID in the canonical URL (e.g. `688173` for Mac mini). `{slug}` is the SEO slug — the server ignores it for routing but expects something present. `?storeid=029` is mandatory: without a `storeid` cookie or query param, MicroCenter renders the price field empty (see §21.4).
+
+Response is HTML (≈1 MB). Two data points are embedded:
+
+**1. All-store inventory (the prize).** A `<script>` block near the end of `<body>` contains:
+
+```js
+var inventory = [
+  {"qoh":1,"storeNumber":"205","storeName":"AZ - Phoenix","productId":708467},
+  {"qoh":0,"storeNumber":"215","storeName":"TX - Austin","productId":708467},
+  ...
+  {"qoh":0,"storeNumber":"029","storeName":"Shippable Items","productId":708467}
+];
+```
+
+- 32 entries — same set on every product as of 2026-05-13 (the reference repo `owenseay/stock-checker` lists the same store IDs).
+- `qoh` is an integer count, not a boolean. `qoh > 0` ⇒ IN_STOCK at that store. `qoh === 0` ⇒ OUT_OF_STOCK.
+- A missing store entry (count drops below 32 for that product) ⇒ treat as OUT_OF_STOCK for that store. Do not error.
+- Store number `029` (`"Shippable Items"`) is the web-fulfillment store. `qoh > 0` there ⇒ orderable online. UI labels it "Online (Shippable)".
+
+**2. Price.** National (does not vary by store, confirmed). Available in two places in the same response — read whichever lands first:
+
+- `<span id="pricing" content="599.99">` — preferred (machine-readable attribute).
+- JSON-LD `<script type="application/ld+json">` block with `@type: Product` → `offers.price`.
+
+If `#pricing[content]` is empty and JSON-LD has no price, treat as ERROR (will retry next tick). Do not fall back to `.big-price` text scraping — it sometimes shows the member-only price.
+
+### 21.2 Bot-defense — Cloudflare managed challenge
+
+MicroCenter sits behind Cloudflare's managed JS challenge (`cf-mitigated: challenge` on raw requests). curl/undici/native fetch all hit a 403 with the "Just a moment..." page. **Resolution: the existing §20 patchright + residential proxy stack passes the challenge on first PDP load.** No code changes needed there; the same browser pool serves both retailers.
+
+Notes:
+- The CF clearance cookie is per-context. Reuse the same `BrowserContext` across MC fetches for cookie persistence.
+- Datacenter IPs from the VPS get blocked harder than residential IPs — proxy is mandatory, not optional.
+- One fetch per item per check (not 32) — the all-store inventory blob means we don't fan out per store. CF clearance is cheap relative to that.
+
+### 21.3 URL parsing
+
+Add to `parseUrlOrSku` (renamed to `parseProductInput` if cleaner) a third pattern:
+
+```
+^https?://(www\.)?microcenter\.com/product/(\d{4,7})(/.*)?$
+```
+
+Returns `{ retailer: 'microcenter', mcProductId: '688173' }`. Bare numeric IDs are NOT accepted for MicroCenter (too ambiguous with Best Buy SKUs); the user must paste the full URL.
+
+### 21.4 Fetch + parse pipeline (`src/lib/microcenter.ts`)
+
+```
+1. Acquire patchright context from the shared pool (§20.7).
+2. page.goto(`/product/${productId}/x?storeid=029`, { waitUntil: 'domcontentloaded' })
+   — slug "x" is fine; the server ignores it.
+3. waitForSelector('#pricing, .big-price', { timeout: 10000 }) — truth signal.
+4. const html = await page.content()
+5. Parse:
+   - inventory:  /var inventory\s*=\s*(\[.*?\])\s*;/s   → JSON.parse
+   - price:      /<span[^>]*id="pricing"[^>]*content="([0-9.]+)"/  → cents int
+   - name/image: JSON-LD Product block (image[0] is canonical)
+6. Block heavy resources per §20.6.
+7. Return { retailer:'microcenter', productId, name, imageUrl, priceCents, stores: [{storeNumber, storeName, qoh}, ...] }
+```
+
+Module exports `fetchMicroCenterProduct(productId)`. Internally re-uses `getOrCreateContext()` from `bestbuy-headless.ts` (rename that file to `headless-pool.ts` and move the BB-specific parsing into `bestbuy-pdp.ts`). Concurrency cap shared with BB (`HEADLESS_CONCURRENCY=3`).
+
+### 21.5 Stock interpretation per (item, store)
+
+For each entry in the response `stores` array, decide using §7's state machine, keyed on `(item_id, store_number)`:
+
+| `qoh` | `last_stock_status` | New status | Action |
+|---|---|---|---|
+| `> 0` | `OUT_OF_STOCK` / `UNKNOWN` | `IN_STOCK` | Fire alert (if `alert_enabled` and notify-mode allows), set `last_in_stock_at`, schedule reminders |
+| `> 0` | `IN_STOCK` | `IN_STOCK` | Fire reminder if `now - last_notified_at >= restock_notify_interval_sec` |
+| `=== 0` | `IN_STOCK` | `OUT_OF_STOCK` | No alert; clear reminder schedule |
+| `=== 0` | other | `OUT_OF_STOCK` | No-op |
+
+The §6.6 stale-price guard does NOT apply per-store — price is national.
+
+### 21.6 Data model deltas (migration `0005_microcenter.sql`)
+
+```sql
+-- New columns on items
+ALTER TABLE items ADD COLUMN retailer       TEXT NOT NULL DEFAULT 'bestbuy';  -- 'bestbuy' | 'microcenter'
+ALTER TABLE items ADD COLUMN mc_product_id  TEXT;                              -- 6-digit MC product ID; NULL for BB
+
+-- Drop UNIQUE on items.sku (BB-only); enforce uniqueness per-retailer instead.
+-- Approach: keep sku NULLABLE for MC rows; add partial uniqueness via index.
+DROP INDEX IF EXISTS sqlite_autoindex_items_sku;  -- if present
+CREATE UNIQUE INDEX idx_items_bb_sku ON items(sku) WHERE retailer = 'bestbuy';
+CREATE UNIQUE INDEX idx_items_mc_pid ON items(mc_product_id) WHERE retailer = 'microcenter';
+
+-- Per-(item, store) state — only populated for retailer='microcenter'
+CREATE TABLE item_stores (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id              INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  store_number         TEXT NOT NULL,                            -- '029', '131', etc.
+  store_name           TEXT NOT NULL,                            -- 'TX - Dallas' / 'Shippable Items'
+  is_online            INTEGER NOT NULL DEFAULT 0,               -- 1 iff store_number = '029'
+  alert_enabled        INTEGER NOT NULL DEFAULT 1,               -- per-store opt-in toggle
+  last_qoh             INTEGER,
+  last_stock_status    TEXT NOT NULL DEFAULT 'UNKNOWN',          -- UNKNOWN | IN_STOCK | OUT_OF_STOCK
+  last_in_stock_at     INTEGER,
+  last_notified_at     INTEGER,
+  created_at           INTEGER NOT NULL,
+  updated_at           INTEGER NOT NULL,
+  UNIQUE(item_id, store_number)
+);
+
+CREATE INDEX idx_item_stores_item ON item_stores(item_id);
+```
+
+`stock_events.item_id` continues to reference the parent item. To attribute events to a store, add a nullable `store_number` column:
+
+```sql
+ALTER TABLE stock_events ADD COLUMN store_number TEXT;  -- NULL for BB events; set for MC per-store transitions
+```
+
+For MC items, the per-item-level `last_stock_status` and `last_in_stock_at` on `items` are denormalized roll-ups: `last_stock_status = 'IN_STOCK'` if ANY enabled `item_stores` row is in stock. These let the dashboard list view stay schema-compatible.
+
+### 21.7 Add-item UI (extends §11)
+
+When `parseProductInput` returns `retailer: 'microcenter'`, the modal shows a MicroCenter branch:
+
+1. **Product preview** — same shape as BB (image, name, price). Stock summary reads "In stock at N of 32 stores" or "Out of stock everywhere".
+
+2. **Alert me on (multi-select dropdown):**
+   - Default: all 32 stores checked.
+   - The Web Store (`029`) appears at the top as "Online (Shippable)" with a divider below it. Physical stores follow alphabetically by state then city.
+   - Quick-action chips above the list: "All" / "In-store only" (selects 31 physical, deselects 029) / "Online only" (selects 029, deselects all physical) / "None" (greys-out the Save button until at least one is selected).
+   - Each store row shows its current stock state with a dot indicator (green ⬤ in stock / grey ⬤ OOS / amber ⬤ unknown) so the user can sanity-check before saving.
+   - Implementation: combobox/popover with checkboxes (shadcn `Command` + `Popover`). Trigger renders "N of 32 stores selected" or "All stores" / "Online only" / "In-store only" / "{Store name} only" depending on selection shape.
+
+3. **Stock alerts** + **Price alerts** sections behave identically to BB (per §19, §v6 changelog). Stock alerts gate ALL per-store notifications; the per-store dropdown gates which stores' transitions count.
+
+On submit:
+- Insert `items` row with `retailer='microcenter'`, `mc_product_id`, `sku=NULL`.
+- Insert 32 `item_stores` rows with `alert_enabled` matching the dropdown selection.
+- Background: immediately run a check (POST /api/items/:id/check-now) to populate `last_qoh` / `last_stock_status` for each store.
+
+### 21.8 Edit UI
+
+Same dropdown is editable post-creation. Toggling `alert_enabled` for a store does NOT clear its `last_*` state — only its notification gate. If a store was IN_STOCK and gets disabled, the user simply stops receiving its alerts; if re-enabled later, the next OOS→IN_STOCK transition fires normally.
+
+### 21.9 Discord notification payload (extends §8)
+
+For MC items, the per-store alert message format:
+
+```
+🟢 In stock at MicroCenter — {store_name}
+{product_name}
+Price: ${price}
+{link to PDP with ?storeid={store_number}}
+```
+
+Reminders use the same template with a "↻ Still in stock" header. The PDP URL with the firing store's `?storeid=` lets the user click straight to the per-store availability page.
+
+### 21.10 API routes (extends §10)
+
+- `POST /api/items` — body accepts either `{ url }` (parsed for retailer) or explicit `{ retailer, mcProductId, ... }`. For MC, body also includes `enabledStoreNumbers: string[]` (subset of the 32). Server hydrates `item_stores` rows.
+- `PATCH /api/items/:id` — accepts `enabledStoreNumbers` for MC items; diffs against current `item_stores.alert_enabled` and updates.
+- `GET /api/items/:id` — response includes `stores: [{storeNumber, storeName, qoh, lastStockStatus, alertEnabled, isOnline}]` for MC items.
+- `POST /api/items/:id/check-now` — works unchanged; runs `fetchMicroCenterProduct` instead of BB fetch when `retailer='microcenter'`.
+
+### 21.11 Tests (extends §16)
+
+New test files:
+
+- `microcenter-parse.test.ts` — golden-fixture parsing: feed a saved HTML snapshot, assert `{ stores, priceCents, name, imageUrl }`. Cover the in-stock fixture (MBA 708467) and the all-OOS fixture (Mac mini 688173).
+- `microcenter-url.test.ts` — URL parser cases (canonical, with trailing slug variations, malformed).
+- `checker.microcenter.test.ts` — state-machine: OOS→IN_STOCK fires per store; disabled store does not fire; reminder schedules respect per-store `last_notified_at`; missing store entry treated as OOS without erroring.
+- `notification.microcenter.test.ts` — payload includes correct `?storeid=` deep link and store name.
+
+### 21.12 Out of scope (Phase 2)
+
+- "Notify me when ANY of these N stores has stock" composite alerts (today: each store is independent).
+- Geo-distance store ranking in the dropdown.
+- Quantity-threshold alerts ("only alert if qoh ≥ 3").
+- MC's "Open Box" / "Refurbished" inventory — `var inventory` shows new-only.
+- Cart deep-links — MicroCenter has no public add-to-cart URL pattern, unlike BB. Alert links to PDP.

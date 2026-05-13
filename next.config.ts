@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "pisces.bbystatic.com",
         pathname: "/image2/BestBuy_US/images/products/**",
       },
+      {
+        protocol: "https",
+        hostname: "productimages.microcenter.com",
+        pathname: "/**",
+      },
     ],
   },
 };

@@ -5,16 +5,25 @@ import {
   integer,
   sqliteTable,
   text,
+  uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 
 /**
- * items — watchlist of Best Buy SKUs (SPEC §9)
+ * items — watchlist of products (SPEC §9, §21).
+ *
+ * `retailer` discriminates between Best Buy and MicroCenter. For BB,
+ * `sku` holds the numeric SKU and `mcProductId` is NULL. For MC, `sku`
+ * is NULL and `mcProductId` holds the 6-digit product ID from the URL.
+ * Per-retailer uniqueness is enforced via partial unique indexes below
+ * (`idx_items_bb_sku`, `idx_items_mc_pid`).
  */
 export const items = sqliteTable(
   'items',
   {
     id: integer('id').primaryKey({ autoIncrement: true }),
-    sku: text('sku').notNull().unique(),
+    retailer: text('retailer').notNull().default('bestbuy'),
+    sku: text('sku'),
+    mcProductId: text('mc_product_id'),
     name: text('name'),
     brand: text('brand'),
     imageUrl: text('image_url'),
@@ -65,6 +74,44 @@ export const items = sqliteTable(
   },
   (table) => [
     index('idx_items_due').on(table.enabled, table.nextCheckDueAt),
+    uniqueIndex('idx_items_bb_sku')
+      .on(table.sku)
+      .where(sql`${table.retailer} = 'bestbuy'`),
+    uniqueIndex('idx_items_mc_pid')
+      .on(table.mcProductId)
+      .where(sql`${table.retailer} = 'microcenter'`),
+  ],
+);
+
+/**
+ * item_stores — per-(item, store) state for MicroCenter items (SPEC §21.5, §21.6).
+ *
+ * Only populated for items where retailer='microcenter'. Each MC item gets
+ * ~32 rows on creation, one per known store. `alertEnabled` is the per-store
+ * opt-in toggle exposed in the UI. The state-machine fields mirror the §7
+ * shape but key on (itemId, storeNumber).
+ */
+export const itemStores = sqliteTable(
+  'item_stores',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    itemId: integer('item_id')
+      .notNull()
+      .references(() => items.id, { onDelete: 'cascade' }),
+    storeNumber: text('store_number').notNull(),
+    storeName: text('store_name').notNull(),
+    isOnline: integer('is_online').notNull().default(0),
+    alertEnabled: integer('alert_enabled').notNull().default(1),
+    lastQoh: integer('last_qoh'),
+    lastStockStatus: text('last_stock_status').notNull().default('UNKNOWN'),
+    lastInStockAt: integer('last_in_stock_at'),
+    lastNotifiedAt: integer('last_notified_at'),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_item_stores_item_store').on(table.itemId, table.storeNumber),
+    index('idx_item_stores_item').on(table.itemId),
   ],
 );
 
@@ -83,6 +130,9 @@ export const stockEvents = sqliteTable(
     buttonState: text('button_state'),
     priceCents: integer('price_cents'),
     message: text('message'),
+    // For MC per-store events, the store_number this event refers to.
+    // NULL for BB events and for item-level MC events (e.g. ERROR).
+    storeNumber: text('store_number'),
     ts: integer('ts').notNull(),
   },
   (table) => [
@@ -122,6 +172,8 @@ export const settings = sqliteTable(
 
 export type Item = typeof items.$inferSelect;
 export type NewItem = typeof items.$inferInsert;
+export type ItemStore = typeof itemStores.$inferSelect;
+export type NewItemStore = typeof itemStores.$inferInsert;
 export type StockEvent = typeof stockEvents.$inferSelect;
 export type NewStockEvent = typeof stockEvents.$inferInsert;
 export type WorkerHeartbeat = typeof workerHeartbeat.$inferSelect;

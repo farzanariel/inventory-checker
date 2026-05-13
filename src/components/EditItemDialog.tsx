@@ -1,8 +1,12 @@
 "use client";
 
 /**
- * EditItemDialog — change intervals + note for an existing item. Submits via
- * PATCH /api/items/:id.
+ * EditItemDialog — change alert config + note for an existing item. Submits
+ * via PATCH /api/items/:id.
+ *
+ * For MicroCenter items, also fetches per-store alert state via GET
+ * /api/items/:id (which returns the joined `stores` array) and renders the
+ * <McStorePicker> so the user can change which stores fire alerts.
  *
  * Renders as a centered <Dialog> on md+ and a bottom <Drawer> on mobile.
  *
@@ -12,7 +16,7 @@
  * different item is selected (no setState-in-effect needed).
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -42,9 +46,13 @@ import {
   StockAlertSection,
   type StockAlertValues,
 } from "@/components/StockAlertSection";
+import {
+  McStorePicker,
+  type McStoreOption,
+} from "@/components/McStorePicker";
 import { useIsDesktop } from "@/hooks/use-media-query";
-import { patchItem } from "@/lib/api";
-import type { Item } from "@/lib/db/schema";
+import { fetchItem, patchItem } from "@/lib/api";
+import type { Item, ItemStore } from "@/lib/db/schema";
 import { formatPrice } from "@/lib/format";
 
 type Props = {
@@ -82,12 +90,48 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // MicroCenter per-store state. Fetched lazily on mount for MC items.
+  const isMc = item.retailer === "microcenter";
+  const [mcStores, setMcStores] = useState<ItemStore[] | null>(null);
+  const [mcEnabledStores, setMcEnabledStores] = useState<Set<string>>(new Set());
+  const [mcLoading, setMcLoading] = useState(isMc);
+  const [mcError, setMcError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isMc) return;
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const full = await fetchItem(item.id, controller.signal);
+        const stores = full.stores ?? [];
+        setMcStores(stores);
+        setMcEnabledStores(
+          new Set(
+            stores.filter((s) => s.alertEnabled === 1).map((s) => s.storeNumber),
+          ),
+        );
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        const message =
+          err instanceof Error ? err.message : "Failed to load store list";
+        setMcError(message);
+      } finally {
+        if (!controller.signal.aborted) setMcLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [isMc, item.id]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
     setError(null);
     if (!stockAlert.enabled && !priceAlert.enabled) {
       setError("Enable stock alerts, price alerts, or both.");
+      return;
+    }
+    if (isMc && mcStores && mcEnabledStores.size === 0) {
+      setError("Pick at least one MicroCenter store to alert on.");
       return;
     }
     setSubmitting(true);
@@ -110,6 +154,9 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
         price_notify_mode: priceAlert.notifyMode,
         price_alert_while_oos: priceAlert.whileOos,
+        ...(isMc && mcStores
+          ? { enabled_store_numbers: [...mcEnabledStores] }
+          : {}),
       });
       toast.success("Saved changes");
       onSaved?.();
@@ -126,26 +173,44 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
   const FooterEl = submitSize === "lg" ? DrawerFooter : DialogFooter;
   const buttonHeight = submitSize === "lg" ? "h-11 active:scale-[0.98]" : "";
 
+  const mcOptions: McStoreOption[] | null = mcStores
+    ? mcStores.map((s) => ({
+        store_number: s.storeNumber,
+        store_name: s.storeName,
+        in_stock: s.lastStockStatus === "IN_STOCK",
+        qoh: s.lastQoh,
+      }))
+    : null;
+
+  const idLabel =
+    item.retailer === "microcenter"
+      ? `MC ${item.mcProductId}`
+      : `SKU ${item.sku}`;
+
   return (
     <form onSubmit={handleSubmit} className="contents">
-      <div className="flex min-w-0 max-w-full flex-col gap-4 overflow-hidden">
-        <div className="flex min-w-0 max-w-full gap-3 overflow-hidden rounded-lg border border-border bg-card px-3 py-2">
+      <div className="flex min-w-0 max-w-full flex-col gap-5 overflow-hidden">
+        <div className="flex min-w-0 max-w-full gap-3 overflow-hidden rounded-lg border border-[var(--surface-recessed-border)] bg-[var(--surface-recessed)] px-3 py-2.5">
           {item.imageUrl ? (
             <Image
               src={item.imageUrl}
-              alt={item.name ?? `SKU ${item.sku}`}
+              alt={item.name ?? idLabel}
               width={56}
               height={56}
+              unoptimized={item.retailer === "microcenter"}
               className="size-14 shrink-0 rounded-md border border-border bg-white object-contain p-1"
             />
           ) : null}
           <div className="min-w-0 flex flex-1 flex-col gap-1">
             <div className="flex min-w-0 items-start gap-2">
-              <span className="block min-w-0 flex-1 truncate text-sm" title={item.name ?? ""}>
+              <span
+                className="block min-w-0 flex-1 truncate text-sm font-medium"
+                title={item.name ?? ""}
+              >
                 {item.name ?? "—"}
               </span>
               <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
-                SKU {item.sku}
+                {idLabel}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
@@ -171,6 +236,29 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
             </a>
           </div>
         </div>
+
+        {isMc ? (
+          mcLoading ? (
+            <p className="font-mono text-xs text-muted-foreground">
+              Loading store list…
+            </p>
+          ) : mcError ? (
+            <p
+              className="font-mono text-xs"
+              style={{ color: "var(--color-status-error)" }}
+              role="status"
+            >
+              {mcError}
+            </p>
+          ) : mcOptions && mcOptions.length > 0 ? (
+            <McStorePicker
+              stores={mcOptions}
+              selected={mcEnabledStores}
+              onChange={setMcEnabledStores}
+              disabled={submitting}
+            />
+          ) : null
+        ) : null}
 
         <StockAlertSection
           idPrefix="edit"
@@ -241,11 +329,11 @@ export function EditItemDialog({ item, open, onOpenChange, onSaved }: Props) {
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit item</DialogTitle>
             <DialogDescription>
-              Adjust check + re-notify intervals or update the note.
+              Adjust alerts, intervals, or the note.
             </DialogDescription>
           </DialogHeader>
           {item ? (
@@ -268,7 +356,7 @@ export function EditItemDialog({ item, open, onOpenChange, onSaved }: Props) {
         <DrawerHeader>
           <DrawerTitle>Edit item</DrawerTitle>
           <DrawerDescription>
-            Adjust check + re-notify intervals or update the note.
+            Adjust alerts, intervals, or the note.
           </DrawerDescription>
         </DrawerHeader>
         {item ? (

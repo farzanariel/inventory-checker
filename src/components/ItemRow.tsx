@@ -210,30 +210,36 @@ export function ItemRow({ item, onChanged }: Props) {
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
-            alt={item.name ?? `SKU ${item.sku}`}
+            alt={item.name ?? (item.retailer === "microcenter" ? `MC ${item.mcProductId}` : `SKU ${item.sku}`)}
             width={40}
             height={40}
+            unoptimized={item.retailer === "microcenter"}
             className="size-10 shrink-0 rounded-md border border-border bg-white object-contain p-1"
           />
         ) : null}
 
         {/* main content — two lines */}
         <div className="min-w-0 flex-1">
-          {/* line 1 */}
+          {/* line 1 — spreadsheet-style columns on desktop. Fixed widths so price
+              right edges and status labels align vertically across every row. */}
           <div className="flex items-baseline gap-3">
             <span
-              className="truncate text-sm font-medium text-foreground"
+              className="min-w-0 flex-1 truncate text-sm font-medium text-foreground"
               title={item.name ?? `SKU ${item.sku}`}
             >
               {item.name ?? `SKU ${item.sku}`}
             </span>
-            {/* Desktop only: price + status pill on line 1, right-aligned. */}
-            <span className="ml-auto hidden md:flex items-baseline gap-1.5 font-mono text-sm tabular-nums text-foreground">
-              {priceLabel}
+            {/* Chip column — empty slot reserved so price column stays fixed. */}
+            <span className="hidden md:block w-20 text-right whitespace-nowrap overflow-hidden">
               {dropChip}
             </span>
+            {/* Price column — right-aligned fixed width. */}
+            <span className="hidden md:block w-24 text-right font-mono text-sm tabular-nums text-foreground whitespace-nowrap">
+              {priceLabel}
+            </span>
+            {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
             <span
-              className="hidden md:inline font-mono text-[11px] uppercase tracking-wider w-[5.5rem] text-right"
+              className="hidden md:block w-24 text-right font-mono text-[11px] uppercase tracking-wider whitespace-nowrap"
               style={{ color: badgeColorVar(item) }}
             >
               {badgeLabel(item)}

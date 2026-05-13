@@ -1,11 +1,17 @@
 "use client";
 
 /**
- * AddItemDialog — paste a Best Buy URL or raw SKU, configure intervals + note.
- * Submits to POST /api/items.
+ * AddItemDialog — paste a Best Buy / MicroCenter URL or raw SKU, configure
+ * alerts + note. Submits to POST /api/items.
  *
  * Renders as a centered <Dialog> on md+ and as a bottom <Drawer> on mobile so
  * the form sits at thumb-reach. Form internals are identical.
+ *
+ * Defaults (per UX requirement):
+ *  - stock alerts default OFF
+ *  - price alerts default ON
+ *  - after lookup, if the item is currently out of stock we flip stock ON
+ *    (price stays on; user can opt out)
  *
  * Controlled: parent owns open state.
  */
@@ -43,16 +49,35 @@ import {
   StockAlertSection,
   type StockAlertValues,
 } from "@/components/StockAlertSection";
+import {
+  McStorePicker,
+  type McStoreOption,
+} from "@/components/McStorePicker";
 import { useIsDesktop } from "@/hooks/use-media-query";
 import { createItem, lookupProduct, type ProductLookup } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
-import { looksResolvableBestBuyInput } from "@/lib/parse-input";
+import { looksResolvableProductInput } from "@/lib/parse-input";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdded?: () => void;
 };
+
+/**
+ * Is the looked-up product currently out of stock? Used to auto-enable the
+ * stock-alert toggle (since the user is almost certainly here to be pinged
+ * when it restocks).
+ *
+ * BBY: `purchasable === false` is the canonical OOS signal.
+ * MC : no in-stock store across the chain.
+ */
+function isLookupOutOfStock(lookup: ProductLookup): boolean {
+  if (lookup.retailer === "microcenter") {
+    return !lookup.stores.some((s) => s.in_stock);
+  }
+  return lookup.purchasable === false;
+}
 
 export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
   const isDesktop = useIsDesktop();
@@ -67,6 +92,9 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
   const [lookup, setLookup] = useState<ProductLookup | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  // MicroCenter only: which store_numbers are alert-enabled. Defaults to
+  // every store returned by the lookup. Reset whenever a new MC lookup lands.
+  const [mcEnabledStores, setMcEnabledStores] = useState<Set<string>>(new Set());
 
   function reset() {
     setInput("");
@@ -78,13 +106,14 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     setLookupError(null);
     setLookupLoading(false);
     setSubmitting(false);
+    setMcEnabledStores(new Set());
   }
 
   useEffect(() => {
     if (!open) return;
 
     const trimmed = input.trim();
-    if (!looksResolvableBestBuyInput(trimmed)) {
+    if (!looksResolvableProductInput(trimmed)) {
       return;
     }
 
@@ -95,6 +124,13 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
       try {
         const product = await lookupProduct(trimmed, controller.signal);
         setLookup(product);
+        if (product.retailer === "microcenter") {
+          setMcEnabledStores(new Set(product.stores.map((s) => s.store_number)));
+        }
+        // Smart defaults: flip stock alerts ON if currently OOS.
+        if (isLookupOutOfStock(product)) {
+          setStockAlert((prev) => ({ ...prev, enabled: true }));
+        }
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
         const message =
@@ -130,6 +166,12 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
         priceAlert.targetDollars.trim() !== "" && Number.isFinite(targetDollarsNum)
           ? Math.round(targetDollarsNum * 100)
           : undefined;
+      const isMc = lookup?.retailer === "microcenter";
+      if (isMc && mcEnabledStores.size === 0) {
+        setError("Pick at least one MicroCenter store to alert on.");
+        setSubmitting(false);
+        return;
+      }
       const created = await createItem({
         input: input.trim(),
         check_interval_min: Number.parseInt(stockAlert.checkIntervalMin, 10) || 1,
@@ -144,8 +186,12 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
         price_notify_mode: priceAlert.notifyMode,
         price_alert_while_oos: priceAlert.whileOos,
+        ...(isMc && { enabled_store_numbers: [...mcEnabledStores] }),
       });
-      toast.success(`Added: ${created.name ?? `SKU ${created.sku}`}`);
+      const idLabel = created.retailer === "microcenter"
+        ? (created.mcProductId ? `MC ${created.mcProductId}` : "MicroCenter item")
+        : `SKU ${created.sku ?? "?"}`;
+      toast.success(`Added: ${created.name ?? idLabel}`);
       onAdded?.();
       onOpenChange(false);
       // delay reset so closing animation runs against the still-filled form
@@ -158,9 +204,19 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
     }
   }
 
+  const mcOptions: McStoreOption[] | null =
+    lookup?.retailer === "microcenter"
+      ? lookup.stores.map((s) => ({
+          store_number: s.store_number,
+          store_name: s.store_name,
+          in_stock: s.in_stock,
+          qoh: s.qoh,
+        }))
+      : null;
+
   // Body — same form on every viewport. Wrapper differs.
   const formBody = (
-    <div className="flex min-w-0 flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-5">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="add-input">URL or SKU</Label>
         <Input
@@ -173,7 +229,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
             setLookupError(null);
             setLookupLoading(false);
           }}
-          placeholder="Paste a Best Buy URL or SKU"
+          placeholder="Paste a Best Buy or MicroCenter URL (or a BB SKU)"
           inputMode="text"
           autoCapitalize="off"
           autoCorrect="off"
@@ -185,25 +241,36 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
 
       {lookup || lookupLoading || lookupError ? (
         <div
-          className="overflow-hidden rounded-lg border border-border bg-card px-3 py-2"
+          className="overflow-hidden rounded-lg border border-[var(--surface-recessed-border)] bg-[var(--surface-recessed)] px-3 py-2.5"
           aria-live="polite"
         >
           {lookup ? (
             <div className="flex min-w-0 gap-3">
-              <Image
-                src={lookup.image_url}
-                alt={lookup.name}
-                width={56}
-                height={56}
-                className="size-14 shrink-0 rounded-md border border-border bg-white object-contain p-1"
-              />
+              {lookup.image_url ? (
+                <Image
+                  src={lookup.image_url}
+                  alt={lookup.name}
+                  width={56}
+                  height={56}
+                  // MC's image CDN is Cloudflare-gated against Next's
+                  // server-side image proxy. Browsers can usually still load
+                  // it directly (residential IP + standard headers), so skip
+                  // optimization for MC and let the client fetch raw.
+                  unoptimized={lookup.retailer === "microcenter"}
+                  className="size-14 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+                />
+              ) : (
+                <div className="size-14 shrink-0 rounded-md border border-border bg-muted" />
+              )}
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex min-w-0 items-start gap-2">
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">
                     {lookup.name}
                   </span>
                   <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
-                    SKU {lookup.sku}
+                    {lookup.retailer === "microcenter"
+                      ? `MC ${lookup.mc_product_id}`
+                      : `SKU ${lookup.sku}`}
                   </span>
                 </div>
                 <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
@@ -216,12 +283,14 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                   </span>
                   <span aria-hidden="true">·</span>
                   <span className="truncate">
-                    {lookup.button_state
-                      ? lookup.button_state.replaceAll("_", " ")
-                      : "stock pending"}
+                    {lookup.retailer === "microcenter"
+                      ? `${lookup.stores.filter((s) => s.in_stock).length}/${lookup.stores.length} stores in stock`
+                      : lookup.button_state
+                        ? lookup.button_state.replaceAll("_", " ")
+                        : "stock pending"}
                   </span>
                 </div>
-                {lookup.stock_source === "metadata-only" ? (
+                {lookup.retailer === "bestbuy" && lookup.stock_source === "metadata-only" ? (
                   <p className="font-mono text-[10px] leading-snug text-muted-foreground break-words">
                     Best Buy&apos;s pricing API doesn&apos;t index this SKU yet.
                     Item will be added now; price + stock fill in on the next worker check.
@@ -245,6 +314,15 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
             </p>
           ) : null}
         </div>
+      ) : null}
+
+      {mcOptions ? (
+        <McStorePicker
+          stores={mcOptions}
+          selected={mcEnabledStores}
+          onChange={setMcEnabledStores}
+          disabled={submitting}
+        />
       ) : null}
 
       <StockAlertSection
@@ -297,13 +375,13 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           if (!next) setTimeout(reset, 200);
         }}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <form onSubmit={handleSubmit} className="contents">
             <DialogHeader>
               <DialogTitle>Add item</DialogTitle>
               <DialogDescription>
-                Paste a Best Buy product URL or raw SKU. We will start checking
-                immediately.
+                Paste a Best Buy or MicroCenter product URL (or a Best Buy SKU).
+                We start checking immediately.
               </DialogDescription>
             </DialogHeader>
             {formBody}
@@ -345,8 +423,8 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           <DrawerHeader>
             <DrawerTitle>Add item</DrawerTitle>
             <DrawerDescription>
-              Paste a Best Buy product URL or raw SKU. We will start checking
-              immediately.
+              Paste a Best Buy or MicroCenter product URL (or a Best Buy SKU).
+              We start checking immediately.
             </DrawerDescription>
           </DrawerHeader>
           {formBody}

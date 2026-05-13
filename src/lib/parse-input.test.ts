@@ -1,9 +1,108 @@
 import { describe, test, expect, vi } from "vitest";
 import {
   parseUrlOrSku,
+  parseMicroCenterUrl,
+  parseProductInput,
   looksResolvableBestBuyInput,
+  looksResolvableProductInput,
   resolveSkuFromInput,
+  resolveProductInput,
 } from "./parse-input";
+
+describe("parseMicroCenterUrl", () => {
+  test("extracts productId from canonical PDP URL", () => {
+    expect(
+      parseMicroCenterUrl(
+        "https://www.microcenter.com/product/688173/apple-mac-mini-mu9d3ll-a-(late-2024)-desktop-computer",
+      ),
+    ).toEqual({ ok: true, mcProductId: "688173" });
+  });
+
+  test("http and no-www variants accepted", () => {
+    expect(parseMicroCenterUrl("http://microcenter.com/product/708467/foo")).toEqual({
+      ok: true,
+      mcProductId: "708467",
+    });
+  });
+
+  test("trailing slash / no slug still parses", () => {
+    expect(parseMicroCenterUrl("https://www.microcenter.com/product/688173/")).toEqual({
+      ok: true,
+      mcProductId: "688173",
+    });
+    expect(parseMicroCenterUrl("https://www.microcenter.com/product/688173")).toEqual({
+      ok: true,
+      mcProductId: "688173",
+    });
+  });
+
+  test("non-MC URL rejected", () => {
+    const r = parseMicroCenterUrl("https://www.bestbuy.com/product/sku/12345");
+    expect(r.ok).toBe(false);
+  });
+
+  test("bare numeric input rejected (would collide with BB)", () => {
+    const r = parseMicroCenterUrl("688173");
+    expect(r.ok).toBe(false);
+  });
+
+  test("non-string input rejected", () => {
+    // @ts-expect-error intentionally passing wrong type
+    expect(parseMicroCenterUrl(null).ok).toBe(false);
+  });
+});
+
+describe("parseProductInput (dispatcher)", () => {
+  test("MC URL routes to microcenter branch", () => {
+    expect(
+      parseProductInput("https://www.microcenter.com/product/688173/apple-mac-mini"),
+    ).toEqual({ ok: true, retailer: "microcenter", mcProductId: "688173" });
+  });
+
+  test("BB URL routes to bestbuy branch", () => {
+    expect(
+      parseProductInput("https://www.bestbuy.com/site/-/6587182.p?skuId=6587182"),
+    ).toEqual({ ok: true, retailer: "bestbuy", sku: "6587182" });
+  });
+
+  test("bare numeric routes to bestbuy", () => {
+    expect(parseProductInput("6587182")).toEqual({
+      ok: true,
+      retailer: "bestbuy",
+      sku: "6587182",
+    });
+  });
+
+  test("malformed MC URL returns MC error, not BB error", () => {
+    const r = parseProductInput("https://www.microcenter.com/category/foo");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatch(/MicroCenter/i);
+  });
+});
+
+describe("looksResolvableProductInput", () => {
+  test("accepts BB and MC URLs and bare SKU", () => {
+    expect(looksResolvableProductInput("https://www.microcenter.com/product/688173/x")).toBe(true);
+    expect(looksResolvableProductInput("6587182")).toBe(true);
+    expect(looksResolvableProductInput("https://www.bestbuy.com/product/foo/sku/6505727")).toBe(true);
+  });
+  test("rejects empty and unrelated", () => {
+    expect(looksResolvableProductInput("")).toBe(false);
+    expect(looksResolvableProductInput("https://amazon.com/dp/B0XYZ")).toBe(false);
+  });
+});
+
+describe("resolveProductInput", () => {
+  test("MC URL resolves synchronously without network fetch", async () => {
+    const fetchImpl = vi.fn();
+    const r = await resolveProductInput(
+      "https://www.microcenter.com/product/688173/apple-mac-mini",
+      { fetchImpl: fetchImpl as unknown as typeof fetch },
+    );
+    expect(r).toEqual({ ok: true, retailer: "microcenter", mcProductId: "688173" });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
 
 describe("parseUrlOrSku", () => {
   test("new URL format extracts SKU from /sku/ segment", () => {
