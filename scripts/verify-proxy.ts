@@ -73,7 +73,7 @@ async function main() {
   // Step 2: Sticky session check
   console.log("\n🔄 Step 2: Sticky session check");
   try {
-    const ips = [];
+    const ips: string[] = [];
     for (let i = 0; i < 3; i++) {
       const ip = execSync(
         `curl -x "${curlProxy}" -s --connect-timeout 10 --max-time 15 https://api.ipify.org`,

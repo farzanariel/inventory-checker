@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   // Playwright and its stealth/fingerprint dependencies are Node.js-only —
   // they use native binaries and can't be bundled by Turbopack/webpack.
   serverExternalPackages: [
+    "patchright",
+    "patchright-core",
     "playwright",
     "playwright-extra",
     "puppeteer-extra-plugin-stealth",
