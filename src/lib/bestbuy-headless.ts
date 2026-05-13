@@ -88,10 +88,26 @@ interface PoolState {
   warmedUp: boolean;
   proxyKey: string;
   headed: boolean;
+  /**
+   * Monotonically increasing generation number. Each call to scrapePdpForSku
+   * captures the generation at pool acquisition; if the generation changes
+   * under it (pool recycled by another concurrent call), the call can detect
+   * staleness and retry with a fresh reference instead of using a dying browser.
+   */
+  generation: number;
 }
 
 let poolState: PoolState | null = null;
 let poolInit: Promise<PoolState> | null = null;
+let generationCounter = 0;
+
+/**
+ * Browsers that have been recycled out of the active pool but may still have
+ * in-flight pages from concurrent scrapePdpForSku calls. We defer closing
+ * them until after the microtask queue settles so those pages can complete
+ * naturally instead of crashing with "browser has been closed".
+ */
+const drainingBrowsers: Browser[] = [];
 
 const MAX_CONTEXT_AGE_MS = 45 * 60 * 1000; // recycle before _abck rotates
 const MAX_FAILURE_STREAK = 3;
@@ -176,6 +192,7 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     warmedUp: false,
     proxyKey: opts.proxy ?? "",
     headed: !!opts.headed,
+    generation: 0, // overwritten by getPool's .then() handler
   };
 }
 
@@ -187,24 +204,50 @@ async function getPool(opts: HeadlessOptions): Promise<PoolState> {
       poolState.proxyKey !== (opts.proxy ?? "") ||
       poolState.headed !== !!opts.headed ||
       poolState.failureStreak >= MAX_FAILURE_STREAK;
-    if (stale) await closePool();
+    if (stale) {
+      // Don't close the old browser synchronously — concurrent calls may
+      // still have in-flight pages from this browser. Instead, drain it
+      // (will close asynchronously) and fall through to create a new pool.
+      drainingBrowsers.push(poolState.browser);
+      poolState = null;
+      poolInit = null;
+    }
   }
   if (poolState) return poolState;
   if (!poolInit) {
+    generationCounter += 1;
+    const gen = generationCounter;
     poolInit = buildContext(opts).then((state) => {
+      state.generation = gen;
       poolState = state;
       poolInit = null;
       return state;
     });
   }
-  return poolInit;
+  const pool = await poolInit;
+  // Sweep drained browsers after a microtask tick so in-flight pages
+  // from the old generation can close naturally before we tear down.
+  if (drainingBrowsers.length > 0) {
+    const toClose = drainingBrowsers.splice(0);
+    setImmediate(() => {
+      for (const b of toClose) b.close().catch(() => {});
+    });
+  }
+  return pool;
 }
 
 export async function closePool(): Promise<void> {
   const old = poolState;
   poolState = null;
   poolInit = null;
-  if (old) await old.browser.close().catch(() => {});
+  if (old) {
+    // Don't close synchronously — let in-flight pages finish first.
+    drainingBrowsers.push(old.browser);
+    const toClose = drainingBrowsers.splice(0);
+    setImmediate(() => {
+      for (const b of toClose) b.close().catch(() => {});
+    });
+  }
 }
 
 // ---------- Public API ----------
