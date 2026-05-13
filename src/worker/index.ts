@@ -17,7 +17,7 @@ import { and, asc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
 import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
 import { fetchProducts, isMissingFromPriceBlocks } from '@/lib/bestbuy';
-import { scrapePdpForSku } from '@/lib/bestbuy-headless';
+import { fetchProductsViaPdp } from '@/lib/bestbuy-pdp';
 import { applyCheckResult } from '@/lib/checker';
 import {
   fetchProductsViaTls,
@@ -30,18 +30,6 @@ const PRUNE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_BATCH_SIZE = 25;
 const WORKER_VERSION = process.env.WORKER_VERSION ?? 'dev';
 
-// Headless PDP scraper settings for the tick context.
-// A single 45s sequential call blocks the entire batch.
-// We run at most HEADLESS_CONCURRENCY calls in parallel,
-// each with a shorter timeout so one slow page doesn't
-// starve the tick loop.
-const HEADLESS_TIMEOUT_MS = 15_000;
-const HEADLESS_CONCURRENCY = 3;
-
-// Session warming (NEC-34): path to persisted browser storage state
-// (cookies + localStorage) so the _abck Akamai cookie survives
-// process restarts. Set BB_STORAGE_STATE in .env to enable.
-const STORAGE_STATE_PATH = process.env.BB_STORAGE_STATE ?? '';
 
 let shouldStop = false;
 let lastPruneAt = 0;
@@ -195,33 +183,22 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     }
   }
 
-  // --- Layer 2: Headless PDP scraper ---
+  // --- Layer 2: PDP proxy scraper (NEC-44) ---
   // For SKUs that the priceBlocks index doesn't carry (newer-catalog items
-  // like 6663816) OR that exceeded the TLS 403 budget, fall back to the
-  // headless PDP scraper. One slow page (default 45s timeout) must not
-  // block the entire batch, so we run up to HEADLESS_CONCURRENCY calls
-  // concurrently with a shorter timeout.
-  const headlessSkus = skus.filter((sku) => {
+  // like 6663816) OR that exceeded the TLS 403 budget, fall back to a
+  // residential-proxy curl scrape of the product page. Concurrency is
+  // managed internally by fetchProductsViaPdp (MAX_CONCURRENT=2).
+  const pdpSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
     return (
       r && !r.ok && (isMissingFromPriceBlocks(r.error) || needsHeadlessFallback(r.error))
     );
   });
-  if (headlessSkus.length > 0) {
-    const results = await runConcurrent(
-      headlessSkus,
-      HEADLESS_CONCURRENCY,
-      async (sku) => {
-        const result = await scrapePdpForSku(sku, {
-          timeoutMs: HEADLESS_TIMEOUT_MS,
-          storageStatePath: STORAGE_STATE_PATH || undefined,
-        });
-        return { sku, result };
-      },
-    );
-    for (const { sku, result } of results) {
+  if (pdpSkus.length > 0) {
+    const pdpMap = await fetchProductsViaPdp(pdpSkus);
+    for (const [sku, result] of pdpMap) {
       if (result.ok) {
-        console.log(`[worker] sku=${sku} fetch_path=headless`);
+        console.log(`[worker] sku=${sku} fetch_path=pdp_proxy`);
       }
       fetchMap.set(sku, result);
     }
