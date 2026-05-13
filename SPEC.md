@@ -15,6 +15,7 @@
 - **v4 (2026-05-11):** Added §19 Price Change Alerts (NEC-10). Schema gains 10 columns on `items` for per-item price-alert config + baseline + stale-price guard. `stock_events.status` gains `'PRICE_DROP'`. §9.1 retention table extended to include `PRICE_DROP` (significant event) and document `NOTIFIED` rows (already in code, now formalized). §16 test list adds three new test files. §18 backlog moves "Price drop alerts" out (shipped) and adds the `'any'` direction toggle + open-box price tracking as new phase-2 items. CEO confirmation accepted 2026-05-11 (NEC-10 interaction `e6bb58f2-3f0b…`); Codex round-1 review (NEC-12) `approve-with-edits` folded in: baseline-update decision table, sharpened stale-price guard, `'any'` direction dropped from v1 scope.
 - **v3 (2026-05-10):** Codex round-2 patches applied. §6.4 clarifies we use `buttonState`, not `purchasable` (and SKU 6587182 currently maps to OUT_OF_STOCK, not IN_STOCK). §7.4 renamed delivery contract from "at-least-once" to "best-effort with reminder recovery" — true at-least-once needs an outbox (Phase 2). §7.5 rewritten so the Best Buy fetch happens BEFORE the SQLite write lock; transaction scope is now read-decide-write only. Added `PRAGMA busy_timeout`. §13/§7 split into `fetchProducts(skus[])` (pure HTTP) and `applyCheckResult(itemId, result)` (DB transaction) so batching and check-now share one transactional path. §9 added explicit retention semantics for `stock_events` — transitions, errors, and notification attempts only, NOT every poll. §16 manual verification corrected for SKU 6587182's actual current state.
 - **v2 (2026-05-10):** Codex round-1 review incorporated. §6 rewritten with proven endpoint. §7 notification state machine clarified (UNKNOWN handling, concurrency, delivery contract). §9 data model split status into stock vs health. §10 added URL parser for both formats. §14/§15 softened proxy language; documented TLS-fingerprint dependency. Added worker heartbeat. Added tests section. Project-local CLAUDE.md overrides global Vercel/Supabase preset.
+- **v7 (2026-05-12, NEC-34):** Added §20 Headless Browser Pipeline (Akamai bypass). Switched from playwright-extra + puppeteer-extra-plugin-stealth to patchright (Playwright fork with sensor-evading patches). Added session warming (visit bestbuy.com homepage → wait for _abck → persist storage state). Documented proxy credentials in §15 deployment.
 
 ---
 
@@ -538,8 +539,9 @@ inventory-checker/
 - **Updating:** `git pull && npm install && npm run build && pm2 reload all`.
 - **Best Buy starts blocking:** First sign is sustained 403/429 across multiple items (check `consecutive_errors` aggregate). Mitigation:
   1. Increase intervals (less aggressive polling).
-  2. Drop in proxies (env var `BESTBUY_PROXIES`, format pasted by user later).
-  3. Last resort: switch to Best Buy's official Products API (free key, requires registration, "near-real-time" updates — slower than the unofficial endpoint but reliable).
+  2. Drop in proxies (env var `BB_PROXY`, format `host:port:user:pass`).
+  3. Enable headless fallback (already in place for newer-catalog SKUs; depends on patchright + session warming, see §20).
+  4. Last resort: switch to Best Buy's official Products API (free key, requires registration, "near-real-time" updates — slower than the unofficial endpoint but reliable).
 - **Discord webhook fails:** retry once at 30s; if still fails, log + show "notifications degraded" badge in UI; stock detection continues unaffected.
 - **Time zones:** all timestamps stored as unix ms UTC, formatted client-side.
 
@@ -554,6 +556,9 @@ inventory-checker/
 | Worker dies and pm2 fails to restart | `/api/health` exposes worker heartbeat freshness; user can monitor externally (UptimeRobot) — Phase 2 |
 | First alert lost between DB commit and webhook fire (§7.4) | Reminder loop provides natural recovery within `restock_notify_interval_sec` |
 | Image CDN pattern changes | Fall back to scraping the canonical product page for `og:image` (Phase 2) |
+| Proxy credentials leak | `.env` is gitignored; `BB_PROXY` and `BB_STORAGE_STATE` are runtime env vars never checked in |
+| Residential proxy IP blocked by Best Buy | Provider rotates exit IPs; sticky session per SKU prevents mid-session IP change; fall back to a different provider if needed |
+| Session-warmed storage state goes stale | `_abck` cookie expires ~1hr; context auto-recycles; stale state → warm-up re-run automatically on next check
 
 ## 16. Tests (per Codex round-1)
 
@@ -707,3 +712,71 @@ Direction toggle (`'any'`) is omitted from v1 UI per §18 phase-2 deferral.
 > - Anything new I'm missing now that the endpoint is proven?
 >
 > Be blunt. If the design is shippable, say so plainly.
+
+## 20. Headless Browser Pipeline (Akamai Bypass)
+
+Issue: [NEC-34](/NEC/issues/NEC-34). Required because newer-catalog SKUs return `ProductNotFoundException` from the priceBlocks endpoint (§6) and must be scraped from the PDP via a full browser.
+
+### 20.1 Stack
+
+- **patchright** (Playwright fork v1.59.4+) — includes sensor-evading patches baked into the browser runtime (`runtime.enable`, `navigator.webdriver`, WebGL/canvas, plugins, permissions). Replaces playwright-extra + puppeteer-extra-plugin-stealth.
+- **fingerprint-generator** + **fingerprint-injector** — per-session browser fingerprint diversity (user-agent, viewport, WebGL, canvas).
+- **Residential proxy** — IPRoyal, NetNut, SOAX, or Bright Data (~$10/mo). Required for SKUs where the VPS's datacenter IP triggers the full Akamai challenge page.
+
+### 20.2 Pipeline (stealth launch → proxy → warm session → PDP scrape)
+
+```
+1. chromium.launch(patchright, { proxy })       — patchright browser with sensor patches
+2. browser.newContext({ fingerprint })            — diversified UA + viewport + canvas
+3. fpInjector.attachFingerprintToPlaywright()     — inject remaining fingerprint spoofs
+4. warmSession(bestbuy.com homepage)              — let sensor.js complete → _abck cookie planted
+5. page.goto(`/site/-/${sku}.p`)                  — PDP with pre-warmed Akamai session
+6. waitForSelector([data-testid$="-{sku}"])      — truth signal (buy button rendered)
+7. page.evaluate(JSON-LD extraction)              — name, price, buttonState
+8. persist storageState to disk                   — survive process restarts
+```
+
+### 20.3 Session warming (`warmSession()`)
+
+Visit `https://www.bestbuy.com/` first, wait for `document.cookie` to contain a valid `_abck` value (starts with a digit — Akamai's signal that the sensor.js challenge passed). This plants the three Akamai cookies (`_abck`, `bm_sz`, `ak_bmsc`) in the browser context.
+
+Storage state (cookies + localStorage) is persisted to disk via `context.storageState()`. On the next worker start or context recycle, the state is loaded via `browser.newContext({ storageState })`, skipping the 10–20s warm-up. The session is re-warmed after 30 minutes (`SESSION_WARMUP_EXPIRY_MS`) or if _abck expires (~1hr Akamai default).
+
+### 20.4 Proxy configuration
+
+Proxy credentials are stored in `.env`:
+
+```env
+BB_PROXY=host:port:username:password
+BB_STORAGE_STATE=/root/inventory-checker/data/storage-state.json
+```
+
+`BB_PROXY` format: `host:port` for unauthenticated, or `host:port:user:pass` for authenticated. Parsed and plumbed through patchright's `proxy` launch option.
+
+### 20.5 Settings in `bestbuy-headless.ts`
+
+| Env var | Default | Description |
+|---|---|---|
+| `BB_PROXY` | (none) | Residential proxy in `host:port:user:pass` format |
+| `BB_STORAGE_STATE` | (none) | Path to persist browser storage state for session warming |
+| `BB_HEADLESS_TRACE` | `0` | Set to `1` for per-SKU timing traces |
+| `BB_HEADLESS_DEBUG` | `0` | Set to `1` to dump PDP HTML to `/tmp/bb-pdp-{sku}.html` |
+
+### 20.6 Resource blocking
+
+80%+ of Best Buy PDP bytes are unnecessary (images, fonts, stylesheets, analytics). Blocked types:
+
+- Resource types: `image`, `media`, `font`, `stylesheet`
+- Host substrings: `google-analytics.com`, `googletagmanager.com`, `doubleclick.net`, `facebook.net`, `criteo.com`, `adsrvr.org`, `scorecardresearch.com`, `newrelic.com`, `nr-data.net`, `demdex.net`, `everesttech.net`, `branch.io`, `rfihub.com`
+
+### 20.7 Context lifecycle
+
+- Long-lived browser + context per process (reused across ticks).
+- Recycled after 45 minutes (`MAX_CONTEXT_AGE_MS`) or 3 consecutive failures (`MAX_FAILURE_STREAK`).
+- Old browser is drained asynchronously (closed on next `setImmediate`) so in-flight pages from concurrent calls complete naturally.
+- Up to 3 headless calls run concurrently (`HEADLESS_CONCURRENCY`) with a 15s per-SKU timeout.
+
+### 20.8 Out of scope
+
+- TLS-impersonation HTTP client (sibling [NEC-33](/NEC/issues/NEC-33)).
+- Notification / UI changes — purely a fetcher upgrade.

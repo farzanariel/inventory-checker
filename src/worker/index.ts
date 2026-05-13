@@ -19,6 +19,10 @@ import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
 import { fetchProducts, isMissingFromPriceBlocks } from '@/lib/bestbuy';
 import { scrapePdpForSku } from '@/lib/bestbuy-headless';
 import { applyCheckResult } from '@/lib/checker';
+import {
+  fetchProductsViaTls,
+  needsHeadlessFallback,
+} from '@/lib/bestbuy-tls';
 
 const TICK_MS = 1000;
 const PRUNE_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
@@ -33,6 +37,11 @@ const WORKER_VERSION = process.env.WORKER_VERSION ?? 'dev';
 // starve the tick loop.
 const HEADLESS_TIMEOUT_MS = 15_000;
 const HEADLESS_CONCURRENCY = 3;
+
+// Session warming (NEC-34): path to persisted browser storage state
+// (cookies + localStorage) so the _abck Akamai cookie survives
+// process restarts. Set BB_STORAGE_STATE in .env to enable.
+const STORAGE_STATE_PATH = process.env.BB_STORAGE_STATE ?? '';
 
 let shouldStop = false;
 let lastPruneAt = 0;
@@ -158,20 +167,56 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   const skus = dueItems.map((i) => i.sku);
   const fetchMap = await fetchProducts(skus);
 
-  // For SKUs that the priceBlocks index doesn't carry (newer-catalog items like
-  // 6663816), fall back to the headless PDP scraper. One slow page (default
-  // 45s timeout) must not block the entire batch, so we run up to
-  // HEADLESS_CONCURRENCY calls concurrently with a shorter timeout.
+  // --- Layer 1: TLS-impersonating HTTP client ---
+  // For SKUs that failed via undici (non-missing errors like 403/timeout),
+  // retry using the curl-impersonate wrapper which presents a Chrome 116
+  // JA3 fingerprint and full header set. This bypasses Akamai's TLS-level
+  // blocking without running a full browser.
+  const tlsFallbackSkus = skus.filter((sku) => {
+    const r = fetchMap.get(sku);
+    return (
+      r &&
+      !r.ok &&
+      !isMissingFromPriceBlocks(r.error) &&
+      !needsHeadlessFallback(r.error)
+    );
+  });
+  if (tlsFallbackSkus.length > 0) {
+    const tlsMap = await fetchProductsViaTls(tlsFallbackSkus);
+    for (const [sku, result] of tlsMap) {
+      if (result.ok) {
+        fetchMap.set(sku, result);
+      } else if (needsHeadlessFallback(result.error)) {
+        // Keep the original error in fetchMap — headless will pick it up
+        // below. But update the error to indicate TLS was exhausted.
+        // Don't overwrite because undici's original error is more useful.
+      } else {
+        // TLS failed with a non-403 error — keep the original undici error.
+      }
+    }
+  }
+
+  // --- Layer 2: Headless PDP scraper ---
+  // For SKUs that the priceBlocks index doesn't carry (newer-catalog items
+  // like 6663816) OR that exceeded the TLS 403 budget, fall back to the
+  // headless PDP scraper. One slow page (default 45s timeout) must not
+  // block the entire batch, so we run up to HEADLESS_CONCURRENCY calls
+  // concurrently with a shorter timeout.
   const headlessSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
-    return r && !r.ok && isMissingFromPriceBlocks(r.error);
+    return (
+      r && !r.ok && (isMissingFromPriceBlocks(r.error) || needsHeadlessFallback(r.error))
+    );
   });
   if (headlessSkus.length > 0) {
     const results = await runConcurrent(
       headlessSkus,
       HEADLESS_CONCURRENCY,
       async (sku) => {
-        const result = await scrapePdpForSku(sku, { timeoutMs: HEADLESS_TIMEOUT_MS });
+        const result = await scrapePdpForSku(sku, {
+          timeoutMs: HEADLESS_TIMEOUT_MS,
+          storageStatePath: STORAGE_STATE_PATH || undefined,
+        });
         return { sku, result };
       },
     );

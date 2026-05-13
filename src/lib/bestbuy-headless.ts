@@ -3,10 +3,23 @@
  * priceBlocks endpoint doesn't index (newer-catalog items return
  * `ProductNotFoundException`).
  *
- * Stack mirrors the chatter project: playwright-extra + stealth +
- * Apify fingerprint generator + residential proxy. Real Chromium so
- * Akamai Bot Manager's sensor-data challenge runs and plants
- * `_abck`/`bm_sz`/`ak_bmsc` cookies in the context.
+ * Stack uses **patchright** — a Playwright fork with sensor-evading
+ * patches baked into the browser runtime (patches runtime.enable,
+ * navigator.webdriver, WebGL/canvas, plugins, permissions) so the
+ * browser passes Akamai Bot Manager's sensor-data challenge.
+ *
+ * Three-component strategy (NEC-34):
+ *
+ *   1. Stealth browser — patchright replaces playwright-extra +
+ *      puppeteer-extra-plugin-stealth. The patches live in the
+ *      browser binary itself, not in a JS layer that can be detected.
+ *   2. Residential proxy — plumbed through patchright's `proxy`
+ *      launch option. Sticky session per SKU via proxy auth.
+ *   3. Session warming — visit `https://www.bestbuy.com/` first,
+ *      wait for sensor.js to complete and `_abck` cookie to be marked
+ *      valid. Persist all storage state (cookies + localStorage) per
+ *      residential session. Reuse across consecutive SKU checks until
+ *      cookies expire (Akamai _abck typically lives ~1hr).
  *
  * Performance notes (the reason this file is more than 50 lines):
  *
@@ -24,11 +37,8 @@
  *     a configurable max-age, in case Akamai rotates `_abck` mid-session.
  */
 
-import { chromium } from "playwright-extra";
-import type { Browser, BrowserContext, Route } from "playwright";
-// puppeteer-extra-plugin-stealth ships its own .d.ts in newer versions, but
-// the type for the default export is loose; we use it dynamically below.
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { chromium } from "patchright";
+import type { Browser, BrowserContext, Route } from "patchright";
 import {
   FingerprintGenerator,
   type BrowserFingerprintWithHeaders,
@@ -36,8 +46,6 @@ import {
 import { FingerprintInjector } from "fingerprint-injector";
 
 import type { ProductResult } from "./bestbuy";
-
-chromium.use(StealthPlugin());
 
 const fpGenerator = new FingerprintGenerator({
   browsers: [{ name: "chrome", minVersion: 128 }],
@@ -55,6 +63,14 @@ export interface HeadlessOptions {
   timeoutMs?: number;
   /** Force headed Chromium (debugging only). */
   headed?: boolean;
+  /** Path to a storage state file to load (session warming). If set,
+   * the warmed cookies + localStorage are applied to the context on
+   * creation instead of doing a fresh warm-up. */
+  storageStatePath?: string;
+  /** Force a fresh warm-up even if warmed state exists. */
+  forceWarmup?: boolean;
+  /** Session warming timeout (default 30s). */
+  warmupTimeoutMs?: number;
 }
 
 interface ParsedProxy {
@@ -88,6 +104,11 @@ interface PoolState {
   warmedUp: boolean;
   proxyKey: string;
   headed: boolean;
+  /** Storage state path used for this context. Empty string if no
+   * persistence was configured. */
+  storageStatePath: string;
+  /** When warming was last done (0 if never). */
+  lastWarmupAt: number;
   /**
    * Monotonically increasing generation number. Each call to scrapePdpForSku
    * captures the generation at pool acquisition; if the generation changes
@@ -111,6 +132,7 @@ const drainingBrowsers: Browser[] = [];
 
 const MAX_CONTEXT_AGE_MS = 45 * 60 * 1000; // recycle before _abck rotates
 const MAX_FAILURE_STREAK = 3;
+const SESSION_WARMUP_EXPIRY_MS = 30 * 60 * 1000; // re-warm after 30min
 const BLOCKED_RESOURCE_TYPES = new Set(["image", "media", "font", "stylesheet"]);
 const BLOCKED_HOST_SUBSTRINGS = [
   "google-analytics.com",
@@ -133,6 +155,7 @@ const BLOCKED_HOST_SUBSTRINGS = [
 async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
   const proxy = opts.proxy ? parseProxy(opts.proxy) : undefined;
   const fp: BrowserFingerprintWithHeaders = fpGenerator.getFingerprint();
+  const storageStatePath = opts.storageStatePath ?? "";
 
   const browser = await chromium.launch({
     headless: !opts.headed,
@@ -144,7 +167,7 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     ],
   });
 
-  const context = await browser.newContext({
+  let contextOptions: Parameters<typeof browser.newContext>[0] = {
     userAgent: fp.fingerprint.navigator.userAgent,
     viewport: {
       width: fp.fingerprint.screen.width,
@@ -153,9 +176,20 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     locale: "en-US",
     timezoneId: "America/New_York",
     bypassCSP: true,
-  });
+  };
 
-  await fpInjector.attachFingerprintToPlaywright(context, fp);
+  // Load warmed storage state if available and not forcing a refresh.
+  if (storageStatePath && !opts.forceWarmup) {
+    const fs = await import("node:fs/promises");
+    try {
+      await fs.access(storageStatePath);
+      contextOptions.storageState = storageStatePath;
+    } catch {
+      // No saved state — will warm up fresh below.
+    }
+  }
+
+  const context = await browser.newContext(contextOptions);
 
   // tsx/esbuild compiles TS with a `__name(fn, "name")` helper; define
   // it as a no-op on every page so evaluated code doesn't ReferenceError.
@@ -184,6 +218,12 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     void route.continue();
   });
 
+  // Apply fingerprint AFTER route setup so the injector works properly.
+  // patchright is a Playwright fork with identical runtime API; cast is
+  // needed because fingerprint-injector's types reference playwright-core
+  // types that aren't structurally identical to patchright's patched types.
+  await fpInjector.attachFingerprintToPlaywright(context as never, fp);
+
   return {
     browser,
     context,
@@ -192,6 +232,8 @@ async function buildContext(opts: HeadlessOptions): Promise<PoolState> {
     warmedUp: false,
     proxyKey: opts.proxy ?? "",
     headed: !!opts.headed,
+    storageStatePath,
+    lastWarmupAt: 0,
     generation: 0, // overwritten by getPool's .then() handler
   };
 }
@@ -205,9 +247,6 @@ async function getPool(opts: HeadlessOptions): Promise<PoolState> {
       poolState.headed !== !!opts.headed ||
       poolState.failureStreak >= MAX_FAILURE_STREAK;
     if (stale) {
-      // Don't close the old browser synchronously — concurrent calls may
-      // still have in-flight pages from this browser. Instead, drain it
-      // (will close asynchronously) and fall through to create a new pool.
       drainingBrowsers.push(poolState.browser);
       poolState = null;
       poolInit = null;
@@ -241,13 +280,92 @@ export async function closePool(): Promise<void> {
   poolState = null;
   poolInit = null;
   if (old) {
-    // Don't close synchronously — let in-flight pages finish first.
     drainingBrowsers.push(old.browser);
     const toClose = drainingBrowsers.splice(0);
     setImmediate(() => {
       for (const b of toClose) b.close().catch(() => {});
     });
   }
+}
+
+// ---------- Session warming ----------
+
+/**
+ * Visit the Best Buy homepage to trigger Akamai's sensor-data challenge
+ * (sensor.js), then wait until `_abck` cookie is present and valid.
+ *
+ * This plants the Akamai cookies (`_abck`, `bm_sz`, `ak_bmsc`) in the
+ * browser context so subsequent PDP page loads skip the 10–20s sensor
+ * solve and load immediately.
+ *
+ * If `storageStatePath` is set, the full storage state (cookies +
+ * localStorage) is persisted to disk after warming so it can be reused
+ * across process restarts without doing a fresh warm-up.
+ *
+ * Returns `true` if warming succeeded, `false` if it failed.
+ */
+export async function warmSession(
+  context: BrowserContext,
+  storageStatePath?: string,
+  timeoutMs: number = 30_000,
+): Promise<boolean> {
+  const page = await context.newPage();
+  page.setDefaultTimeout(timeoutMs);
+  page.setDefaultNavigationTimeout(timeoutMs);
+
+  try {
+    console.log("[warming] visiting bestbuy.com to trigger sensor.js…");
+    await page.goto("https://www.bestbuy.com/", { waitUntil: "domcontentloaded" });
+
+    // Wait for the page to settle — Akamai sensor.js runs asynchronously
+    // after page load and plants `_abck` cookie once the challenge passes.
+    // We wait up to timeoutMs for the cookie to appear and look valid.
+    const abckPresent = await page.waitForFunction(() => {
+      const match = document.cookie.match(/(?:^|;\s*)_abck=([^;]+)/);
+      if (!match) return false;
+      // _abck values that don't start with digits are "pending" or
+      // "failed" markers. A value starting with `\d+` suggests it's
+      // a real challenge-passed token. (Akamai internal format varies.)
+      return /^\d/.test(match[1]);
+    }, { timeout: timeoutMs }).then(() => true).catch(() => false);
+
+    if (!abckPresent) {
+      console.log("[warming] _abck cookie not detected — challenge may not have completed");
+      // Still try to persist whatever state we have — partial state is
+      // better than none, and some SKUs may still work.
+    } else {
+      console.log("[warming] _abck cookie detected — sensor challenge passed");
+    }
+
+    // Persist storage state if a path is configured.
+    if (storageStatePath) {
+      const fs = await import("node:fs/promises");
+      const dir = storageStatePath.substring(0, storageStatePath.lastIndexOf("/"));
+      if (dir) {
+        await fs.mkdir(dir, { recursive: true });
+      }
+      const state = await context.storageState();
+      await fs.writeFile(storageStatePath, JSON.stringify(state, null, 2));
+      console.log(`[warming] storage state persisted to ${storageStatePath}`);
+    }
+
+    return abckPresent;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "unknown error";
+    console.log(`[warming] session warming failed: ${message}`);
+    return false;
+  } finally {
+    await page.close().catch(() => {});
+  }
+}
+
+/**
+ * Check whether a warmed session needs refreshing.
+ */
+function isWarmupStale(pool: PoolState): boolean {
+  if (!pool.warmedUp) return true;
+  if (pool.lastWarmupAt === 0) return true;
+  return Date.now() - pool.lastWarmupAt > SESSION_WARMUP_EXPIRY_MS;
 }
 
 // ---------- Public API ----------
@@ -259,9 +377,28 @@ export async function scrapePdpForSku(
   const resolved: HeadlessOptions = {
     ...options,
     proxy: options.proxy ?? process.env.BB_PROXY ?? undefined,
+    storageStatePath:
+      options.storageStatePath ??
+      process.env.BB_STORAGE_STATE ??
+      undefined,
   };
   const timeoutMs = resolved.timeoutMs ?? 45_000;
   const pool = await getPool(resolved);
+
+  // Warm the session if needed (first time or stale).
+  if (isWarmupStale(pool) || resolved.forceWarmup) {
+    const warmOk = await warmSession(
+      pool.context,
+      pool.storageStatePath || undefined,
+      resolved.warmupTimeoutMs ?? 30_000,
+    );
+    pool.warmedUp = true;
+    pool.lastWarmupAt = Date.now();
+    if (!warmOk) {
+      console.log(`[hl ${sku}] warm-up did not confirm _abck — proceeding anyway`);
+    }
+  }
+
   const page = await pool.context.newPage();
   page.setDefaultTimeout(timeoutMs);
   page.setDefaultNavigationTimeout(timeoutMs);
@@ -394,7 +531,6 @@ export async function scrapePdpForSku(
 
     log("extracted");
     pool.failureStreak = 0;
-    pool.warmedUp = true;
     const result: ProductResult = {
       ok: true,
       sku,
@@ -405,6 +541,20 @@ export async function scrapePdpForSku(
       canonicalUrl: ld?.url ?? extracted.url,
     };
     if (brand) result.brand = brand;
+
+    // Persist storage state after a successful scrape so warmed cookies
+    // survive process restarts and don't need a fresh warm-up.
+    if (pool.storageStatePath && !resolved.forceWarmup) {
+      const state = await pool.context.storageState();
+      const fs = await import("node:fs/promises");
+      const fsPath = pool.storageStatePath;
+      const dir = fsPath.substring(0, fsPath.lastIndexOf("/"));
+      if (dir) {
+        await fs.mkdir(dir, { recursive: true });
+      }
+      await fs.writeFile(fsPath, JSON.stringify(state, null, 2)).catch(() => {});
+    }
+
     return result;
   } catch (err) {
     pool.failureStreak += 1;
