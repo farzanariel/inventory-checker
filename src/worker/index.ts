@@ -26,11 +26,43 @@ const PRUNE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_BATCH_SIZE = 25;
 const WORKER_VERSION = process.env.WORKER_VERSION ?? 'dev';
 
+// Headless PDP scraper settings for the tick context.
+// A single 45s sequential call blocks the entire batch.
+// We run at most HEADLESS_CONCURRENCY calls in parallel,
+// each with a shorter timeout so one slow page doesn't
+// starve the tick loop.
+const HEADLESS_TIMEOUT_MS = 15_000;
+const HEADLESS_CONCURRENCY = 3;
+
 let shouldStop = false;
 let lastPruneAt = 0;
 let quietTickCount = 0;
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/**
+ * Run `fn` over `items` with at most `concurrency` promises in-flight.
+ * Returns results in input order.
+ */
+async function runConcurrent<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+  let i = 0;
+
+  async function worker(): Promise<void> {
+    while (i < items.length) {
+      const idx = i++;
+      results[idx] = await fn(items[idx]);
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
 
 function installSignalHandlers() {
   const onSignal = (sig: string) => {
@@ -127,14 +159,25 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   const fetchMap = await fetchProducts(skus);
 
   // For SKUs that the priceBlocks index doesn't carry (newer-catalog items like
-  // 6663816), fall back to the headless PDP scraper one at a time.
+  // 6663816), fall back to the headless PDP scraper. One slow page (default
+  // 45s timeout) must not block the entire batch, so we run up to
+  // HEADLESS_CONCURRENCY calls concurrently with a shorter timeout.
   const headlessSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
     return r && !r.ok && isMissingFromPriceBlocks(r.error);
   });
-  for (const sku of headlessSkus) {
-    const headlessResult = await scrapePdpForSku(sku);
-    fetchMap.set(sku, headlessResult);
+  if (headlessSkus.length > 0) {
+    const results = await runConcurrent(
+      headlessSkus,
+      HEADLESS_CONCURRENCY,
+      async (sku) => {
+        const result = await scrapePdpForSku(sku, { timeoutMs: HEADLESS_TIMEOUT_MS });
+        return { sku, result };
+      },
+    );
+    for (const { sku, result } of results) {
+      fetchMap.set(sku, result);
+    }
   }
 
   let errorCount = 0;

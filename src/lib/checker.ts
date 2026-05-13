@@ -415,12 +415,37 @@ function errorDecision(
   item: Item,
   errorMessage: string,
   now: number,
-  nextCheckDueAt: number,
 ): DecisionOutput {
   const newConsecutive = item.consecutiveErrors + 1;
   let healthStatus = item.healthStatus;
   if (newConsecutive >= 5) healthStatus = "ERROR";
   else if (newConsecutive >= 3) healthStatus = "DEGRADED";
+
+  // Invalidate stock status when errors persist past the ERROR threshold.
+  // Prevents dashboard from showing stale IN_STOCK when scraper is broken.
+  const invalidateStock = newConsecutive >= 5;
+
+  // --- Exponential backoff ---
+  // After 3 consecutive errors, multiply the check interval so broken SKUs
+  // don't get hammered every tick. At 10+, auto-disable entirely.
+  //   errors 1-2: normal interval
+  //   errors 3-4:  2x interval
+  //   errors 5-6:  4x
+  //   errors 7-8:  8x
+  //   errors 9+:  16x (capped so we never exceed ~16h for interval=1)
+  const AUTO_DISABLE_THRESHOLD = 10;
+  const autoDisable = newConsecutive >= AUTO_DISABLE_THRESHOLD;
+
+  let nextCheckDueAt: number;
+  if (autoDisable) {
+    // Push 7 days out — effectively dead unless someone re-enables manually.
+    nextCheckDueAt = now + 7 * 24 * 60 * 60 * 1000;
+  } else if (newConsecutive >= 3) {
+    const mult = Math.min(2 ** (newConsecutive - 2), 16);
+    nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin * mult);
+  } else {
+    nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin);
+  }
 
   const patch: Partial<Item> = {
     consecutiveErrors: newConsecutive,
@@ -431,16 +456,28 @@ function errorDecision(
     lastHealthMessage: errorMessage,
   };
 
+  if (invalidateStock) {
+    patch.lastStockStatus = "UNKNOWN";
+  }
+
+  if (autoDisable) {
+    patch.enabled = 0;
+    patch.healthStatus = "ERROR";
+    patch.lastHealthMessage = `Auto-disabled after ${newConsecutive} consecutive errors: ${errorMessage}`;
+  }
+
   return {
     patch,
-    newStockStatus: item.lastStockStatus as StockStatus,
-    transitioned: false,
+    newStockStatus: invalidateStock
+      ? "UNKNOWN"
+      : (item.lastStockStatus as StockStatus),
+    transitioned: invalidateStock,
     stockNotification: null,
     priceNotification: null,
     notification: null,
     insideTxnEvent: { kind: "error", message: errorMessage },
     priceEvent: null,
-    reason: `Error: ${errorMessage} (consecutive_errors=${newConsecutive}, health=${healthStatus})`,
+    reason: `Error: ${errorMessage} (consecutive_errors=${newConsecutive}, health=${healthStatus})${invalidateStock ? " — stock invalidated to UNKNOWN" : ""}${autoDisable ? " — auto-disabled" : ""}`,
   };
 }
 
@@ -448,12 +485,12 @@ function decide(item: Item, result: ProductResult, now: number): DecisionOutput 
   const nextCheckDueAt = computeNextCheckDueAt(now, item.checkIntervalMin);
 
   if (!result.ok) {
-    return errorDecision(item, result.error, now, nextCheckDueAt);
+    return errorDecision(item, result.error, now);
   }
 
   const newStockStatus = interpretStock(result.buttonState);
   if (newStockStatus === "UNKNOWN") {
-    const dec = errorDecision(item, "Invalid response shape", now, nextCheckDueAt);
+    const dec = errorDecision(item, "Invalid response shape", now);
     dec.patch.lastButtonState = result.buttonState;
     return dec;
   }
