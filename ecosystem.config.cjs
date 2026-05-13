@@ -35,7 +35,7 @@ module.exports = {
       cwd: __dirname,
       script: 'node_modules/.bin/tsx',
       interpreter: 'node',
-      args: 'src/worker/index.ts',
+      args: '--env-file .env src/worker/index.ts',
       env: {
         NODE_ENV: 'production',
       },
