@@ -18,6 +18,10 @@ import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
 import { fetchProducts, isMissingFromPriceBlocks, productUrlForSku } from '@/lib/bestbuy';
 import { fetchProductsViaPdp } from '@/lib/bestbuy-pdp';
+import {
+  fetchProductDetailsViaGraphql,
+  mergeProductDetailsIntoResult,
+} from '@/lib/bestbuy-graphql';
 import { applyCheckResult, applyMicroCenterCheckResult } from '@/lib/checker';
 import { fetchMicroCenterProduct } from '@/lib/microcenter';
 import {
@@ -196,8 +200,8 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   // --- Layer 1.5: Fulfillment GraphQL stock fallback (SPEC §6.7) ---
   // For SKUs that priceBlocks can't resolve (J-code product-family items),
   // hit /gateway/graphql/fulfillment via the same warmed curl_chrome116
-  // client. Returns buttonState only — name/price/image are stitched from
-  // the item's existing DB values (this path does NOT mutate those fields).
+  // client. Returns buttonState only; successful stock results are then
+  // enriched by the GraphQL-over-GET metadata path before DB writes.
   // SKUs that fail here remain in PENDING_REINDEX exactly as before.
   const fulfillmentSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
@@ -217,13 +221,34 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
       });
     }
     const fulfillmentMap = await fetchStockViaFulfillment(fulfillmentSkus, itemBySku);
+    const needsMetadataSkus: string[] = [];
     for (const [sku, result] of fulfillmentMap) {
       if (result.ok) {
+        needsMetadataSkus.push(sku);
         console.log(`[worker] sku=${sku} fetch_path=fulfillment`);
         fetchMap.set(sku, result);
       }
       // On failure, leave the original ProductNotFoundException error in fetchMap
       // so the item stays in PENDING_REINDEX exactly as before (no regression).
+    }
+
+    if (needsMetadataSkus.length > 0) {
+      const detailsMap = await fetchProductDetailsViaGraphql(needsMetadataSkus);
+      for (const sku of needsMetadataSkus) {
+        const stockResult = fetchMap.get(sku);
+        const merged = stockResult
+          ? mergeProductDetailsIntoResult(stockResult, detailsMap.get(sku))
+          : stockResult;
+        if (merged?.ok) {
+          console.log(`[worker] sku=${sku} fetch_path=fulfillment+graphql`);
+          fetchMap.set(sku, merged);
+        } else {
+          const detailResult = detailsMap.get(sku);
+          if (detailResult && !detailResult.ok) {
+            console.warn(`[worker] sku=${sku} graphql_metadata_failed=${detailResult.error}`);
+          }
+        }
+      }
     }
   }
 

@@ -14,6 +14,7 @@ export type ProductResult =
       brand?: string;
       currentPriceCents: number;
       regularPriceCents?: number;
+      imageUrl?: string;
       buttonState: string;
       purchasable: boolean;
       canonicalUrl: string;

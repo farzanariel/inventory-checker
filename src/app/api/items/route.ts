@@ -21,8 +21,12 @@ import {
   type ProductResult,
 } from "@/lib/bestbuy";
 import { fetchProductsViaPdp } from "@/lib/bestbuy-pdp";
+import {
+  fetchProductDetailsViaGraphql,
+  type BestBuyProductDetails,
+} from "@/lib/bestbuy-graphql";
 import { resolveProductInput } from "@/lib/parse-input";
-import { fetchMicroCenterProduct, microcenterPdpUrl } from "@/lib/microcenter";
+import { fetchMicroCenterProduct } from "@/lib/microcenter";
 import { itemStores } from "@/lib/db/schema";
 
 const CreateItemSchema = z
@@ -207,18 +211,25 @@ export async function POST(req: NextRequest) {
   let product: Extract<ProductResult, { ok: true }> | null = productResult?.ok
     ? productResult
     : null;
+  let graphqlDetails: Extract<BestBuyProductDetails, { ok: true }> | null = null;
 
-  // priceBlocks miss → run the curl+proxy PDP scraper once at save time so
-  // the first row has real price/stock (NEC-44). If PDP fails too, fall back
-  // to v2 metadata (name/brand only) and let the worker retry on its interval.
+  // priceBlocks miss → ask GraphQL-over-GET for live metadata, then fall back
+  // to the older PDP scrape and v2 metadata.
+  // Stock is still refreshed by the worker's fulfillment path.
   let metaFallback: Awaited<ReturnType<typeof fetchProductMetaV2>> | null = null;
   if (!product && productResult && !productResult.ok && isMissingFromPriceBlocks(productResult.error)) {
-    const pdpMap = await fetchProductsViaPdp([skuParse.sku]);
-    const pdpResult = pdpMap.get(skuParse.sku);
-    if (pdpResult?.ok) {
-      product = pdpResult;
+    const detailsMap = await fetchProductDetailsViaGraphql([skuParse.sku]);
+    const details = detailsMap.get(skuParse.sku);
+    if (details?.ok) {
+      graphqlDetails = details;
     } else {
-      metaFallback = await fetchProductMetaV2(skuParse.sku);
+      const pdpMap = await fetchProductsViaPdp([skuParse.sku]);
+      const pdpResult = pdpMap.get(skuParse.sku);
+      if (pdpResult?.ok) {
+        product = pdpResult;
+      } else {
+        metaFallback = await fetchProductMetaV2(skuParse.sku);
+      }
     }
   }
   const meta = metaFallback?.ok ? metaFallback : null;
@@ -231,12 +242,12 @@ export async function POST(req: NextRequest) {
         retailer: "bestbuy",
         sku: skuParse.sku,
         mcProductId: null,
-        name: product?.name ?? meta?.name ?? null,
-        brand: product?.brand ?? meta?.brand ?? null,
-        productUrl: product?.canonicalUrl ?? meta?.canonicalUrl ?? productUrlForSku(skuParse.sku),
-        imageUrl: imageUrlForSku(skuParse.sku),
-        currentPriceCents: product?.currentPriceCents ?? null,
-        regularPriceCents: product?.regularPriceCents ?? null,
+        name: product?.name ?? graphqlDetails?.name ?? meta?.name ?? null,
+        brand: product?.brand ?? graphqlDetails?.brand ?? meta?.brand ?? null,
+        productUrl: product?.canonicalUrl ?? graphqlDetails?.canonicalUrl ?? meta?.canonicalUrl ?? productUrlForSku(skuParse.sku),
+        imageUrl: product?.imageUrl ?? graphqlDetails?.imageUrl ?? imageUrlForSku(skuParse.sku),
+        currentPriceCents: product?.currentPriceCents ?? graphqlDetails?.currentPriceCents ?? null,
+        regularPriceCents: product?.regularPriceCents ?? graphqlDetails?.regularPriceCents ?? null,
         checkIntervalMin,
         restockNotifyIntervalMin,
         enabled: 1,

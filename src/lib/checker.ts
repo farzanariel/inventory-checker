@@ -284,7 +284,7 @@ function decideStock(
   const patch: Partial<Item> = {
     name: result.name,
     brand: result.brand ?? null,
-    imageUrl: imageUrlForSku(item.sku ?? ""),
+    imageUrl: result.imageUrl ?? imageUrlForSku(item.sku ?? ""),
     productUrl: result.canonicalUrl ?? productUrlForSku(item.sku ?? ""),
     currentPriceCents: result.currentPriceCents,
     regularPriceCents: result.regularPriceCents ?? null,

@@ -11,6 +11,7 @@ import {
   imageUrlForSku,
   isMissingFromPriceBlocks,
 } from "@/lib/bestbuy";
+import { fetchProductDetailsViaGraphql } from "@/lib/bestbuy-graphql";
 import { resolveProductInput } from "@/lib/parse-input";
 import { fetchMicroCenterProduct } from "@/lib/microcenter";
 
@@ -98,11 +99,27 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // priceBlocks miss → return v2 catalog metadata so the lookup stays fast.
-  // The full price+stock check (via headless) runs at save time in
-  // POST /api/items, so the user sees details immediately and the heavy
-  // scrape only fires once they commit to adding the item.
+  // priceBlocks miss → return live GraphQL-over-GET metadata when available,
+  // falling back to v2 catalog metadata so lookup still succeeds.
   if (result && !result.ok && isMissingFromPriceBlocks(result.error)) {
+    const detailsMap = await fetchProductDetailsViaGraphql([skuParse.sku]);
+    const details = detailsMap.get(skuParse.sku);
+    if (details?.ok) {
+      return NextResponse.json({
+        retailer: "bestbuy" as const,
+        sku: details.sku,
+        name: details.name,
+        brand: details.brand ?? null,
+        image_url: details.imageUrl ?? imageUrlForSku(details.sku),
+        product_url: details.canonicalUrl,
+        current_price_cents: details.currentPriceCents,
+        regular_price_cents: details.regularPriceCents ?? null,
+        button_state: null,
+        purchasable: null,
+        stock_source: "graphql-metadata" as const,
+      });
+    }
+
     const meta = await fetchProductMetaV2(skuParse.sku);
     if (meta.ok) {
       return NextResponse.json({
