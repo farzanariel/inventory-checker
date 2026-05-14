@@ -1,0 +1,28 @@
+{
+  "id": "har-541",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777897.18f98af6",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "409",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:17 GMT",
+    "expires": "Thu, 14 May 2026 16:58:17 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "13",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6481527\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.8,\"reviewCount\":455,\"syndicatedReviewSummary\":[{\"clientDisplayName\":\"Targus\",\"overallRating\":4.571429,\"totalReviewCount\":7,\"displayLink\":\"https://bestbuy.ugc.bazaarvoice.com/3545syn/6481527/syndicatedreviews.htm?sourcename=targus\",\"__typename\":\"SyndicatedReviewSummary\"},{\"clientDisplayName\":\"hp.com\",\"overallRating\":4.1666665,\"totalReviewCount\":6,\"displayLink\":\"https://bestbuy.ugc.bazaarvoice.com/3545syn/6481527/syndicatedreviews.htm?sourcename=hp\",\"__typename\":\"SyndicatedReviewSummary\"}],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/targus-classic-slim-briefcase-for-15-6-laptops-black/J7QXPFZVCC\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/targus-classic-slim-briefcase-for-15-6-laptops-black/J7QXPFZVCC/sku/6481527\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"Targus - Classic Slim Briefcase for 15.6 Laptops - Black\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

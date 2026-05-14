@@ -1,0 +1,287 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [managedContentByTypeAndId]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "473",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "pdp-web",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "managedContentByTypeAndId"
+    },
+    "body": {
+      "operationName": "managedContentByTypeAndId",
+      "variables": {
+        "catalog": "platform-manager",
+        "type": "key-value",
+        "id": "ask-blue-configs"
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query managedContentByTypeAndId($catalog: String!, $type: String!, $id: String!) {\n  managedContentByTypeAndId(\n    managedContentInput: {catalog: $catalog, type: $type, id: $id}\n  ) {\n    document\n    __typename\n    catalog\n    id\n    type\n  }\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777882.18f8b471",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "2377",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "11",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "managedContentByTypeAndId": {
+          "document": {
+            "API_END_POINT_URL": {
+              "app": "https://app.bestbuy.com",
+              "web": "https://www.bestbuy.com"
+            },
+            "ENVIRONMENT": "development",
+            "MOCK_API_END_POINT_URL": "https://endpoints.stratus.bby/digital/eks/te-non-a/us-east-1/askblemcksrvr-eks/askblemcksrvr-int",
+            "MOCK_END_POINT_API_KEY": "3cb6c103878165d47ccc36696e7ec32fc0ba3e48265b0ba2aaab004b636fd7e8",
+            "askBlueEnabledApp": true,
+            "askBlueEnabledWeb": true,
+            "askBlueUtList": [
+              "49a4bbb9-aece-11ea-97cd-005056aeb6f7",
+              "572a7234-8d8d-11f0-b83d-06e81abc3177",
+              "a10a2ebf-4ea7-11f1-8af7-0254a68b6c75",
+              "be6e0487-0f8a-11f0-b6b7-0affc03f8695",
+              "d94cf4f1-d4bd-11ed-9e49-005056a8d8b1",
+              "e64f2717-6253-11f0-9621-121591935d1f",
+              "1fc31272-b653-11ea-8136-0a1533e9dd2f",
+              "d99456c0-03d5-11f0-bcf4-068fdac8c883",
+              "52bfaaf4-690f-11ea-ac49-0a0eccadca29",
+              "e64f2717-6253-11f0-9621-121591935d1f",
+              "68cd49a0-2696-11f1-b193-029e43b7edf1",
+              "a9bc4ea8-0a47-11ee-9023-0a7fc935345b",
+              "01a93c7b-dffe-11ef-baf1-02915e3ea5fd",
+              "a3e541d5-eba8-11e2-ac2c-00505692405c",
+              "1018a36e-3cd7-11ef-b94c-025cc9ad82b7",
+              "7bd79a6e-2e73-11f1-b3cf-0affe2e5d05d",
+              "035c8623-4f3c-11ec-935b-0abe48b89689",
+              "496c89a6-3c9c-11f0-ae91-0281e62b3cdb",
+              "bb94d7c6-a18b-11e8-8103-005056aeac0a",
+              "51fcec38-4749-11f0-8c0a-02e8827fe407",
+              "b712a957-e300-11ea-8842-005056aeb6f7",
+              "75d6bf07-587f-11ea-bea2-005056a8d8b1",
+              "82fe4da6-8a9e-11e8-b196-005056ae74b1",
+              "1fc31272-b653-11ea-8136-0a1533e9dd2f",
+              "0ca10d43-fc2c-11e5-83e7-00505692405c",
+              "cd42f761-1127-11f0-a84a-0607c73c5e53",
+              "ffaa38ca-2f79-11f1-b7c0-0affd5c9a383",
+              "f3d13e0d-2f0e-11f1-b7c0-0affd5c9a383",
+              "b42ef22e-2ec0-11f1-b7c0-0affd5c9a383",
+              "35ca5a0f-a989-11ec-8d3e-0addff7446a1",
+              "8eea447a-2eb2-11f1-b0c6-1234373adde9",
+              "95964ccb-eb5c-11e2-a88a-00505692405b",
+              "1fa89be2-c077-11f0-8e3a-021bd22ceb77",
+              "6c72cb8d-19db-11f0-8440-0a608691ee53",
+              "f572be7f-8269-11f0-b58f-0a6bd9827fe5",
+              "19cd6d97-0925-11e3-884a-00505692405c",
+              "867ee4bd-f55e-11e2-9308-00505692405c",
+              "8431c018-d1f9-11f0-824a-0249c9343057",
+              "9e3b88eb-4048-11f0-af7b-02d434cacc89",
+              "dac2ed11-02e5-11f1-b2c4-0a6b05cb9a89",
+              "35f79da9-1d52-11f1-8d00-02da504d6d83",
+              "679de86f-ebc6-11e2-ac2c-00505692405c",
+              "072f6887-a006-11ef-b17d-027bcedb8889",
+              "b6f0ec0c-3ad6-11f0-851e-02d72b58d9af",
+              "717c4615-de0f-11ef-b5d3-02e07e248443",
+              "874167d1-24e0-11f0-afda-0a8aaf13b6df",
+              "5dbf1a24-57bc-11e3-97fe-00505692405a",
+              "eb68d9c5-0486-11ee-841e-0693fddda4ad",
+              "6c72cb8d-19db-11f0-8440-0a608691ee53",
+              "30d4f1ff-2011-11f0-9dec-0a4ef876567d",
+              "38fc079d-419b-11ec-9b26-06381b08a077",
+              "b3d87859-683f-11ed-9de1-06d2722a205d",
+              "8a8ddab9-efb5-11e6-901b-0050568f0ce9",
+              "6fff4f5a-e36d-11e3-bde8-00505692405a",
+              "61740398-ebbf-11e2-ac2c-00505692405c",
+              "0ca10d43-fc2c-11e5-83e7-00505692405c",
+              "f787b0ba-eb72-11e2-ac2c-00505692405c",
+              "c5593c5b-e8e0-11eb-a20c-02b5287522eb",
+              "3541774b-3d9c-11ef-b4e5-0a52b409766b",
+              "e3ecca74-e1ea-11e3-9188-00505692405c",
+              "a3e541d5-eba8-11e2-ac2c-00505692405c",
+              "a9bd5e6b-eb7f-11e2-a88a-00505692405b",
+              "e7e1008d-f2e0-11ea-bc15-005056aead3a",
+              "2380afd8-3156-11f0-b3a7-0a88b6a92ea3",
+              "499ccd99-d725-11f0-8085-0a0183378725",
+              "5715ada9-c51a-11e8-9ff7-005056ae2eaa",
+              "1c39c15b-8265-11f0-bad7-024e86469b21",
+              "36d1d2a5-e33e-11eb-807c-06786772858b",
+              "3d82c4ef-1daf-11e4-b343-00505692405c",
+              "2913f5b9-7b65-11ec-959f-0ec9554cd341",
+              "837996f2-546f-11ed-9070-0a601136d497",
+              "f96105d2-3c1c-11ee-9c95-0681f71aa2df",
+              "20a6dc32-db8b-11e3-9457-00505692405b",
+              "f4fed54c-1582-11e3-8e4c-00505692405c",
+              "a6124609-d1d6-11e5-be74-00505692405b",
+              "67c12953-eb66-11e2-a88a-00505692405b"
+            ],
+            "askBlueUtRestrictionEnabled": true,
+            "enableConsoleLogging": false,
+            "landingScreenStarterPrompts": [
+              {
+                "suggestions": [
+                  {
+                    "text": "Find the best laptop"
+                  },
+                  {
+                    "text": "Compare TVs"
+                  },
+                  {
+                    "text": "Smart home setup"
+                  }
+                ],
+                "title": "Tech & computing"
+              },
+              {
+                "suggestions": [
+                  {
+                    "text": "Gaming setup"
+                  },
+                  {
+                    "text": "Home office setup"
+                  },
+                  {
+                    "text": "Audio equipment"
+                  }
+                ],
+                "title": "Entertainment & work"
+              },
+              {
+                "suggestions": [
+                  {
+                    "text": "Kitchen appliances"
+                  },
+                  {
+                    "text": "Fitness gear"
+                  },
+                  {
+                    "text": "Outdoor gear"
+                  }
+                ],
+                "title": "Home & lifestyle"
+              }
+            ],
+            "landingScreenSubTitle": "Whether you know exactly what you need or you're still figuring it out, I can help you find what works.",
+            "landingScreenTitle": "Let's find what's best for you.",
+            "layerMode": {
+              "app": "three-layer",
+              "web": "three-layer"
+            },
+            "loadingIndicatorMessage": [
+              {
+                "id": "initial",
+                "selection": {
+                  "mode": "random",
+                  "pool": [
+                    {
+                      "id": "init_2",
+                      "title": "Looking into it"
+                    }
+                  ]
+                },
+                "trigger": {
+                  "type": "onTurnStart"
+                }
+              },
+              {
+                "id": "t_plus_7",
+                "message": {
+                  "title": "Figuring out what you need"
+                },
+                "trigger": {
+                  "type": "afterSeconds",
+                  "value": 7
+                }
+              },
+              {
+                "id": "t_plus_11",
+                "message": {
+                  "title": "This is taking a little longer than expected..."
+                },
+                "trigger": {
+                  "type": "afterSeconds",
+                  "value": 11
+                }
+              },
+              {
+                "id": "t_plus_20",
+                "message": {
+                  "subTitle": "You can keep waiting, or switch to something else.",
+                  "title": "This is taking some time."
+                },
+                "trigger": {
+                  "type": "afterSeconds",
+                  "value": 20
+                }
+              },
+              {
+                "id": "t_plus_60",
+                "message": {
+                  "subTitle": "Try again, or come back in a few minutes. We’re working to fix this.",
+                  "title": "That didn’t go through."
+                },
+                "trigger": {
+                  "type": "afterSeconds",
+                  "value": 60
+                }
+              }
+            ]
+          },
+          "__typename": "ManagedContent",
+          "catalog": "platform-manager",
+          "id": "ask-blue-configs",
+          "type": "key-value"
+        }
+      }
+    }
+  }
+}

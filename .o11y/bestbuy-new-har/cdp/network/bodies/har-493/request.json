@@ -1,0 +1,28 @@
+{
+  "id": "har-493",
+  "url": "https://pixel.adsafeprotected.com/jsdiagnostic?code:pet_profile&anid:931017&sessionId:9ad3eed2-8818-4144-1385-416fab933bd9&err:responsetime%3A424%26probability%3A10",
+  "method": "GET",
+  "headers": {
+    ":authority": "pixel.adsafeprotected.com",
+    ":method": "GET",
+    ":path": "/jsdiagnostic?code:pet_profile&anid:931017&sessionId:9ad3eed2-8818-4144-1385-416fab933bd9&err:responsetime%3A424%26probability%3A10",
+    ":scheme": "https",
+    "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "dnt": "1",
+    "pragma": "no-cache",
+    "priority": "i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "image",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-storage-access": "active",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": null
+}

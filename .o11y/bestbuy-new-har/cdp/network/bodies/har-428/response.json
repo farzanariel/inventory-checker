@@ -1,0 +1,18 @@
+{
+  "id": "har-428",
+  "url": "https://www.bestbuy.com/streams/v1/consume",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8da07",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-length": "36",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "8217524d-4fb4-11f1-a701-0e79396342ad"
+}

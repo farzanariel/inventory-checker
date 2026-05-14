@@ -1,0 +1,19 @@
+{
+  "id": "har-178",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/analytics-dotcom/chunks/flashtalkingPdp-364103cc2353f93b81fb.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ab14",
+    "cache-control": "max-age=1300123",
+    "content-encoding": "br",
+    "content-length": "401",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"48bdd38d9e15e84cb4be330ee1fc8ae0:1777485024.075901\"",
+    "expires": "Fri, 29 May 2026 18:06:44 GMT",
+    "last-modified": "Wed, 29 Apr 2026 17:50:24 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "/*! For license information please see flashtalkingPdp-364103cc2353f93b81fb.js.LICENSE.txt */\n\"use strict\";(self.webpackJsonpAnalytics=self.webpackJsonpAnalytics||[]).push([[8297],{45403(e,t,n){n.r(t),n.d(t,{default:()=>c}),Object.defineProperty(c,\"name\",{value:\"default\",configurable:!0});var i=n(48079),a=n.n(i),l=n(50697),s=n.n(l);function c(e,t){var n,i=document.createElement(\"iframe\");t=(t=a()(n=s()(t)).call(n,function(e){return e+\"=\"+t[e]})).join(\"&\"),i.style=\"position:absolute; visibility:hidden; width:1px; height:1px;\",i.src=\"https://servedby.flashtalking.com/container/7922;86518;8908;iframe/?\"+t,document.body.appendChild(i)}}}]);\n//# sourceMappingURL=flashtalkingPdp-364103cc2353f93b81fb.js.map"
+}

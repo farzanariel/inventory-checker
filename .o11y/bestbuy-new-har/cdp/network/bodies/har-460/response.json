@@ -1,0 +1,19 @@
+{
+  "id": "har-460",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/6213.6619af38b4c80ffe.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777885.18f8e734",
+    "cache-control": "max-age=2513571",
+    "content-encoding": "br",
+    "content-length": "1163",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:05 GMT",
+    "etag": "\"c5a949a08afbcb020d853437dea08547:1778696814.298613\"",
+    "expires": "Fri, 12 Jun 2026 19:10:56 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:54 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6213],{26213:(e,o,s)=>{s.r(o),s.d(o,{default:()=>f});var r=s(73365),l=s(1521),a=s(98196),t=s(49262),n=s(40979),i=s(7270),d=s(13727),c=s(82828),u=s(30207),p=s(58080),m=s(39235);let g=({isCachedResponse:e})=>{let[o,s]=(0,l.useState)(null),[g,f]=(0,l.useState)(null),[C,h]=(0,l.useState)(null),b=(0,c.useApolloClient)(),[y]=(0,m.cN)(),[v]=(0,d.QRl)(),w=(0,l.useRef)(null),[I]=(0,d.tIE)(),[P]=(0,d.gQK)(),x=P?\"s\":\"l\",E=(0,p.lT)(),M=E.get(\"locDestZip\"),S=E.get(\"locStoreId\"),N=E.get(\"pt\"),j=E.get(\"vt\"),k=(0,l.useMemo)(()=>({deviceClass:x,mediationLayerConfigs:g,pageType:\"PDP\",partyId:N,salesChannel:\"www\",skuId:I,storeId:S,visitorId:j,xForwardedFor:\"\",zipcode:M}),[x,g,N,I,S,j,\"\",M]),F=(0,l.useMemo)(()=>g&&I?(0,i.IW)(k):null,[g,k,I]);(0,l.useEffect)(()=>{(0,n.MZb)(e=>{e&&\"boolean\"!=typeof e?f(e?.components?.ninja?.mediationLayerConfigs?.minMaxCarouselItems):f(null)})},[]),(0,l.useEffect)(()=>{I&&F&&!(0,n.Ime)(F)&&!o&&(0,n.cMF)(b,F).then(e=>{s(e)}).catch(()=>{s(null)})},[b,F,I,o]);let L={skuId:I,sponsoredDetails:{isSponsored:!0,sponsoredDataOverride:o},destinationZipCode:M,saveForLaterIsRecognized:!!y?.preferences?.identifiers?.userToken||!!y?.name?.firstName,isSmallViewLayout:P,analyticsPageName:\"Product Detail Page\",openBoxConditionCode:v?.code??void 0,salesChannel:\"LargeView\",pageType:\"Product Detail Page\",config:{configNodeKey:\"MF\",disablePills:!0,disableMatchType:!0,disableNodeConfig:!0},profileLabels:y?.profileLabels??void 0,onATCError:e=>{if(e.errorCode){let o=document.getElementById(\"error-portal\");h(a.createPortal((0,r.jsx)(u.ErrorComponent,{errorSummaryMessage:e.errorSummary.message}),o)),o&&o.scrollIntoView({behavior:\"smooth\",block:\"center\"})}},onATCSuccess:()=>{},enableMarketplaceForAllowList:!0};return(0,r.jsxs)(r.Fragment,{children:[o?(0,r.jsx)(\"div\",{className:`${P?\"mb-200 container-v3 py-300 v-bg-pure-white\":\"pt-400 mb-200\"}`,id:\"sponsored-carousel-na\",ref:w,children:(0,r.jsx)(t.ProductCarousel,{...L,isCachedResponse:e})}):null,C]})},f=()=>(0,r.jsx)(d.Ei,{children:e=>(0,r.jsx)(g,{isCachedResponse:e})})}}]);"
+}

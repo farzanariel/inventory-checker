@@ -1,0 +1,14 @@
+{
+  "id": "har-493",
+  "url": "https://pixel.adsafeprotected.com/jsdiagnostic?code:pet_profile&anid:931017&sessionId:9ad3eed2-8818-4144-1385-416fab933bd9&err:responsetime%3A424%26probability%3A10",
+  "status": 200,
+  "headers": {
+    "cache-control": "no-cache",
+    "content-length": "43",
+    "content-type": "image/gif",
+    "date": "Thu, 14 May 2026 16:58:06 GMT",
+    "p3p": "CP=\"COM NAV INT STA NID OUR IND NOI\"",
+    "pragma": "no-cache"
+  },
+  "body": "GIF89a\u0001\u0000\u0001\u0000�\u0000\u0000���\u0000\u0000\u0000!�\u0004\u0001\u0000\u0000\u0000\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0002D\u0001\u0000;"
+}

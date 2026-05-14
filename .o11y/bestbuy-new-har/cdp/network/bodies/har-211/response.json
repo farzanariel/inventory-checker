@@ -1,0 +1,13 @@
+{
+  "id": "har-211",
+  "url": "https://fel-api.prod.browse.bestbuy.com/exception",
+  "status": 200,
+  "headers": {
+    "access-control-allow-methods": "POST",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "content-length": "16",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:01 GMT"
+  },
+  "body": "{\"message\":\"OK\"}"
+}

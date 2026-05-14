@@ -1,0 +1,17 @@
+{
+  "id": "har-407",
+  "url": "https://www.bestbuy.com/streams/v1/SEARCH_TERM?limit=25",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777884.18f8d592",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-length": "43",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "{\"dataTopic\":\"SEARCH_TERM\",\"streamData\":[]}"
+}

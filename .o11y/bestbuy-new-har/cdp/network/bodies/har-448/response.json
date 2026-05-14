@@ -1,0 +1,21 @@
+{
+  "id": "har-448",
+  "url": "https://www.bestbuy.com/awacs-ingestor/api/cload",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777885.18f8e181",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "661",
+    "content-type": "application/json;charset=UTF-8",
+    "date": "Thu, 14 May 2026 16:58:05 GMT",
+    "expires": "Thu, 14 May 2026 16:58:05 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-request-id": "xrequest::1778777885::23.215.61.231::18f8e181::1165912"
+  },
+  "body": "{\"componentId\":\"79e900e3-6985-4040-8851-ff55914e140e\",\"pageNumber\":0,\"keywords\":\"All Laptops\",\"awacsId\":\"\",\"skuPosition\":0,\"carouselSize\":0,\"mtimestamp\":\"1778777885\",\"pageSkuId\":\"6674708\",\"pageSize\":0,\"skuIds\":\"\",\"orderItems\":[],\"platform\":\"L\",\"facets\":\"\",\"mtype\":\"CLOAD\",\"pageCategoryId\":\"\",\"pageType\":\"PDP\",\"componentInstanceId\":\"undefined\",\"id\":\"2054969509252945137\",\"event\":\"CLOAD\",\"mversion\":1,\"componentVersion\":\"not provided\",\"deviceAndBrowser\":\"Mozilla5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit537.36 (KHTML like Gecko) Chrome147.0.0.0 Safari537.36\",\"sessionId\":\"1c4a7049-5345-400a-af37-ad3f937d8f99\",\"userId\":\"a4e56918-fc43-46a3-a65f-abce7625852a\",\"blueprint\":\"\",\"userToken\":\"8217524d-4fb4-11f1-a701-0e79396342ad\",\"component\":\"RECOMMENDED_CAROUSEL\",\"breadcrumb\":\"/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops\",\"placement\":\"DEFAULT\",\"items\":[],\"pageTransactionId\":\"7e3b6204-6c8a-40b4-ac3d-574d9eaf7888\",\"visitorId\":\"e616ea95-4828-4b2a-a078-2bf0bb59f33c\"}"
+}

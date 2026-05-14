@@ -1,0 +1,14 @@
+{
+  "id": "har-221",
+  "url": "https://bf26528hhp.bf.dynatrace.com/bf?type=js3&sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1&svrid=31&flavor=cors&vi=MEFLCJHFVMVLCKFMCMRHKNVVUCDROLSL-0&modifiedSince=1773782146078&bp=3&app=0f4871fda9ce1d80&crc=1416289948&en=6s9q7ur5&end=1",
+  "status": 200,
+  "headers": {
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "cache-control": "no-cache",
+    "content-length": "1456",
+    "content-type": "text/plain;charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "strict-transport-security": "max-age=31536000"
+  },
+  "body": "OK(BF)|sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1|name=ruxitagent|config=app%3D0f4871fda9ce1d80%7Cssc%3D1%7Ccors%3D1%7Cowasp%3D1%7CfeatureHash%3DICANVfhjqru%7CdoNotDetect%3Dmdw%2Cscr%2Cclk%2Cdcl%2Ckyu%2Cmup%2Ckyd%7Cvcfi%3D0%7CreportUrl%3Dhttps%3A%2F%2Fbf26528hhp.bf.dynatrace.com%2Fbf%7Crdnt%3D1%7Cuxrgce%3D1%7Ccuc%3D6s9q7ur5%7Cmel%3D100000%7Cdpvc%3D1%7Cmd%3Dmdcc1%3Dcbby_rdp%2Cmdcc6%3Dcut%2Cmdcc7%3Dcvt%2Cmdcc8%3DcSID%2Cmdcc9%3DcCTT%2Cmdcc10%3DdskuId%2Cmdcc11%3Dbwindow.deoMetaData.blueprint%2Cmdcc12%3Dbdocument.referrer%2Cmdcc19%3Dbs.pageName%2Cmdcc22%3Dbs.eVar38%2Cmdcc23%3Dcut%2Cmdcc24%3Dcat%2Cmdcc26%3Dcvt%2Cmdcc27%3Dcoid%2Cmdcc28%3Dbwindow.deoMetaData.blueprint%2Cmdcc29%3Dbwindow.dynatraceMetaData.pageName%2Cmdcc30%3Dbwindow.dynatraceMetaData.variant%2Cmdcc31%3Dbwindow.dynatraceMetaData.pageName%2Cmdcc32%3Dbwindow.dynatraceMetaData.variant%2Cmdcc33%3Dcet%2Cmdcc34%3Dcct%2Cmdcc35%3Dcbby_rdp%2Cmdcc36%3Dcdeo%2Cmdcc38%3Dcbby_cbc_lb%7ClastModification%3D1778765437727%7Cmdp%3Dmdcc31%2Cmdcc32%2Cmdcc33%2Cmdcc34%7Ctp%3D500%2C50%2C0%7Csrbbv%3D2%7CagentUri%3Dhttps%3A%2F%2Fjs-cdn.dynatrace.com%2Fjstag%2F17b62997368%2Fruxitagent_ICANVfhjqru_10327251022105625.js%7Cdomain%3Dwww.bestbuy.com|featureHash=ICANVfhjqru|buildNumber=10327251022105625|lastModification=1778765437727"
+}

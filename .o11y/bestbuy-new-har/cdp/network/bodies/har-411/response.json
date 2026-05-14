@@ -1,0 +1,28 @@
+{
+  "id": "har-411",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d62c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "419",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "27",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"brand\":\"Lenovo\",\"hierarchy\":{\"bbypres\":[{\"primary\":true,\"id\":\"pcmcat138500050001\",\"categoryDetail\":{\"name\":\"All Laptops\",\"broaderTerms\":{\"primaryLineage\":[{\"id\":\"abcat0502000\",\"name\":\"Laptops\",\"sequence\":0,\"__typename\":\"HierarchyLineage\"},{\"id\":\"abcat0500000\",\"name\":\"Computers & Tablets\",\"sequence\":1,\"__typename\":\"HierarchyLineage\"},{\"id\":\"cat00000\",\"name\":\"Best Buy\",\"sequence\":2,\"__typename\":\"HierarchyLineage\"}],\"__typename\":\"HierarchyBroaderTerms\"},\"__typename\":\"CategoryDetail\"},\"__typename\":\"ProductHierarchyLink\"}],\"__typename\":\"ProductHierarchy\"},\"name\":{\"short\":\"Lenovo - IdeaPad Slim 3 15.3\\\" 2k Touchscreen Laptop - AMD Ryzen 7 170 2025 - 16GB Memory - 512GB SSD - Luna Grey\",\"__typename\":\"ProductName\"},\"price\":{\"currentPrice\":599.99,\"__typename\":\"ItemPrice\"},\"reviewInfo\":{\"averageRating\":0,\"__typename\":\"ProductReviewInfo\"},\"__typename\":\"Product\",\"skuId\":\"6674708\",\"openBoxCondition\":null}}}\n"
+}

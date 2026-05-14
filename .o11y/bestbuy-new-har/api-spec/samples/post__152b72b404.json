@@ -1,0 +1,96 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [__unknown__]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/json",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "220",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-client-id": "blue-assist-web"
+    },
+    "body": {
+      "query": "query getProductBySkuIdQuery { productBySkuId(skuId: \"6674708\") { skuId hierarchy { bbypres { primary categoryDetail { id name broaderTerms { primaryLineage { id name } } } } } seller { classification } } }"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777882.18f8b664",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "226",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "34",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "productBySkuId": {
+          "skuId": "6674708",
+          "hierarchy": {
+            "bbypres": [
+              {
+                "primary": true,
+                "categoryDetail": {
+                  "id": "pcmcat138500050001",
+                  "name": "All Laptops",
+                  "broaderTerms": {
+                    "primaryLineage": [
+                      {
+                        "id": "abcat0502000",
+                        "name": "Laptops"
+                      },
+                      {
+                        "id": "abcat0500000",
+                        "name": "Computers & Tablets"
+                      },
+                      {
+                        "id": "cat00000",
+                        "name": "Best Buy"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "seller": {
+            "classification": "1P"
+          }
+        }
+      }
+    }
+  }
+}

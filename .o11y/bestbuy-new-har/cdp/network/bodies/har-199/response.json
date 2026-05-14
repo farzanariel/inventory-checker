@@ -1,0 +1,19 @@
+{
+  "id": "har-199",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/2053.41ecacd728d8fc98.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777881.18f8acc2",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "581",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"57dd758a01d4e197e1a6ce800e6b0b64:1778696802.520284\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:42 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[2053],{2053:(e,s,i)=>{i.r(s),i.d(s,{ProductVariations:()=>t,default:()=>c});var a=i(73365);i(1521);var n=i(13727),r=i(92165),l=i(39235),d=i(74610);let t=({isMiniPDP:e})=>(0,a.jsx)(n.Ei,{children:s=>(0,a.jsx)(p,{isMiniPDP:e,isCachedResponse:s})}),p=({isMiniPDP:e,isCachedResponse:s})=>{let[i]=(0,l.cN)({provideFallbacks:!0}),t=i?.preferences?.store?.locationId,p=i?.planPaidMembership?.activeType??i?.planPaidMembership?.effectiveType??null,c=i?.contact?.primaryShippingAddress?.zip,o=(0,n.rDR)()[0]?.piscesBaseUrl,[u]=(0,n.N9J)(),[h]=(0,n.gQK)(),[b]=(0,n.tIE)(),[P]=(0,n.LwT)(),{isDemoEligible:C}=(0,d.useMetaGlassesConfig)({skuId:b}),M=p?.includes?.(\"PLAN_PAID_MEMBER\")??!1;return P?(0,a.jsx)(r.ProductVariationsByBsin,{bsin:P,skuId:b,isSmallView:h,useAccordionView:e,salesChannel:u,planPaidMemberType:p,piscesBaseUrl:o,destinationZipCode:c,storeId:t,isBestbuyMember:M,isMetaGlassesDemoEligible:C,isCachedResponse:s}):(0,a.jsx)(r.ProductVariations,{skuId:b,isSmallView:h,useAccordionView:e,salesChannel:u,planPaidMemberType:p,piscesBaseUrl:o,destinationZipCode:c,storeId:t,isCachedResponse:s})},c=t}}]);"
+}

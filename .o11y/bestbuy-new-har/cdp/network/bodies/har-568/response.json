@@ -1,0 +1,17 @@
+{
+  "id": "har-568",
+  "url": "https://c.contentsquare.net/display?v=13.89.2&pid=1795&pn=6&sn=200&uu=62a402ab-03c8-a856-eaa9-ede366c7c7d6&ct=2",
+  "status": 204,
+  "headers": {
+    "cache-control": "no-cache, must-revalidate, pre-check=0, post-check=0",
+    "timing-allow-origin": "*",
+    "pragma": "no-cache",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "expires": "Sun, 24 Oct 1982 23:00:00 GMT",
+    "access-control-allow-origin": "*",
+    "date": "Thu, 14 May 2026 16:58:18 GMT",
+    "content-disposition": "inline",
+    "access-control-allow-headers": "Access-Control-Expose-Headers, Content-Type, Content-Compression, X-Requested-With"
+  },
+  "body": ""
+}

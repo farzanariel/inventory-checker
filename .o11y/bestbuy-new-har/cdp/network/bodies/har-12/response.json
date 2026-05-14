@@ -1,0 +1,19 @@
+{
+  "id": "har-12",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/974ca0ecebc998cc.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777878.18f885c8",
+    "cache-control": "max-age=2513572",
+    "content-encoding": "br",
+    "content-length": "275",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"c779e28cf3e6a11dc234fcf334f0fa3d:1778696833.180044\"",
+    "expires": "Fri, 12 Jun 2026 19:10:50 GMT",
+    "last-modified": "Wed, 13 May 2026 18:27:13 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".no-horizontal-scrollbar{-ms-overflow-style:none;scrollbar-width:none}.no-horizontal-scrollbar .scrollable::-webkit-scrollbar{display:none!important}.show-more-section{transition:max-height .3s ease-in,opacity .3s ease-in}.expand-component-description ul li{list-style-type:disc!important}.show{max-height:1000px}.accessory-list{width:70%}.accessory-container{display:flex;flex-direction:column;padding-top:8px}.caretDownIcon,.caretUpIcon{transform:scale(1.6);fill:var(--color-unstable-link-blue);margin-left:6px}.product-description li{list-style-type:disc!important}"
+}

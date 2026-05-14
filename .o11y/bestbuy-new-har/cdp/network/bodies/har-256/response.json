@@ -1,0 +1,22 @@
+{
+  "id": "har-256",
+  "url": "https://www.bestbuy.com/site/canopy/component/shop/account-menu/v1?businessName=%24(csi.user.businessName)&deviceClass=l&disableSignInToast=false&enableAccountMenuButton=true&isNewHeaderLayout=true&isRecognized=%24(csi.user.isRecognized)&userName=%24(csi.user.name)",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777882.18f8b68d",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "1052",
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 2229 0 -",
+    "x-bby-instance-id": "unknown",
+    "x-forwarded-proto": "https",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "body": "\n                            \n                         <div id=\"shop-account-menu-82459293\" class=\"_none\" data-version=\"2.13.49\"><div class=\"shop-account-menu\"><!--$--><!--/$--></div><script defer src=\"https://assets.bbystatic.com/shop/account-menu/dist/client/client-6046ee5d99fb6d1f20129a4935e73fba.js\"></script><script>getInitializer().then(initializer => initializer.initializeComponent({\"creatorNamespace\":\"shop\",\"componentId\":\"account-menu\",\"contractVersion\":\"v1\",\"componentVersion\":\"2.13.49\"}, \"shop-account-menu-82459293\", \"{\\\"app\\\":{\\\"userName\\\":\\\"ARI\\\",\\\"disableSignInToast\\\":false,\\\"isRecognized\\\":true,\\\"deviceClass\\\":\\\"l\\\",\\\"businessName\\\":\\\" \\\",\\\"enableAccountMenuButton\\\":true,\\\"isDegraded\\\":false,\\\"signInToastWaitTime\\\":20000,\\\"signInToastPagePermissions\\\":{\\\"allowOnGhp\\\":true,\\\"allowOnPdp\\\":true,\\\"allowOnPlp\\\":true},\\\"enableUPAAccountHome\\\":false,\\\"metaLayer\\\":{\\\"env_assets\\\":\\\"https:\\\\u002F\\\\u002Fassets.bbystatic.com\\\",\\\"env_piscesUrl\\\":\\\"https:\\\\u002F\\\\u002Fpisces.bbystatic.com\\\",\\\"env_appServer\\\":\\\"https:\\\\u002F\\\\u002Fwww.bestbuy.com\\\"},\\\"activePlanType\\\":\\\"\\\",\\\"enableCDNFromAccountMenu\\\":true,\\\"enableCreditCardDashboard\\\":true,\\\"enableGuestFreeShippingonAccountMenu\\\":true,\\\"payManageUrl\\\":\\\"\\\\u002Fidentity\\\\u002Fsso\\\\u002Fsignin?contextId=sso-visa&processIndicator=dashboard&source=fT4TCYlhM%2FBHt4GYEIyTpUXh8eOIYXDjvQ8brdIq%2BgjFKp0ZC2Aq%2BH81O%2Futk9NoztIKhuI3FqmuRt1rZid1%2Bw%3D%3D\\\",\\\"enableLifeTimeSavings\\\":true,\\\"enableMemberTermSavings\\\":true,\\\"enableSmbPersonalization\\\":true,\\\"membershipType\\\":\\\"NULL\\\",\\\"totalSavings\\\":\\\"\\\",\\\"memberSince\\\":\\\"\\\",\\\"automaticTakeover\\\":true,\\\"disableEntryPoint\\\":false,\\\"enableMemberOnboarding\\\":true,\\\"enableMemberOnboardingLV\\\":true,\\\"toastContext\\\":\\\"account-toast\\\",\\\"toastRedirectSource\\\":\\\"pEGrXleBQ%2BTUIvn6pE892hZ9KAMb8EH6QQFWKTIDQAnl%2FXigyQTvqsU8LOkdPk8ifRUjP8SZihr522K4rYAiRw%3D%3D\\\",\\\"enableGlobalNavRedesign\\\":true,\\\"enableRedesignABTest\\\":false,\\\"isNewHeaderLayout\\\":true,\\\"instanceId\\\":\\\"shop-account-menu-82459293\\\"},\\\"disableSignInToast\\\":false,\\\"enableAccountMenuButton\\\":false,\\\"businessName\\\":\\\"\\\",\\\"userName\\\":\\\"\\\",\\\"placement\\\":\\\"\\\",\\\"isRecognized\\\":false,\\\"deviceClass\\\":\\\"\\\",\\\"isNewHeaderLayout\\\":false}\", \"en-US\"));</script></div>"
+}

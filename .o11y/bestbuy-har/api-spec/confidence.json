@@ -1,0 +1,18 @@
+{
+  "endpoints": [
+    {
+      "key": "GET https://www.bestbuy.com/gateway/graphql/fulfillment",
+      "samples": 16,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "har-537",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777897.18f98a8c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "467",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:17 GMT",
+    "expires": "Thu, 14 May 2026 16:58:17 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "16",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6527575\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.8,\"reviewCount\":2617,\"syndicatedReviewSummary\":[{\"clientDisplayName\":\"thule-us-ca\",\"overallRating\":3.5,\"totalReviewCount\":4,\"displayLink\":\"https://bestbuy.ugc.bazaarvoice.com/3545syn/6527575/syndicatedreviews.htm?sourcename=thule-us-ca\",\"__typename\":\"SyndicatedReviewSummary\"}],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/thule-gauntlet-4-attache-briefcase-for-all-16-apple-macbook-pro-models-all-15-apple-macbook-pro-models-14-1-pc-laptops-black/J7RJHS5G8L\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/thule-gauntlet-4-attache-briefcase-for-all-16-apple-macbook-pro-models-all-15-apple-macbook-pro-models-14-1-pc-laptops-black/J7RJHS5G8L/sku/6527575\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"Thule - Gauntlet 4 Attaché Briefcase for all 16” Apple MacBook Pro Models, all 15” Apple MacBook Pro Models & 14.1\\\" PC & Laptops - Black\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

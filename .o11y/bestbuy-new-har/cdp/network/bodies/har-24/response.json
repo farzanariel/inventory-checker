@@ -1,0 +1,20 @@
+{
+  "id": "har-24",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/main-app-9d5849f9f8337c12.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777879.18f88918",
+    "cache-control": "max-age=2422259",
+    "content-encoding": "br",
+    "content-length": "209",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:57:59 GMT",
+    "etag": "\"8e48129fac2c2f3500a01aa8a4add80f:1778545613.487598\"",
+    "expires": "Thu, 11 Jun 2026 17:48:58 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:53 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[7358],{50434:(e,s,n)=>{Promise.resolve().then(n.t.bind(n,57567,23)),Promise.resolve().then(n.t.bind(n,1076,23)),Promise.resolve().then(n.t.bind(n,21580,23)),Promise.resolve().then(n.t.bind(n,47245,23)),Promise.resolve().then(n.t.bind(n,91133,23)),Promise.resolve().then(n.t.bind(n,4297,23)),Promise.resolve().then(n.t.bind(n,31872,23)),Promise.resolve().then(n.bind(n,12569))},51677:()=>{}},e=>{var s=s=>e(e.s=s);e.O(0,[2347,5158],()=>(s(92521),s(50434))),_N_E=e.O()}]);"
+}

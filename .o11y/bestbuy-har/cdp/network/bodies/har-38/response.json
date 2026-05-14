@@ -1,0 +1,14 @@
+{
+  "id": "har-38",
+  "url": "https://pixel.adsafeprotected.com/services/pub?anId=931017&slot=%7Bid:gpt-billboardtall-position2,ss:%5B970.250%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&wr=632.812&sr=1512.982&sessionId=7463a3d2-5fc5-c199-3372-6b60c1abb4fe&url=https%253A%252F%252Fwww.bestbuy.com%252Fproduct%252Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%252FJJGH3KQYP8%252Fsku%252F6674708",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "access-control-expose-headers": "X-Server-Name",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:51:24 GMT",
+    "timing-allow-origin": "*"
+  },
+  "body": "{\"fr\":\"false\",\"brandSafety\":{\"adt\":\"veryLow\",\"alc\":\"veryLow\",\"dlm\":\"veryLow\",\"drg\":\"veryLow\",\"hat\":\"veryLow\",\"off\":\"veryLow\",\"vio\":\"veryLow\"},\"slots\":{\"gpt-billboardtall-position2\":{\"id\":\"24df12d1-4fb5-11f1-bed0-d2be89ea2101\"}},\"custom\":{\"ias-kw\":[\"IAS_SET\"]}}"
+}

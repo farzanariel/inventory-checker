@@ -1,0 +1,18 @@
+{
+  "id": "har-111",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/setup-event-manager.8.9.11.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777879.18f88fe9",
+    "cache-control": "max-age=843595",
+    "content-encoding": "br",
+    "content-length": "184",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:57:59 GMT",
+    "etag": "\"1c1955d21ac39bdec662d13e0462a0a0:1665073415.295971\"",
+    "expires": "Sun, 24 May 2026 11:17:54 GMT",
+    "last-modified": "Thu, 06 Oct 2022 16:23:35 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "!function e(){e.countOfRetries||(e.countOfRetries=1),e.hasSetupAlready||(window.EventManager&&window.EventManager&&!window.EventManager.default?e.hasSetupAlready=!0:window.EventManager&&window.EventManager.default?(window._setUpEventManager(),e.hasSetupAlready=!0):e.countOfRetries<40&&(++e.countOfRetries>20?setTimeout(e,50):setTimeout(e,25)))}();\n//# sourceMappingURL=setup-event-manager.8.9.11.js.map"
+}

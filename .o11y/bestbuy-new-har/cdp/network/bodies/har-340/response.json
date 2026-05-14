@@ -1,0 +1,22 @@
+{
+  "id": "har-340",
+  "url": "https://www.bestbuy.com/site/canopy/component/shop/package-deals-carousel/v1?_layoutClassList=mt-400&abtest353ScalingStrategy=true&abtest353Variant=undefined&deviceClass=l&displayLocation=Product%20Detail%20Page&pageName=Product%20Detail%20Page&skuId=6674708",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777883.18f8c2ce",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "111",
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 149 0 -",
+    "x-bby-instance-id": "unknown",
+    "x-forwarded-proto": "https",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "body": "\n                            \n                         <div style=\"display: none;\" data-shop-package-deals-carousel-v1=\"no-content\" >No content</div>"
+}

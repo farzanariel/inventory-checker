@@ -1,0 +1,15 @@
+{
+  "id": "har-468",
+  "url": "https://6ce7ea865d65d81765e88d215a8e9999.safeframe.googlesyndication.com/safeframe/1-0-45/html/container.html",
+  "method": "GET",
+  "headers": {
+    "DNT": "1",
+    "Referer": "https://www.bestbuy.com/",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\""
+  },
+  "body": null
+}

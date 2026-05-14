@@ -1,0 +1,20 @@
+{
+  "id": "har-207",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/4715.77af5064f02820f9.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8af83",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "1169",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"561b4a29dd2ed3e9e7f4271caf423902:1778696809.597385\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:49 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[4715],{11530:(e,t,r)=>{r.r(t),r.d(t,{default:()=>s});var a=r(73365);r(1521);var n=r(7270),i=r(13727);let s=()=>{let[e]=(0,i.gQK)();return(0,a.jsx)(\"div\",{className:\"mt-300\",children:(0,a.jsx)(n.JF,{deviceClass:e?\"s\":\"l\",headerText:\"Similar products from outside of Best Buy\",listPageNum:1,numTextAdsSV:4,numTextAdsLV:4,pageType:\"pdp\",showProgrammatic:!0,textStyleId:\"6793928452\"})})}},20425:(e,t,r)=>{function a(){return\"undefined\"!=typeof window}r.d(t,{J:()=>i});var n=r(1521);function i(e){!function(e,t={}){let{persisted:r=!1}=t;(0,n.useEffect)(()=>{let t=t=>{r&&t.persisted?e():r||e()};return a()&&window.addEventListener(\"pageshow\",t),()=>{a()&&window.removeEventListener(\"pageshow\",t)}},[e,r])}(e,{persisted:!0})}},57974:(e,t,r)=>{r.d(t,{k:()=>c,u:()=>o});var a=r(1521),n=r(47495),i=r(53659),s=[\"ariaLabel\",\"aria-expanded\",\"buttonRef\",\"className\"];function l(){return(l=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var a in r)({}).hasOwnProperty.call(r,a)&&(e[a]=r[a])}return e}).apply(null,arguments)}var o=a.forwardRef(function(e,t){var r=e.ariaLabel,o=e[\"aria-expanded\"],c=e.buttonRef,u=e.className,d=function(e,t){if(null==e)return{};var r,a,n=function(e,t){if(null==e)return{};var r={};for(var a in e)if(({}).hasOwnProperty.call(e,a)){if(-1!==t.indexOf(a))continue;r[a]=e[a]}return r}(e,t);if(Object.getOwnPropertySymbols){var i=Object.getOwnPropertySymbols(e);for(a=0;a<i.length;a++)r=i[a],-1===t.indexOf(r)&&({}).propertyIsEnumerable.call(e,r)&&(n[r]=e[r])}return n}(e,s),f=(0,i.N)(t,c);return a.createElement(\"button\",l({\"aria-expanded\":o,\"aria-label\":\"\".concat(r,\" info\"),className:(0,n.x)(\"c-info-i\",o&&\"v-active\",u),ref:f,type:\"button\"},d),a.createElement(\"svg\",{\"aria-hidden\":\"true\",viewBox:\"0 0 32 32\"},a.createElement(\"path\",{className:\"c-info-i-circle\",d:\"M26.26,5.74 L26.26,5.74 C20.60,0.086 11.4,0.086 5.74,5.74 C0.086,11.4 0.086,20.60 5.74,26.26 C11.4,31.91 20.60,31.91 26.26,26.26 C31.91,20.6 31.91,11.4 26.26,5.74 Z\"}),a.createElement(\"g\",{className:\"c-info-i-text\",transform:\"translate(13, 5)\"},a.createElement(\"path\",{d:\"M3,0.23 C1.47,0.23 0.29,1.44 0.29,2.82 C0.29,4.24 1.47,5.42 3,5.42 C4.5,5.42 5.71,4.29 5.71,2.82 C5.71,1.38 4.5,0.23 3,0.23 Z\"}),a.createElement(\"rect\",{height:\"14.36\",width:\"4.73\",x:\"0.63\",y:\"7.41\"}))))});o.displayName=\"BrixInformationIcon\";var c=o}}]);"
+}

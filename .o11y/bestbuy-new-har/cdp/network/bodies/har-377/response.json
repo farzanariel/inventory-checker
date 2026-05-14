@@ -1,0 +1,21 @@
+{
+  "id": "har-377",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/federation/mf-dep-vendors-_yarn_cache_object-assign-npm-4_1_1-2327929333-fcc6e4ea8c_zip_node_modules_object-ass-19d9ec-1c32616c1e932bcefbc4.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-amd-bc-debug": "[a=23.11.229.198,b=10241620,c=c,d=1775010269,h=200,k=3,l=1,n=US_GA_ATLANTA,o=20940,r=4,p=698]",
+    "akamai-grn": "0.e73dd717.1778777883.18f8c870",
+    "cache-control": "max-age=323523",
+    "content-encoding": "br",
+    "content-length": "698",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "etag": "\"9ce2d5e47816ae8dde94c087b6231be0:1772796336.606349\"",
+    "expires": "Mon, 18 May 2026 10:50:06 GMT",
+    "last-modified": "Fri, 06 Mar 2026 11:25:36 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "/*! For license information please see mf-dep-vendors-_yarn_cache_object-assign-npm-4_1_1-2327929333-fcc6e4ea8c_zip_node_modules_object-ass-19d9ec-1c32616c1e932bcefbc4.js.LICENSE.txt */\n\"use strict\";(self.webpackChunk_gvp_lib_component_assets=self.webpackChunk_gvp_lib_component_assets||[]).push([[\"vendors-_yarn_cache_object-assign-npm-4_1_1-2327929333-fcc6e4ea8c_zip_node_modules_object-ass-19d9ec\"],{\"../../.yarn/cache/object-assign-npm-4.1.1-2327929333-fcc6e4ea8c.zip/node_modules/object-assign/index.js\":e=>{var n=Object.getOwnPropertySymbols,t=Object.prototype.hasOwnProperty,r=Object.prototype.propertyIsEnumerable;e.exports=function(){try{if(!Object.assign)return!1;var e=new String(\"abc\");if(e[5]=\"de\",\"5\"===Object.getOwnPropertyNames(e)[0])return!1;for(var n={},t=0;t<10;t++)n[\"_\"+String.fromCharCode(t)]=t;if(\"0123456789\"!==Object.getOwnPropertyNames(n).map((function(e){return n[e]})).join(\"\"))return!1;var r={};return\"abcdefghijklmnopqrst\".split(\"\").forEach((function(e){r[e]=e})),\"abcdefghijklmnopqrst\"===Object.keys(Object.assign({},r)).join(\"\")}catch(e){return!1}}()?Object.assign:function(e,c){for(var o,s,a=function(e){if(null==e)throw new TypeError(\"Object.assign cannot be called with null or undefined\");return Object(e)}(e),i=1;i<arguments.length;i++){for(var p in o=Object(arguments[i]))t.call(o,p)&&(a[p]=o[p]);if(n){s=n(o);for(var b=0;b<s.length;b++)r.call(o,s[b])&&(a[s[b]]=o[s[b]])}}return a}}}]);\n//# sourceMappingURL=mf-dep-vendors-_yarn_cache_object-assign-npm-4_1_1-2327929333-fcc6e4ea8c_zip_node_modules_object-ass-19d9ec-1c32616c1e932bcefbc4.js.map"
+}

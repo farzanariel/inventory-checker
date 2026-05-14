@@ -1,0 +1,28 @@
+{
+  "id": "har-413",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d6bd",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "1093",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "18",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productsBySkuIds\":[{\"skuId\":\"6549173\",\"brand\":\"Microsoft\",\"whatItIs\":[\"Gift with Purchase\",\"Microsoft Gaming\",\"Video Game Card\"],\"name\":{\"short\":\"Microsoft - Xbox Game Pass Premium 1 Month Membership – Activation Required [Digital]\",\"__typename\":\"ProductName\"},\"description\":{\"long\":\"Play Diablo IV, Hogwarts Legacy and 200+ more games on any screen.  Dive into a range of legendary franchises from Call of Duty® to Minecraft and everything in between.  Download and play games on Xbox console, PC and supported handhelds.  Stream games with Cloud Gaming on any supported device, including PC, TV, mobile, tablet and VR headsets. Enjoy 1-month of Xbox Game Pass Premium with your Best Buy purchase and play today.  Eligible for new subscribers only.  Plan auto-renews until cancelled.  $14.99 Value.\",\"__typename\":\"ProductDescription\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/351dfc50-238b-4884-9b58-f36e8b4b514a.jpg\",\"__typename\":\"ProductImage\"},\"__typename\":\"Product\",\"openBoxCondition\":null},{\"skuId\":\"6548823\",\"brand\":\"Norton\",\"whatItIs\":[\"Antivirus and Internet Security Software\",\"Free Trial\",\"Norton Antivirus\",\"Subscription\"],\"name\":{\"short\":\"Norton - 360 (3 Device) with LifeLock Identity Advisor (1 Adult) Internet Security + Scam Protection + VPN (6 Month Subscription) - Android, Apple iOS, Mac OS, Windows [Digital]\",\"__typename\":\"ProductName\"},\"description\":{\"long\":\"Norton 360 Deluxe for 3 devices is the all-in-one choice to help keep yourself and your loved ones safe from hidden scams, phishing, malware, and viruses, plus a VPN to help keep internet browsing private, as well as cloud backup for Windows PCs to keep your files safer, and parental controls. With our Advanced AI scam protection you can stop wondering if a message or email is suspicious. Help protect your private and financial information when you post, bank, and shop online. LifeLock Identity Advisor offers US-based Identity Restoration Specialists to help you each step of the way, should you discover you’re a victim of identity theft.\",\"__typename\":\"ProductDescription\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/e9d9e14a-d3cf-462e-b3e7-006f40b69ebe.jpg\",\"__typename\":\"ProductImage\"},\"__typename\":\"Product\",\"openBoxCondition\":null}]}}\n"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "har-196",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/bb08eccf1568495f.css",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777881.18f8acad",
+    "cache-control": "max-age=2422266",
+    "content-encoding": "br",
+    "content-length": "70",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"198c9521ddff0071082d926e15aa8645:1778545621.044376\"",
+    "expires": "Thu, 11 Jun 2026 17:49:07 GMT",
+    "last-modified": "Tue, 12 May 2026 00:27:01 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".popover-button:hover{background-color:#2b5df5;border-color:#2b5df5}.popover-button:hover span{color:#e0e6ef}.popover-button:hover svg{fill:#e0e6ef}"
+}

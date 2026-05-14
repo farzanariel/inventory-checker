@@ -1,0 +1,18 @@
+{
+  "id": "har-329",
+  "url": "https://streams.bestbuy.com/customer/web-streams/v1/events/digital-experience-event",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "content-length": "151",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "x-cloud-trace-context": "f7a7ecb9342fa63d21bdb10d9befc60c",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "body": "{\"overallStatus\":\"SUCCESS\",\"counts\":{\"events\":1,\"ok\":1,\"failed\":0},\"results\":[{\"eventUuid\":\"24b9ff7b-4a4c-a2d6-073e-712834e47846\",\"status\":\"SUCCESS\"}]}"
+}

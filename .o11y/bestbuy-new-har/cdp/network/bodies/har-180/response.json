@@ -1,0 +1,19 @@
+{
+  "id": "har-180",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/analytics-dotcom/chunks/mtSpan-55de0c5e2415359b1649.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ab41",
+    "cache-control": "max-age=1300088",
+    "content-encoding": "br",
+    "content-length": "405",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"499800c0a4b79426848730d46ddbc70c:1777485033.00588\"",
+    "expires": "Fri, 29 May 2026 18:06:09 GMT",
+    "last-modified": "Wed, 29 Apr 2026 17:50:33 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "/*! For license information please see mtSpan-55de0c5e2415359b1649.js.LICENSE.txt */\n\"use strict\";(self.webpackJsonpAnalytics=self.webpackJsonpAnalytics||[]).push([[9124],{32479(e,n,t){t.r(n),t.d(n,{default:()=>c}),Object.defineProperty(c,\"name\",{value:\"default\",configurable:!0});var a=t(53811),i=t(86133);function c(){window.analyticsQ&&window.analyticsQ.listen(function(e){if(\"SPAN_EVENT\"===e.type){var n=(0,a.A)({},e);if(delete n.type,\"PAGE_LOAD\"===n.eventType||\"PLP_LOAD\"===n.eventType)return void console.warn(\"\".concat(n.eventType,\" span events are deprecated\"));(0,i.writeDataTopic)(n.eventType,n)}})}}}]);\n//# sourceMappingURL=mtSpan-55de0c5e2415359b1649.js.map"
+}

@@ -1,0 +1,74 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [MyQuery]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/json",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "447",
+      "content-type": "application/json",
+      "dnt": "1",
+      "mode": "cors",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+    },
+    "body": {
+      "query": "query MyQuery {\n  customer {\n    prioritizedCallToAction(\n      input: {origin: \"toast\", redirectUrl: \"https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\"}\n    ) {\n      copy\n      experienceUrl\n      experienceUrlCopy\n      notification\n      notificationType\n    }\n  }\n}",
+      "variables": {},
+      "operationName": "MyQuery"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777882.18f8b33a",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "gzip",
+      "content-length": "411",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "64",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "customer": {
+          "prioritizedCallToAction": {
+            "copy": "<strong>Add recovery phone number.</strong><br>In case you ever need to recover your account, we'll send you a text. Please {experienceUrl}.",
+            "experienceUrl": "https://www.bestbuy.com/identity/recovery/phone/entrypoint?origin=toast&ctaName=add-account-recovery-phone&redirectUrl=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708",
+            "experienceUrlCopy": "add your phone number",
+            "notification": "add-account-recovery-phone",
+            "notificationType": "moderate"
+          }
+        }
+      }
+    }
+  }
+}

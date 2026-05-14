@@ -1,0 +1,20 @@
+{
+  "id": "har-9",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/ac96b4f39b9894e0.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777878.18f88548",
+    "cache-control": "max-age=366734",
+    "content-encoding": "br",
+    "content-length": "424",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"c86e3e9d5432848334a8a6cefb2bea74:1776374021.070058\"",
+    "expires": "Mon, 18 May 2026 22:50:12 GMT",
+    "last-modified": "Thu, 16 Apr 2026 21:13:41 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": ".main{margin:auto;display:flex;flex-direction:column;justify-content:space-between;width:100%}.LV-fullScreen-mediaGallery,.LV-review-mediaGallery{.container,.row{height:100%;width:100%}.c-modal-grid{width:calc(100% - 30px);height:calc(100% - 30px);min-width:930px;max-width:1600px;min-height:600px;margin:auto;display:flex;flex-direction:column}}.min-width-none{min-width:0}.w-100px{width:100px}.mocked-data{background-color:pink}.openbox-condition-fair{background:#fff5ec}.openbox-condition-good{background:#fff6d1}.openbox-condition-excellent{background:#e5fde5}.openbox-functional-check-2{background:#f6f6f7}.variation-carousel .pl-flex-carousel{padding-bottom:10px;padding-top:8px}.variation-carousel .variation-tile{min-height:44px}.lv-fullscreen-redesign-media-gallery{overflow-x:scroll;.container,.row{height:100%;width:100%}.c-modal-grid{width:calc(100% - 30px);height:calc(100% - 30px);min-width:930px;max-width:1008px;min-height:640px;margin:auto;border-radius:4px;overflow-y:scroll;padding:24px!important}.video-player{position:absolute;background-color:#1d252c}}.gvp-product-highlights .shop-product-highlights .c-overlay-fullscreen{z-index:1001}"
+}

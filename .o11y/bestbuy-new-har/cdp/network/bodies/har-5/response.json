@@ -1,0 +1,19 @@
+{
+  "id": "har-5",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/3910b307be902d4f.css",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777878.18f88530",
+    "cache-control": "max-age=1065721",
+    "content-encoding": "br",
+    "content-length": "175",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"2dbad80b7596910823f42d0a68a73926:1777047057.677362\"",
+    "expires": "Wed, 27 May 2026 00:59:59 GMT",
+    "last-modified": "Fri, 24 Apr 2026 16:10:57 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": ".pagination-arrow,.pagination-number{&:hover{background-color:var(--colorBgCompSurfaceTransparentPressed);text-decoration:none}}.standalone-rating-bar-grid{grid-template-columns:6px 16px minmax(100px,1fr)}.auto-col-width-1{grid-auto-columns:1ch}.auto-col-width-2{grid-auto-columns:2ch}.auto-col-width-3{grid-auto-columns:3ch}.auto-col-width-4{grid-auto-columns:4ch}.auto-col-width-5{grid-auto-columns:5ch}.auto-col-width-6{grid-auto-columns:6ch}"
+}

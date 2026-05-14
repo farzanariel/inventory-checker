@@ -1,0 +1,19 @@
+{
+  "id": "har-399",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/4374.9ae7216121989fdd.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777884.18f8d4ae",
+    "cache-control": "max-age=2513571",
+    "content-encoding": "br",
+    "content-length": "966",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "etag": "\"793230bcdcf3dd2a1a057af8ae3c6a42:1778696808.451377\"",
+    "expires": "Fri, 12 Jun 2026 19:10:55 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:48 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[4374],{4374:(e,l,s)=>{s.r(l),s.d(l,{RecsAdDisplayWrapperLV:()=>m,default:()=>y});var a=s(73365);s(1521);var n=s(13727),i=s(31227),o=s(99020),t=s(84515),r=s(50455),d=s(97473),p=s(39235),c=s(93490);let m=({shouldShowAds:e,isOpenBox:l,lazyRenderConfigs:s})=>(0,a.jsx)(n.Ei,{children:n=>(0,a.jsx)(h,{shouldShowAds:e,isOpenBox:l,lazyRenderConfigs:s,isCachedResponse:n})}),h=({shouldShowAds:e,isOpenBox:l,lazyRenderConfigs:s,isCachedResponse:m})=>{let[h]=(0,n.gQK)(),[y]=(0,n.tIE)(),[b]=(0,p.cN)({provideFallbacks:!0}),x=b?.preferences?.store?.locationId??null,C=(0,n.Ip3)({skuId:y,storeId:x,site:`dotcom-${h?\"s\":\"l\"}`})&&e;return(0,a.jsxs)(a.Fragment,{children:[C&&(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(i.A,{}),(0,a.jsx)(c.qo,{componentName:\"DisplayAdUniversalPlacement\",wrap:!0,children:(0,a.jsx)(o.y,{loadingFallback:t.mm.billboardTall,name:\"display ad below sponsored carousel\",children:(0,a.jsx)(\"div\",{className:\"pt-400\",children:(0,a.jsx)(r.DisplayAdUniversalPlacement,{deviceClass:\"l\",position:\"position2\",size:t.E,textPosition:\"bottom\",isCachedResponse:m})})})})]}),(0,a.jsx)(d.ql,{stylingClassName:\"pt-400\",placement:\"pdp-complementary-mp\",site:\"dotcom-l\",recommend:15,isOpenBox:l,config:{lazyRender:s},isColdStart:!0,isCachedResponse:m}),(0,a.jsx)(d.ql,{stylingClassName:\"pt-400\",placement:\"pdp-compare-mp\",site:\"dotcom-l\",recommend:15,isOpenBox:l,config:{lazyRender:s},isColdStart:!0,isCachedResponse:m})]})},y=m},31227:(e,l,s)=>{s.d(l,{A:()=>a});let a=(0,s(92165).lazy)(()=>Promise.all([s.e(7713),s.e(1387),s.e(7270),s.e(5514),s.e(8272),s.e(1803),s.e(1350),s.e(5563),s.e(9262),s.e(9638),s.e(6213)]).then(s.bind(s,26213)))},50455:(e,l,s)=>{s.r(l),s.d(l,{AtwaNinjaCarousel:()=>i,AtwaNinjaWrapper:()=>n,DisplayAdUniversalPlacement:()=>o,GenericMorpherMostViewedCarouselPlacement:()=>t,GoogleAdSenseFooterPlacement:()=>r,SpotlightAdPlacement:()=>d});var a=s(92165);let n=(0,a.lazy)(()=>Promise.all([s.e(1387),s.e(1098),s.e(6113),s.e(4515),s.e(7270),s.e(8706)]).then(s.bind(s,25563))),i=(0,a.lazy)(()=>Promise.all([s.e(1387),s.e(1098),s.e(6113),s.e(4515),s.e(7270),s.e(9433)]).then(s.bind(s,21932))),o=(0,a.lazy)(()=>Promise.all([s.e(1387),s.e(1098),s.e(6113),s.e(4515),s.e(7270),s.e(7264)]).then(s.bind(s,73242))),t=(0,a.lazy)(()=>s.e(8864).then(s.bind(s,58864))),r=(0,a.lazy)(()=>Promise.all([s.e(1387),s.e(1098),s.e(6113),s.e(4515),s.e(7270),s.e(4715)]).then(s.bind(s,11530))),d=(0,a.lazy)(()=>Promise.all([s.e(1387),s.e(1098),s.e(6113),s.e(4515),s.e(7270),s.e(2900)]).then(s.bind(s,65709)))}}]);"
+}

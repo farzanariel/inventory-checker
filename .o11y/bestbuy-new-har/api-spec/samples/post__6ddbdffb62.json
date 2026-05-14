@@ -1,0 +1,423 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [WarrantySelector_AssociatedWarranties]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "2234",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "attach-warranty-selector",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "WarrantySelector_AssociatedWarranties"
+    },
+    "body": {
+      "operationName": "WarrantySelector_AssociatedWarranties",
+      "variables": {
+        "skuId": "6674708",
+        "warrantyPrice": 599.99,
+        "hasPaidMembership": false,
+        "membershipTier": "NULL",
+        "openBoxCondition": null
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query WarrantySelector_AssociatedWarranties($skuId: String!, $warrantyPrice: Float, $hasPaidMembership: Boolean, $membershipTier: String, $openBoxCondition: Int) {\n  productBySkuId(skuId: $skuId, openBoxCondition: $openBoxCondition) {\n    associatedWarranties(\n      filter: {warrantyPrice: $warrantyPrice, hasPaidMembership: $hasPaidMembership, membershipTier: $membershipTier}\n    ) {\n      popularDuration\n      recommendedPercent\n      warranties {\n        ...WarrantyInterruptorFragment\n        openBoxCondition\n        skuId\n        termLength {\n          unitOfMeasure\n          value\n          __typename\n        }\n        reviewInfo {\n          reviewCount\n          averageRating\n          recommendedPercent\n          __typename\n        }\n        term\n        protectionType\n        planType\n        name {\n          short\n          __typename\n        }\n        description {\n          short\n          __typename\n        }\n        productServiceDescription {\n          details\n          title\n          __typename\n        }\n        classification {\n          class {\n            id\n            __typename\n          }\n          __typename\n        }\n        servicePlan {\n          subtype {\n            code\n            description\n            __typename\n          }\n          __typename\n        }\n        operationalAttributes {\n          displayName\n          values\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n    skuId\n    openBoxCondition\n  }\n}\n\nfragment WarrantyInterruptorFragment on Product {\n  price(\n    input: {salesChannel: \"LargeView\", planPaidMemberType: \"NULL\", customerAttributes: \"\"}\n  ) {\n    customerPrice\n    regularPrice\n    preferredBadging\n    puckDisplayMessage\n    __typename\n  }\n  termLength {\n    value\n    unitOfMeasure\n    __typename\n  }\n  __typename\n  skuId\n  openBoxCondition\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777882.18f8b77f",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "898",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "75",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "productBySkuId": {
+          "associatedWarranties": {
+            "popularDuration": null,
+            "recommendedPercent": null,
+            "warranties": [
+              {
+                "price": {
+                  "customerPrice": 149.99,
+                  "regularPrice": 149.99,
+                  "preferredBadging": null,
+                  "puckDisplayMessage": null,
+                  "__typename": "ItemPrice"
+                },
+                "termLength": {
+                  "value": 1,
+                  "unitOfMeasure": "Years",
+                  "__typename": "TermLength"
+                },
+                "__typename": "Product",
+                "skuId": "6626901",
+                "openBoxCondition": null,
+                "reviewInfo": {
+                  "reviewCount": 11933,
+                  "averageRating": 4.6,
+                  "recommendedPercent": 93,
+                  "__typename": "ProductReviewInfo"
+                },
+                "term": "12 months",
+                "protectionType": "Accidental",
+                "planType": "GSP",
+                "name": {
+                  "short": "1-Year Accidental Geek Squad Protection",
+                  "__typename": "ProductName"
+                },
+                "description": {
+                  "short": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:<br><br> <ul> <li>Accidental damage while handling your product </li> <li>One-time replacement for the original battery </li> <li>Hard drive that stops working</li> <li>Hardware failure, including normal wear and tear </li> </ul>",
+                  "__typename": "ProductDescription"
+                },
+                "productServiceDescription": {
+                  "details": [
+                    "Accidental damage while handling your product",
+                    "One-time replacement for the original battery",
+                    "Hard drive that stops working",
+                    "Hardware failure, including normal wear and tear"
+                  ],
+                  "title": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:",
+                  "__typename": "ProductServiceDescription"
+                },
+                "classification": {
+                  "class": {
+                    "id": "874",
+                    "__typename": "ProductClass"
+                  },
+                  "__typename": "ProductClassification"
+                },
+                "servicePlan": {
+                  "subtype": {
+                    "code": "GSP",
+                    "description": "Geek Squad Protection",
+                    "__typename": "ProductServicePlanSubtype"
+                  },
+                  "__typename": "ProductServicePlan"
+                },
+                "operationalAttributes": [
+                  {
+                    "displayName": "Learn More URL",
+                    "values": [
+                      "https://www.bestbuy.com/site/computer-tablet-protection/laptop-protection/pcmcat1598371234946.c?id=pcmcat1598371234946"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Marketing Headline",
+                    "values": [
+                      "Protect your laptop"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Terms_and_Conditions_URL",
+                    "values": [
+                      "https://www.bestbuy.com/services/plans/termsconditions"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  }
+                ]
+              },
+              {
+                "price": {
+                  "customerPrice": 209.99,
+                  "regularPrice": 209.99,
+                  "preferredBadging": null,
+                  "puckDisplayMessage": null,
+                  "__typename": "ItemPrice"
+                },
+                "termLength": {
+                  "value": 2,
+                  "unitOfMeasure": "Years",
+                  "__typename": "TermLength"
+                },
+                "__typename": "Product",
+                "skuId": "6626929",
+                "openBoxCondition": null,
+                "reviewInfo": {
+                  "reviewCount": 11933,
+                  "averageRating": 4.6,
+                  "recommendedPercent": 93,
+                  "__typename": "ProductReviewInfo"
+                },
+                "term": "24 months",
+                "protectionType": "Accidental",
+                "planType": "GSP",
+                "name": {
+                  "short": "2-Year Accidental Geek Squad Protection",
+                  "__typename": "ProductName"
+                },
+                "description": {
+                  "short": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:<br><br> <ul> <li>Accidental damage while handling your product </li> <li>One-time replacement for the original battery </li> <li>Hard drive that stops working</li> <li>Hardware failure, including normal wear and tear </li> </ul>",
+                  "__typename": "ProductDescription"
+                },
+                "productServiceDescription": {
+                  "details": [
+                    "Accidental damage while handling your product",
+                    "One-time replacement for the original battery",
+                    "Hard drive that stops working",
+                    "Hardware failure, including normal wear and tear"
+                  ],
+                  "title": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:",
+                  "__typename": "ProductServiceDescription"
+                },
+                "classification": {
+                  "class": {
+                    "id": "874",
+                    "__typename": "ProductClass"
+                  },
+                  "__typename": "ProductClassification"
+                },
+                "servicePlan": {
+                  "subtype": {
+                    "code": "GSP",
+                    "description": "Geek Squad Protection",
+                    "__typename": "ProductServicePlanSubtype"
+                  },
+                  "__typename": "ProductServicePlan"
+                },
+                "operationalAttributes": [
+                  {
+                    "displayName": "Learn More URL",
+                    "values": [
+                      "https://www.bestbuy.com/site/computer-tablet-protection/laptop-protection/pcmcat1598371234946.c?id=pcmcat1598371234946"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Marketing Headline",
+                    "values": [
+                      "Protect your laptop"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Terms_and_Conditions_URL",
+                    "values": [
+                      "https://www.bestbuy.com/services/plans/termsconditions"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  }
+                ]
+              },
+              {
+                "price": {
+                  "customerPrice": 259.99,
+                  "regularPrice": 259.99,
+                  "preferredBadging": null,
+                  "puckDisplayMessage": null,
+                  "__typename": "ItemPrice"
+                },
+                "termLength": {
+                  "value": 3,
+                  "unitOfMeasure": "Years",
+                  "__typename": "TermLength"
+                },
+                "__typename": "Product",
+                "skuId": "6626955",
+                "openBoxCondition": null,
+                "reviewInfo": {
+                  "reviewCount": 11933,
+                  "averageRating": 4.6,
+                  "recommendedPercent": 93,
+                  "__typename": "ProductReviewInfo"
+                },
+                "term": "36 months",
+                "protectionType": "Accidental",
+                "planType": "GSP",
+                "name": {
+                  "short": "3-Year Accidental Geek Squad Protection",
+                  "__typename": "ProductName"
+                },
+                "description": {
+                  "short": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:<br><br> <ul> <li>Accidental damage while handling your product </li> <li>One-time replacement for the original battery </li> <li>Hard drive that stops working</li> <li>Hardware failure, including normal wear and tear </li> </ul>",
+                  "__typename": "ProductDescription"
+                },
+                "productServiceDescription": {
+                  "details": [
+                    "Accidental damage while handling your product",
+                    "One-time replacement for the original battery",
+                    "Hard drive that stops working",
+                    "Hardware failure, including normal wear and tear"
+                  ],
+                  "title": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:",
+                  "__typename": "ProductServiceDescription"
+                },
+                "classification": {
+                  "class": {
+                    "id": "874",
+                    "__typename": "ProductClass"
+                  },
+                  "__typename": "ProductClassification"
+                },
+                "servicePlan": {
+                  "subtype": {
+                    "code": "GSP",
+                    "description": "Geek Squad Protection",
+                    "__typename": "ProductServicePlanSubtype"
+                  },
+                  "__typename": "ProductServicePlan"
+                },
+                "operationalAttributes": [
+                  {
+                    "displayName": "Learn More URL",
+                    "values": [
+                      "https://www.bestbuy.com/site/computer-tablet-protection/laptop-protection/pcmcat1598371234946.c?id=pcmcat1598371234946"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Marketing Headline",
+                    "values": [
+                      "Protect your laptop"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Terms_and_Conditions_URL",
+                    "values": [
+                      "https://www.bestbuy.com/services/plans/termsconditions"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  }
+                ]
+              },
+              {
+                "price": {
+                  "customerPrice": 314.99,
+                  "regularPrice": 314.99,
+                  "preferredBadging": null,
+                  "puckDisplayMessage": null,
+                  "__typename": "ItemPrice"
+                },
+                "termLength": {
+                  "value": 4,
+                  "unitOfMeasure": "Years",
+                  "__typename": "TermLength"
+                },
+                "__typename": "Product",
+                "skuId": "6626985",
+                "openBoxCondition": null,
+                "reviewInfo": {
+                  "reviewCount": 11933,
+                  "averageRating": 4.6,
+                  "recommendedPercent": 93,
+                  "__typename": "ProductReviewInfo"
+                },
+                "term": "48 months",
+                "protectionType": "Accidental",
+                "planType": "GSP",
+                "name": {
+                  "short": "4-Year Accidental Geek Squad Protection",
+                  "__typename": "ProductName"
+                },
+                "description": {
+                  "short": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:<br><br> <ul> <li>Accidental damage while handling your product </li> <li>One-time replacement for the original battery </li> <li>Hard drive that stops working</li> <li>Hardware failure, including normal wear and tear </li> </ul>",
+                  "__typename": "ProductDescription"
+                },
+                "productServiceDescription": {
+                  "details": [
+                    "Accidental damage while handling your product",
+                    "One-time replacement for the original battery",
+                    "Hard drive that stops working",
+                    "Hardware failure, including normal wear and tear"
+                  ],
+                  "title": "Enhance your manufacturer warranty and get extended coverage when the warranty ends, including for:",
+                  "__typename": "ProductServiceDescription"
+                },
+                "classification": {
+                  "class": {
+                    "id": "874",
+                    "__typename": "ProductClass"
+                  },
+                  "__typename": "ProductClassification"
+                },
+                "servicePlan": {
+                  "subtype": {
+                    "code": "GSP",
+                    "description": "Geek Squad Protection",
+                    "__typename": "ProductServicePlanSubtype"
+                  },
+                  "__typename": "ProductServicePlan"
+                },
+                "operationalAttributes": [
+                  {
+                    "displayName": "Learn More URL",
+                    "values": [
+                      "https://www.bestbuy.com/site/computer-tablet-protection/laptop-protection/pcmcat1598371234946.c?id=pcmcat1598371234946"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Marketing Headline",
+                    "values": [
+                      "Protect your laptop"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  },
+                  {
+                    "displayName": "Terms_and_Conditions_URL",
+                    "values": [
+                      "https://www.bestbuy.com/services/plans/termsconditions"
+                    ],
+                    "__typename": "ProductOperationalAttribute"
+                  }
+                ]
+              }
+            ],
+            "__typename": "AssociatedWarrantiesConnection"
+          },
+          "__typename": "Product",
+          "skuId": "6674708",
+          "openBoxCondition": null
+        }
+      }
+    }
+  }
+}

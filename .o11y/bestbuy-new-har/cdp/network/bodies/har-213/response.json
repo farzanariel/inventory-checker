@@ -1,0 +1,19 @@
+{
+  "id": "har-213",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/2a57460bc2f39646.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8afc0",
+    "cache-control": "max-age=2422261",
+    "content-encoding": "br",
+    "content-length": "431",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"dc974d666c5c08181433144a4745df4b:1778545618.458083\"",
+    "expires": "Thu, 11 Jun 2026 17:49:02 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:58 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".vehicle-fit-guide-container-lv,.vehicle-fit-guide-container-sv{.body-copy{font-size:13px;margin-top:1rem}}.button-link{align-self:center;align-items:center;background-color:transparent;border:none;gap:.5rem;justify-content:flex-start;min-height:0!important;min-width:0!important;padding:0}.button-link span{color:var(--color-sentiment-primary,#014fd3);font-weight:500}.button-link:disabled span{color:var(--colorBrandLightGray,#c5cbd5)}.change-button{border-right:var(--border-base);margin-right:1rem;padding-right:1rem}.separator{color:#c4c8cf}.vehicle-fit-guide-container-lv,.vehicle-fit-guide-container-sv{background-color:#f3f4f6;border-radius:.5rem;padding:1.5rem}.vehicle-fit-guide-container-lv{height:100%;position:relative;width:100%}.vehicle-fit-guide-loader-container-sv{height:150px;position:absolute;width:87%;z-index:10}.vehicle-fit-guide-loader-container-lv,.vehicle-fit-guide-loader-sv{align-items:center;display:flex;height:100%;justify-content:center;width:100%}.vehicle-fit-guide-loader-container-lv{position:absolute;z-index:10}.vehicle-fit-guide-loader-lv{align-items:center;display:flex;justify-content:center}.vehicle-fit-guide-form-element-container{display:flex;flex-wrap:wrap;margin-top:2rem;width:100%}.vehicle-fit-guide-form-element-sv{flex:1 0 45%}.vehicle-fit-guide-form-element-lv{flex:1 1;flex-shrink:0}.vehicle-fit-icon{background-color:#ffffff;border:2px solid #ffffff;border-radius:50%;padding:4px}"
+}

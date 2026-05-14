@@ -29,6 +29,7 @@ import { execFile as _execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { ProductResult } from "./bestbuy";
+import { interpretStock } from "./bestbuy";
 
 /**
  * Promise wrapper around execFile that always resolves to {stdout, stderr}.
@@ -432,6 +433,142 @@ export async function fetchProductsViaTls(
   } finally {
     concurrentFetches--;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Layer 1.5: Fulfillment GraphQL stock fallback (J-code SKUs)
+// ---------------------------------------------------------------------------
+
+const FULFILLMENT_PATH = "/gateway/graphql/fulfillment";
+const DEFAULT_FULFILLMENT_ZIP = "10001";
+
+/** Item fields stitched into the ProductResult when only stock is fetched. */
+export interface FulfillmentItemContext {
+  name: string;
+  brand: string | null;
+  currentPriceCents: number | null;
+  regularPriceCents: number | null;
+  productUrl: string;
+}
+
+/**
+ * Fetch stock signal (buttonState) for SKUs that priceBlocks doesn't index
+ * (J-code product-family items). Uses the same warmed curl_chrome116 client
+ * as priceBlocks. One request per SKU (the fulfillment endpoint is not
+ * batched).
+ *
+ * Returns a ProductResult per SKU; price/name/image are stitched from the
+ * provided `itemBySku` context — we deliberately do NOT trust the response
+ * for those fields (this path is stock-only per SPEC §6.7).
+ */
+export async function fetchStockViaFulfillment(
+  skus: string[],
+  itemBySku: Map<string, FulfillmentItemContext>,
+): Promise<Map<string, ProductResult>> {
+  const results = new Map<string, ProductResult>();
+  if (skus.length === 0) return results;
+
+  const zip = process.env.BESTBUY_FULFILLMENT_ZIP ?? DEFAULT_FULFILLMENT_ZIP;
+
+  let cookieJar: string;
+  try {
+    cookieJar = await warmSession();
+  } catch {
+    for (const sku of skus) {
+      results.set(sku, { ok: false, sku, error: "fulfillment: session warm failed" });
+    }
+    return results;
+  }
+
+  // Process SKUs with a concurrency cap matching the priceBlocks path.
+  let index = 0;
+  async function worker(): Promise<void> {
+    while (true) {
+      const i = index++;
+      if (i >= skus.length) return;
+      const sku = skus[i];
+      // Jitter so concurrent slots don't start in lockstep.
+      await new Promise((r) => setTimeout(r, Math.round(120 * JITTER())));
+      results.set(sku, await fetchOneFulfillment(sku, cookieJar, zip, itemBySku.get(sku)));
+    }
+  }
+
+  const workerCount = Math.min(MAX_CONCURRENT, skus.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+  return results;
+}
+
+async function fetchOneFulfillment(
+  sku: string,
+  cookieJar: string,
+  zip: string,
+  ctx: FulfillmentItemContext | undefined,
+): Promise<ProductResult> {
+  const variables = JSON.stringify({
+    fulfillmentOptionsInput: { sku, shipping: { destinationZipCode: zip } },
+  });
+  const url = `${BESTBUY_ORIGIN}${FULFILLMENT_PATH}?variables=${encodeURIComponent(variables)}`;
+
+  let curlResult: CurlResult;
+  try {
+    curlResult = await curlFetch(url, cookieJar, 12_000);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "TLS fetch error";
+    return { ok: false, sku, error: `fulfillment: ${message}` };
+  }
+
+  const { stdout: body, statusCode } = curlResult;
+  if (statusCode !== 200) {
+    return { ok: false, sku, error: `fulfillment: HTTP ${statusCode}` };
+  }
+
+  let payload: unknown;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return { ok: false, sku, error: "fulfillment: invalid JSON response" };
+  }
+
+  const buttonState = extractFulfillmentButtonState(payload, sku);
+  if (!buttonState) {
+    return { ok: false, sku, error: "fulfillment: missing buttonState" };
+  }
+
+  if (!ctx) {
+    return { ok: false, sku, error: "fulfillment: no item context for stitching" };
+  }
+
+  const result: ProductResult = {
+    ok: true,
+    sku,
+    name: ctx.name,
+    currentPriceCents: ctx.currentPriceCents ?? 0,
+    buttonState,
+    purchasable: interpretStock(buttonState) === "IN_STOCK",
+    canonicalUrl: ctx.productUrl,
+  };
+  if (ctx.brand) result.brand = ctx.brand;
+  if (ctx.regularPriceCents != null) result.regularPriceCents = ctx.regularPriceCents;
+  return result;
+}
+
+interface FulfillmentResponse {
+  data?: {
+    fulfillmentOptions?: {
+      buttonStates?: Array<{ buttonState?: string; skuId?: string }>;
+    };
+  };
+}
+
+function extractFulfillmentButtonState(payload: unknown, sku: string): string | null {
+  const fulfillment = (payload as FulfillmentResponse)?.data?.fulfillmentOptions;
+  const buttonStates = fulfillment?.buttonStates;
+  if (!Array.isArray(buttonStates) || buttonStates.length === 0) return null;
+  // Prefer the entry matching the requested SKU; fall back to the first one.
+  const match = buttonStates.find((b) => b?.skuId === sku) ?? buttonStates[0];
+  const state = match?.buttonState;
+  return typeof state === "string" && state.length > 0 ? state : null;
 }
 
 // ---------------------------------------------------------------------------

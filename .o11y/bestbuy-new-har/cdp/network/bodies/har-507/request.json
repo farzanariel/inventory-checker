@@ -1,0 +1,15 @@
+{
+  "id": "har-507",
+  "url": "https://api.tx4.pw.adn.cloud/PE4EMM/-4209650271444413949/11d3876d-9897-49aa-abfc-2c2087a8853e",
+  "method": "POST",
+  "headers": {
+    "sec-ch-ua-platform": "\"macOS\"",
+    "Referer": "https://www.bestbuy.com/",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "DNT": "1",
+    "Content-Type": "text/plain;charset=UTF-8",
+    "sec-ch-ua-mobile": "?0"
+  },
+  "body": "{\"url\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"raw_url\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"website_id\":\"PE4EMM\",\"date\":\"2026-05-14T16:58:09.226Z\",\"device\":\"desktop\",\"bot_id\":null,\"environment\":\"browser\",\"session_id\":\"35a6dd5b-49f6-46b5-ad85-2c223ac153a7\",\"tag_version\":\"v3.4.1\",\"modules_executions\":[],\"logger_messages\":[],\"logger_properties\":[],\"time_total_ms\":278,\"time_get_configs_ms\":277,\"time_wait_page_loaded_ms\":0,\"time_start_pw_download_ms\":12391,\"time_pw_download_ms\":70,\"is_api_response_cached\":false}"
+}

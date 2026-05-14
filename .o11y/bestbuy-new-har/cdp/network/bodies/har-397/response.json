@@ -1,0 +1,28 @@
+{
+  "id": "har-397",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d325",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "282",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "15",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"12349291\",\"name\":{\"short\":\"HP - 14\\\" Laptop - Intel N150 Processor - 4GB Memory - 128GB UFS - Pale Rose Gold\",\"__typename\":\"ProductName\"},\"reviewInfo\":{\"reviewCount\":42,\"__typename\":\"ProductReviewInfo\"},\"url\":{\"reviewStandaloneUrl\":\"/product/hp-14-laptop-intel-n150-processor-4gb-memory-128gb-ufs-pale-rose-gold/JJGW3FGF9T/sku/12349291/reviews\",\"__typename\":\"ProductUrl\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

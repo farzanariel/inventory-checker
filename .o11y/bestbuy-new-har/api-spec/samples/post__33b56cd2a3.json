@@ -1,0 +1,1248 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [GetLocationsByZipCode]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "888",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "pdp-web",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "GetLocationsByZipCode"
+    },
+    "body": {
+      "operationName": "GetLocationsByZipCode",
+      "variables": {
+        "zipCode": "21117"
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query GetLocationsByZipCode($zipCode: String = \"\") {\n  storeLookupByZip(\n    filter: {zipCode: $zipCode, limit: 6, miles: 250, status: OPEN, facilityTypes: \"Big Box,Outlet Center\"}\n  ) {\n    stores {\n      distance\n      storeLocation {\n        displayName\n        locationId\n        status\n        storeType\n        physicalLocation {\n          addr1\n          addr2\n          city\n          state\n          zipCode\n          __typename\n        }\n        hours(type: \"SALES\") {\n          openHours {\n            close\n            open\n            date\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777883.18f8cd74",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "668",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:03 GMT",
+      "expires": "Thu, 14 May 2026 16:58:03 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "35",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "storeLookupByZip": {
+          "stores": [
+            {
+              "distance": 0.507904,
+              "storeLocation": {
+                "displayName": "Owings Mills",
+                "locationId": "1436",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "10400 Owings Mills Blvd",
+                  "addr2": null,
+                  "city": "Owings Mills",
+                  "state": "MD",
+                  "zipCode": "21117",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            },
+            {
+              "distance": 9.077171,
+              "storeLocation": {
+                "displayName": "Towson",
+                "locationId": "149",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "1717 York Rd",
+                  "addr2": null,
+                  "city": "Timonium",
+                  "state": "MD",
+                  "zipCode": "21093",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            },
+            {
+              "distance": 16.143204,
+              "storeLocation": {
+                "displayName": "Columbia",
+                "locationId": "263",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "8251 Gateway Overlook Dr",
+                  "addr2": null,
+                  "city": "Elkridge",
+                  "state": "MD",
+                  "zipCode": "21075",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            },
+            {
+              "distance": 18.138092,
+              "storeLocation": {
+                "displayName": "White Marsh",
+                "locationId": "159",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "5200 Campbell Blvd",
+                  "addr2": "Nottingham Square",
+                  "city": "Nottingham",
+                  "state": "MD",
+                  "zipCode": "21236",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            },
+            {
+              "distance": 18.234825,
+              "storeLocation": {
+                "displayName": "Glen Burnie",
+                "locationId": "290",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "6722 Ritchie Hwy",
+                  "addr2": null,
+                  "city": "Glen Burnie",
+                  "state": "MD",
+                  "zipCode": "21061",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            },
+            {
+              "distance": 23.405282,
+              "storeLocation": {
+                "displayName": "Laurel",
+                "locationId": "265",
+                "status": "Open",
+                "storeType": "Big Box",
+                "physicalLocation": {
+                  "addr1": "14160 Baltimore Ave",
+                  "addr2": "Laurel Lakes Centre",
+                  "city": "Laurel",
+                  "state": "MD",
+                  "zipCode": "20707",
+                  "__typename": "StorePhysicalLocation"
+                },
+                "hours": [
+                  {
+                    "openHours": [
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "19:00",
+                        "open": "11:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      },
+                      {
+                        "close": "20:00",
+                        "open": "10:00",
+                        "date": "<redacted>",
+                        "__typename": "StoreLocationOpenHour"
+                      }
+                    ],
+                    "__typename": "StoreLocationOpenHourConnection"
+                  }
+                ],
+                "__typename": "StoreLocation"
+              },
+              "__typename": "StoreLocationWithDistance"
+            }
+          ],
+          "__typename": "StoreDataWithDistanceConnection"
+        }
+      }
+    }
+  }
+}

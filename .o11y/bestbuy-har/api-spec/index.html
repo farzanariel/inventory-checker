@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Buy HAR captured endpoints — API Report</title>
+<style>
+  :root {
+    --brand: #F03603;
+    --black: #100D0D;
+    --gray: #514F4F;
+    --border: #edebeb;
+    --bg: #F9F6F4;
+    --card: #ffffff;
+    --text: #100D0D;
+    --muted: #514F4F;
+    --green: #22863a;
+    --code-bg: #f6f5f5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  header { margin-bottom: 2rem; }
+  header h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+  header .meta { color: var(--muted); font-size: 0.875rem; }
+
+  .summary { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; flex: 1; min-width: 120px; }
+  .stat .label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; margin-bottom: 0.25rem; }
+  .stat .value { font-size: 1.5rem; font-weight: 700; color: var(--black); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.5rem; overflow: hidden; }
+  .card-header { padding: 0.875rem 1.25rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .card-header:hover { background: #faf9f8; }
+  .card-title { display: flex; align-items: center; gap: 0.75rem; }
+  .card-meta { display: flex; align-items: center; gap: 0.75rem; }
+  .method { background: var(--green); color: white; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .op-name { font-weight: 600; font-size: 0.9375rem; }
+  .fn-name { font-size: 0.8125rem; color: var(--muted); background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; }
+  .badge { font-size: 0.75rem; color: var(--muted); background: var(--code-bg); padding: 0.15rem 0.5rem; border-radius: 10px; }
+
+  .card-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .card.open .card-body { display: block; padding-top: 1rem; }
+  .card-body h4 { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 1.25rem 0 0.5rem; }
+  .card-body h4:first-child { margin-top: 0; }
+  .endpoint-line { font-size: 0.875rem; margin-bottom: 0.25rem; }
+
+  .var-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+  .var-table th { text-align: left; font-weight: 600; color: var(--muted); padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .var-table td { padding: 0.35rem 0.75rem; border-bottom: 1px solid #f5f4f3; }
+  .var-table code { font-size: 0.8125rem; }
+
+  pre { background: var(--code-bg); border-radius: 4px; padding: 0.75rem 1rem; overflow-x: auto; font-size: 0.8125rem; line-height: 1.5; }
+  pre.scrollable { max-height: 400px; overflow-y: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace; font-size: 0.875em; }
+
+  .client-section { margin-top: 2rem; }
+  .client-section h2 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Best Buy HAR captured endpoints</h1>
+    <p class="meta">https://www.bestbuy.com · 1 operation discovered from browser trace</p>
+  </header>
+
+  <div class="summary">
+    <div class="stat"><div class="label">Operations</div><div class="value">1</div></div>
+    <div class="stat"><div class="label">Endpoint</div><div class="value" style="font-size:0.875rem">/gateway/graphql/fulfillment</div></div>
+    <div class="stat"><div class="label">Protocol</div><div class="value" style="font-size:0.875rem">REST</div></div>
+    <div class="stat"><div class="label">Total samples</div><div class="value">16</div></div>
+  </div>
+
+  
+    <div class="card" id="op-0">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /gateway/graphql/fulfillment</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">16 samples</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;data&quot;: {
+    &quot;fulfillmentOptions&quot;: {
+      &quot;__typename&quot;: &quot;FulfillmentOptionsList&quot;,
+      &quot;buttonStates&quot;: [
+        {
+          &quot;__typename&quot;: &quot;ButtonState&quot;,
+          &quot;buttonState&quot;: &quot;ADD_TO_CART&quot;,
+          &quot;condition&quot;: &quot;NEW&quot;,
+          &quot;displayText&quot;: &quot;Add to Cart&quot;,
+          &quot;fulfillmentOption&quot;: &quot;SHIPPING&quot;,
+          &quot;hyperlinkUrl&quot;: null,
+          &quot;planButtonState&quot;: null,
+          &quot;planDisplayText&quot;: null,
+          &quot;secondaryButtonState&quot;: null,
+          &quot;secondaryDisplayText&quot;: null,
+          &quot;skuId&quot;: &quot;6674708&quot;
+        }
+      ],
+      &quot;deliveryDetails&quot;: [
+        {
+          &quot;__typename&quot;: &quot;FulfillmentDeliveryDetail&quot;,
+          &quot;deliveryAvailability&quot;: [
+            {
+              &quot;__typename&quot;: &quot;FulfillmentDeliveryAvailability&quot;,
+              &quot;condition&quot;: &quot;NEW&quot;,
+              &quot;backordered&quot;: null,
+              &quot;deliverable&quot;: null,
+              &quot;deliveryEligible&quot;: null,
+              &quot;deliveryServices&quot;: null,
+              &quot;deliverySlots&quot;: null,
+              &quot;forceSkipScheduling&quot;: null,
+              &quot;forceSkipSchedulingReasonCode&quot;: null,
+              &quot;homeDeliveryDisplayDateType&quot;: null,
+              &quot;inStoreOnly&quot;: null,
+              &quot;installationEligible&quot;: null,
+              &quot;installationSlots&quot;: null,
+              &quot;productAppointmentType&quot;: null,
+              &quot;salLocationId&quot;: null,
+              &quot;restrictions&quot;: null
+            }
+          ],
+          &quot;destinationZipCode&quot;: null,
+          &quot;sku&quot;: &quot;6674708&quot;
+        }
+      ],
+      &quot;ispuDetails&quot;: [
+        {
+          &quot;__typename&quot;: &quot;InStorePickupDetail&quot;,
+          &quot;installationEligible&quot;: null,
+          &quot;ispuAvailability&quot;: [
+            {
+              &quot;__typename&quot;: &quot;InStorePickupAvailability&quot;,
+              &quot;whenAvailableFlag&quot;: null,
+              &quot;restrictions&quot;: null,
+              &quot;quantity&quot;: null,
+              &quot;promiseByStreetDate&quot;: null,
+              &quot;preorderable&quot;: null,
+              &quot;pickupEligible&quot;: true,
+              &quot;minPickupInHours&quot;: null,
+              &quot;minDate&quot;: null,
+              &quot;m
+  ...</code></pre>
+      </div>
+    </div>
+
+  
+  <div class="client-section">
+    <h2>Generated client</h2>
+    <p style="color:var(--muted);font-size:0.875rem;margin-bottom:0.75rem;">Copy <code>client.mjs</code> into your project. Zero dependencies — uses native <code>fetch</code>.</p>
+    <pre class="scrollable"><code>// Auto-generated API client from browser-trace capture.
+// Usage: import {  } from './client.mjs';
+
+const BASE = 'https://www.bestbuy.com';
+
+const defaultHeaders = {
+  'Content-Type': 'application/json',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  ':authority': 'www.bestbuy.com',
+  ':method': 'GET',
+  ':path': '/gateway/graphql/fulfillment?variables=%7B%22fulfillmentOptionsInput%22%3A%7B%22sku%22%3A%226674708%22%2C%22shipping%22%3A%7B%22destinationZipCode%22%3A%2297230%22%7D%2C%22inStorePickup%22%3A%7B%22storeId%22%3A%221436%22%7D%2C%22buttonState%22%3A%7B%22storeId%22%3A%221436%22%2C%22destinationZipCode%22%3A%2297230%22%2C%22context%22%3A%22PDP%22%2C%22fulfillmentOption%22%3A%22SHIPPING%22%7D%7D%7D',
+  ':scheme': 'https',
+  'cache-control': 'no-cache',
+  'dnt': '1',
+  'pragma': 'no-cache',
+  'priority': 'u=1, i',
+  'true-client-ip': '172.56.33.147',
+  'x-akamai-edgescape': 'georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0',
+  'x-client-id': 'pdp-web',
+  'x-dynatrace': '',
+  'x-page-request-id': 'a3886109-d8f9-4ccd-b4cc-6a07c68fb35a',
+  'x-request-id': 'xrequest::1778777474::23.215.61.234::895c25b6::1597550',
+  'x-requested-for-operation-name': 'PageLoadAnalyticsData_Init_Pdp',
+};
+
+async function request(path, { method = 'GET', body, query, headers } = {}) {
+  let url = BASE + path;
+  if (query) {
+    const qs = new URLSearchParams(Object.entries(query).filter(([, v]) =&gt; v != null));
+    if (qs.toString()) url += '?' + qs;
+  }
+  const res = await fetch(url, {
+    method,
+    headers: { ...defaultHeaders, ...headers },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
+  const ct = res.headers.get('content-type') || '';
+  return ct.includes('json') ? res.json() : res.text();
+}
+
+export async function getgateway_graphql_fulfillment(options = {}) {
+  return request('/gateway/graphql/fulfillment', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+</code></pre>
+  </div>
+</div>
+</body>
+</html>

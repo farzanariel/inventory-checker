@@ -1,0 +1,28 @@
+{
+  "id": "har-293",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8bc9e",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "720",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "29",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"brand\":\"Dell\",\"brandId\":\"2091\",\"classification\":{\"class\":{\"id\":\"770\",\"__typename\":\"ProductClass\"},\"__typename\":\"ProductClassification\"},\"isSmallMediumBusiness\":null,\"releaseDateDisplayValue\":null,\"whatItIs\":[\"Laptop Computer\"],\"eligibleGatedEventCustomerSegments\":null,\"isConstrainedHighVelocity\":false,\"inStoreServiceType\":null,\"buyingOptions\":[{\"type\":\"New\",\"product\":{\"openBoxCondition\":null,\"openBoxOptions\":null,\"inStoreServiceType\":null,\"price\":{\"openBoxCondition\":null,\"__typename\":\"ItemPrice\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6576/6576719_sd.jpg\",\"__typename\":\"ProductImage\"},\"name\":{\"short\":\"Dell - Inspiron 14 - 14\\\" 2K 2-in-1 Touchscreen Laptop - AMD Ryzen 5 8640HS 2023 - 8GB Memory - 512 GB Storage - Midnight Blue\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"skuId\":\"6576719\"},\"pdpUrl\":\"https://www.bestbuy.com/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL/sku/6576719\",\"__typename\":\"InboundBuyingOption\"}],\"price\":{\"customerPrice\":547.99,\"mobileContracts\":null,\"__typename\":\"ItemPrice\"},\"waitlists\":null,\"bsinProduct\":{\"bsin\":\"J3K4L6JSFL\",\"products\":[{\"openBoxCondition\":null,\"condition\":{\"type\":\"new\",\"__typename\":\"ProductCondition\"},\"seller\":{\"classification\":\"1P\",\"__typename\":\"Seller\"},\"skuId\":\"6576719\",\"__typename\":\"Product\"},{\"openBoxCondition\":null,\"condition\":{\"type\":\"new\",\"__typename\":\"ProductCondition\"},\"seller\":{\"classification\":\"3P\",\"__typename\":\"Seller\"},\"skuId\":\"10347264\",\"__typename\":\"Product\"},{\"openBoxCondition\":null,\"condition\":{\"type\":\"refurbished excellent\",\"__typename\":\"ProductCondition\"},\"seller\":{\"classification\":\"3P\",\"__typename\":\"Seller\"},\"skuId\":\"12377735\",\"__typename\":\"Product\"}],\"__typename\":\"BsinProduct\"},\"bsin\":\"J3K4L6JSFL\",\"seller\":{\"classification\":\"1P\",\"id\":\"bby\",\"__typename\":\"Seller\"},\"__typename\":\"Product\",\"skuId\":\"6576719\",\"openBoxCondition\":null}}}\n"
+}

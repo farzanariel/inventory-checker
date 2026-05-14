@@ -1,0 +1,19 @@
+{
+  "id": "har-283",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/158.2f9dc5845d0049f2.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777882.18f8bba5",
+    "cache-control": "max-age=2422262",
+    "content-encoding": "br",
+    "content-length": "458",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "etag": "\"0ed98bb77bc9e154823bcedf7843e4da:1778545588.339145\"",
+    "expires": "Thu, 11 Jun 2026 17:49:04 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:28 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[158],{50158:(e,t,l)=>{l.r(t),l.d(t,{UnifiedRecommendationExperienceWithProps:()=>c,default:()=>i});var a=l(73365),r=l(1521),n=l(13727),s=l(49647),o=l(6069);let c=({config:e,stylingClassName:t,tileLayout:l})=>{let[c]=(0,n.tIE)(),i=e?.lazyRender?.scrollYLocationURE??700,[d,u]=(0,r.useState)(!1);return(0,r.useEffect)(()=>{let e=()=>{window.scrollY>i&&(u(!0),window.removeEventListener(\"scroll\",e))};return window.addEventListener(\"scroll\",e),()=>{window.removeEventListener(\"scroll\",e)}},[i]),d&&(0,a.jsx)(s.H,{skuId:c,layout:\"pdp\",stylingClassName:t,pageName:\"Product Detail Page\",onSuccessAddToCartCallback:e=>{(0,o.lm)(e?.cartCount)},isMarketplaceEnabledForPage:!0,tileLayout:l})},i=c}}]);"
+}

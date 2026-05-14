@@ -1,0 +1,29 @@
+{
+  "id": "har-454",
+  "url": "https://syndicatedsearch.goog/afs/ads?sjk=mvjtjWR8RCm8T27DBBC7mQ%3D%3D&adsafe=high&psid=6793928452&adpage=1&channel=pdp&client=bestbuy-afs&q=computers%20%26%20tablets%20laptops&r=m&sct=ID%3D6328ed96216d192f%3AT%3D1771179253%3ART%3D1771179253%3AS%3DALNI_Malfhu6sHK_cfYnSX4MM9H4ixyoGw&sc_status=6&hl=en&type=0&oe=UTF-8&ie=UTF-8&fexp=21404%2C17300002%2C17301431%2C17301432%2C17301436%2C17301266%2C72717108&format=n4&ad=n4&nocache=7131778777885001&num=0&output=uds_ads_only&v=3&bsl=10&pac=2&u_his=3&u_tz=-240&dt=1778777885001&u_w=1512&u_h=982&biw=632&bih=812&psw=632&psh=4481&frm=0&uio=-wi800&cont=mn-adsense-bottom-desktop-2&drt=0&jsid=csa&nfp=1&jsv=913690580&rurl=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708&referer=https%3A%2F%2Fwww.bestbuy.com%2F",
+  "method": "GET",
+  "headers": {
+    ":authority": "syndicatedsearch.goog",
+    ":method": "GET",
+    ":path": "/afs/ads?sjk=mvjtjWR8RCm8T27DBBC7mQ%3D%3D&adsafe=high&psid=6793928452&adpage=1&channel=pdp&client=bestbuy-afs&q=computers%20%26%20tablets%20laptops&r=m&sct=ID%3D6328ed96216d192f%3AT%3D1771179253%3ART%3D1771179253%3AS%3DALNI_Malfhu6sHK_cfYnSX4MM9H4ixyoGw&sc_status=6&hl=en&type=0&oe=UTF-8&ie=UTF-8&fexp=21404%2C17300002%2C17301431%2C17301432%2C17301436%2C17301266%2C72717108&format=n4&ad=n4&nocache=7131778777885001&num=0&output=uds_ads_only&v=3&bsl=10&pac=2&u_his=3&u_tz=-240&dt=1778777885001&u_w=1512&u_h=982&biw=632&bih=812&psw=632&psh=4481&frm=0&uio=-wi800&cont=mn-adsense-bottom-desktop-2&drt=0&jsid=csa&nfp=1&jsv=913690580&rurl=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708&referer=https%3A%2F%2Fwww.bestbuy.com%2F",
+    ":scheme": "https",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "dnt": "1",
+    "pragma": "no-cache",
+    "priority": "u=0, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "iframe",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-storage-access": "active",
+    "upgrade-insecure-requests": "1",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": null
+}

@@ -1,0 +1,26 @@
+{
+  "id": "har-357",
+  "url": "https://www.bestbuy.com/gateway/graphql/fulfillment?variables=%7B%22fulfillmentOptionsInput%22%3A%7B%22sku%22%3A%226630534%2C6554351%22%2C%22buttonState%22%3A%7B%22context%22%3A%22PLP%22%2C%22destinationZipCode%22%3A%2297230%22%2C%22storeId%22%3A%221436%22%7D%2C%22condition%22%3A%22NEW%22%7D%7D",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777883.18f8c55b",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "706",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "18",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"fulfillmentOptions\":{\"__typename\":\"FulfillmentOptionsList\",\"buttonStates\":[{\"__typename\":\"ButtonState\",\"buttonState\":\"ADD_TO_CART\",\"condition\":\"NEW\",\"displayText\":\"Add to Cart\",\"fulfillmentOption\":null,\"hyperlinkUrl\":null,\"planButtonState\":null,\"planDisplayText\":null,\"secondaryButtonState\":null,\"secondaryDisplayText\":null,\"skuId\":\"6630534\"},{\"__typename\":\"ButtonState\",\"buttonState\":\"ADD_TO_CART\",\"condition\":\"NEW\",\"displayText\":\"Add to Cart\",\"fulfillmentOption\":null,\"hyperlinkUrl\":null,\"planButtonState\":null,\"planDisplayText\":null,\"secondaryButtonState\":null,\"secondaryDisplayText\":null,\"skuId\":\"6554351\"}],\"deliveryDetails\":[{\"__typename\":\"FulfillmentDeliveryDetail\",\"deliveryAvailability\":[{\"__typename\":\"FulfillmentDeliveryAvailability\",\"condition\":\"NEW\",\"backordered\":null,\"deliverable\":null,\"deliveryEligible\":null,\"deliveryServices\":null,\"deliverySlots\":null,\"forceSkipScheduling\":null,\"forceSkipSchedulingReasonCode\":null,\"homeDeliveryDisplayDateType\":null,\"inStoreOnly\":null,\"installationEligible\":null,\"installationSlots\":null,\"productAppointmentType\":null,\"salLocationId\":null,\"restrictions\":null}],\"destinationZipCode\":null,\"sku\":\"6630534,6554351\"}],\"ispuDetails\":[{\"__typename\":\"InStorePickupDetail\",\"installationEligible\":null,\"ispuAvailability\":[{\"__typename\":\"InStorePickupAvailability\",\"whenAvailableFlag\":null,\"restrictions\":null,\"quantity\":null,\"promiseByStreetDate\":null,\"preorderable\":null,\"pickupEligible\":null,\"minPickupInHours\":null,\"minDate\":null,\"maxDate\":null,\"instoreInventoryAvailable\":null,\"inStoreServices\":null,\"inStoreOnly\":null,\"fulfillmentType\":null,\"fulfillDate\":null,\"emailEligible\":null,\"downloadEligible\":null,\"displayDateType\":null,\"condition\":\"NEW\",\"backordered\":null}],\"maximumDistanceChecked\":null,\"nearbyLocation\":null,\"numberOfStoresChecked\":null,\"sku\":\"6630534,6554351\",\"nearbyLocations\":null,\"store\":{\"__typename\":\"FulfillmentPickUpStore\",\"city\":null,\"name\":null,\"storeId\":null,\"zip\":null}}],\"shippingDetails\":[{\"__typename\":\"FulfillmentShippingDetail\",\"destinationZipCode\":null,\"sku\":\"6630534,6554351\",\"shippingAvailability\":[{\"__typename\":\"FulfillmentShippingAvailability\",\"backordered\":null,\"condition\":\"NEW\",\"customerLOSGroup\":null,\"defaultCustomerLosGroupId\":null,\"directToBoxEligible\":null,\"downloadEligible\":null,\"emailEligible\":null,\"fulfillByVendor\":null,\"inStoreOnly\":null,\"installationEligible\":null,\"levelOfServices\":null,\"preorderable\":null,\"promiseByStreetDate\":null,\"restrictions\":null,\"shippingEligible\":null,\"whenAvailableFlag\":null}]}]}}}"
+}

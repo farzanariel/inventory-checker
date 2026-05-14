@@ -1,0 +1,28 @@
+{
+  "id": "har-332",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8c06c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "767",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "30",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6626901\",\"buyingOptions\":[{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/1-year-accidental-geek-squad-protection/JCQ6HKH3P9/sku/6626901\",\"type\":\"New\"}],\"termLength\":{\"__typename\":\"TermLength\",\"unitOfMeasure\":\"Years\",\"value\":1},\"name\":{\"short\":\"1-Year Accidental Geek Squad Protection\",\"__typename\":\"ProductName\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/5802/5802830_sa.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"__typename\":\"ItemPrice\",\"showTotalSavings\":true,\"totalSavings\":0,\"totalSavingsPercent\":0,\"totalPaidMemberSavings\":0,\"totalNonPaidMemberSavings\":0,\"preferredBadging\":null,\"puckDisplayMessage\":null,\"puckMessageURL\":null,\"dealExpirationTimeStamp\":null,\"restrictedPriceDisplayMessage\":null,\"displayableCustomerPrice\":149.99,\"displayableRegularPrice\":149.99,\"icrCode\":null,\"isEcoRebateEligible\":false,\"heroRenderPriceOptions\":\"PAYMENT_OPTIONS\",\"openBoxPrice\":null,\"openBoxSavings\":null,\"openBoxCondition\":null,\"lowestOpenboxPrice\":null,\"showLeasingOption\":false,\"connectionType\":\"3\",\"skuId\":\"6626901\",\"regularPriceMessageType\":null,\"subscriptionSummary\":null,\"paymentOptions\":[{\"__typename\":\"ItemPricePaymentOption\",\"numberOfInstallments\":4,\"installmentAmount\":37.5,\"installmentServiceFee\":1,\"vendor\":\"zip\",\"isDisplayable\":true,\"type\":\"BNPL\"}],\"isBbyCardMember\":null,\"financeOption\":null,\"mobileContracts\":null,\"giftSkus\":null,\"priceWithCart\":null,\"customerSelectedDiscountsAvailable\":null,\"spendAndGetCabosAvailable\":null,\"tieredOffersTracking\":null,\"whatIfPrice\":null},\"offers\":{\"__typename\":\"SkuOffersConnection\",\"offers\":[]},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

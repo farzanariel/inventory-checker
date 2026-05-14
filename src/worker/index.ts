@@ -16,13 +16,15 @@ import { and, asc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
 
 import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
-import { fetchProducts, isMissingFromPriceBlocks } from '@/lib/bestbuy';
+import { fetchProducts, isMissingFromPriceBlocks, productUrlForSku } from '@/lib/bestbuy';
 import { fetchProductsViaPdp } from '@/lib/bestbuy-pdp';
 import { applyCheckResult, applyMicroCenterCheckResult } from '@/lib/checker';
 import { fetchMicroCenterProduct } from '@/lib/microcenter';
 import {
   fetchProductsViaTls,
+  fetchStockViaFulfillment,
   needsHeadlessFallback,
+  type FulfillmentItemContext,
 } from '@/lib/bestbuy-tls';
 
 const MC_CONCURRENCY = 3;
@@ -191,12 +193,43 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     }
   }
 
+  // --- Layer 1.5: Fulfillment GraphQL stock fallback (SPEC §6.7) ---
+  // For SKUs that priceBlocks can't resolve (J-code product-family items),
+  // hit /gateway/graphql/fulfillment via the same warmed curl_chrome116
+  // client. Returns buttonState only — name/price/image are stitched from
+  // the item's existing DB values (this path does NOT mutate those fields).
+  // SKUs that fail here remain in PENDING_REINDEX exactly as before.
+  const fulfillmentSkus = skus.filter((sku) => {
+    const r = fetchMap.get(sku);
+    return r && !r.ok && isMissingFromPriceBlocks(r.error);
+  });
+  if (fulfillmentSkus.length > 0) {
+    const itemBySku = new Map<string, FulfillmentItemContext>();
+    for (const item of bbItems) {
+      const sku = item.sku as string;
+      if (!fulfillmentSkus.includes(sku)) continue;
+      itemBySku.set(sku, {
+        name: item.name ?? `SKU ${sku}`,
+        brand: item.brand ?? null,
+        currentPriceCents: item.currentPriceCents,
+        regularPriceCents: item.regularPriceCents,
+        productUrl: item.productUrl ?? productUrlForSku(sku),
+      });
+    }
+    const fulfillmentMap = await fetchStockViaFulfillment(fulfillmentSkus, itemBySku);
+    for (const [sku, result] of fulfillmentMap) {
+      if (result.ok) {
+        console.log(`[worker] sku=${sku} fetch_path=fulfillment`);
+        fetchMap.set(sku, result);
+      }
+      // On failure, leave the original ProductNotFoundException error in fetchMap
+      // so the item stays in PENDING_REINDEX exactly as before (no regression).
+    }
+  }
+
   // --- Layer 2: PDP proxy scraper (NEC-44) ---
-  // Only used when Layer 1 returned a 403-budget-exceeded error. We deliberately
-  // do NOT route ProductNotFoundException ("migrated to J-ID platform") SKUs
-  // here — Akamai currently blocks PDP requests across every fingerprint we
-  // can produce, so it just spams ERROR events. Those SKUs are now handled as
-  // PENDING_REINDEX in checker.ts and we keep retrying priceBlocks every tick.
+  // Only used when Layer 1 returned a 403-budget-exceeded error
+  // (`needsHeadlessFallback`). J-code SKUs are handled by Layer 1.5 above.
   const pdpSkus = skus.filter((sku) => {
     const r = fetchMap.get(sku);
     return r && !r.ok && needsHeadlessFallback(r.error);

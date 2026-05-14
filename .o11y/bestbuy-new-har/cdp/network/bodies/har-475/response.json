@@ -1,0 +1,19 @@
+{
+  "id": "har-475",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/2690.83db54a89a537b3e.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777885.18f8eca9",
+    "cache-control": "max-age=2513571",
+    "content-encoding": "br",
+    "content-length": "318",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:05 GMT",
+    "etag": "\"f5b039fd433ad73f9226b06445d54e60:1778696805.125179\"",
+    "expires": "Fri, 12 Jun 2026 19:10:56 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:45 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[2690],{52690:(e,r,a)=>{a.r(r),a.d(r,{SaveForLater:()=>i,default:()=>l});var s=a(73365);a(1521);var t=a(92826),n=a(39235);let i=({skuId:e,isSmallView:r})=>{let[a]=(0,n.cN)({provideFallbacks:!0});return(0,s.jsx)(t.F,{buttonVariation:r?\"round\":\"rectangle-lg\",deviceClass:r?\"sv\":\"lv\",entityId:e,isRecognized:!!a?.preferences?.identifiers?.userToken||!!a?.name?.firstName})},l=i}}]);"
+}

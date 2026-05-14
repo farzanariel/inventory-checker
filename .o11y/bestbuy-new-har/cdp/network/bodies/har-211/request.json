@@ -1,0 +1,30 @@
+{
+  "id": "har-211",
+  "url": "https://fel-api.prod.browse.bestbuy.com/exception",
+  "method": "POST",
+  "headers": {
+    ":authority": "fel-api.prod.browse.bestbuy.com",
+    ":method": "POST",
+    ":path": "/exception",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "1236",
+    "content-type": "application/x-www-form-urlencoded",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "logLevel=warn&message=%7B%22logger%22%3A%22MPX%22%2C%22componentVersion%22%3A%221.29.2%22%2C%22filter%22%3A%22mpx-sc-paul-logger-format%22%2C%22displayLocation%22%3A%22seller-details-pdp%22%2C%22deviceClass%22%3A%22l%22%2C%22skuId%22%3A%226674708%22%2C%22errorContextName%22%3A%22seller-details-pdp%22%2C%22level%22%3A%22WARN%22%2C%22message%22%3A%22MPX%20%7C%20seller-details-pdp%20%7C%20l%20%7C%20seller-details-pdp%20%7C%20MPX_Visit%22%7D&location=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708&referrer=https%3A%2F%2Fwww.bestbuy.com%2F&userAgent=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010_15_7)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F147.0.0.0%20Safari%2F537.36&rdp=l&SID=1c4a7049-5345-400a-af37-ad3f937d8f99&UID=a4e56918-fc43-46a3-a65f-abce7625852a&file=https%3A%2F%2Fwww.bestbuy.com%2F~assets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2F4357-b72950ade30b1a5c.js&line=444%3A34147&logger=MPX&componentVersion=1.29.2&filter=mpx-sc-paul-logger-format&displayLocation=seller-details-pdp&deviceClass=l&skuId=6674708&errorContextName=seller-details-pdp&level=WARN"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "har-186",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/6269.43e352d635cc6d87.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777881.18f8ab54",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "232",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"01300419f0a93cb8c46f5a77054bb222:1778696814.395167\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:26:54 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6269],{56269:(e,l,r)=>{r.r(l),r.d(l,{default:()=>g});var s=r(73365),t=r(83419),a=r(13554);let g=({enableServiceWorker:e})=>{let l=t.default.withFields({logger:\"PDP\"});return(0,s.jsxs)(s.Fragment,{children:[(0,s.jsx)(a.b1,{enabled:e,logger:l}),(0,s.jsx)(a.Ix,{logger:l})]})}}}]);"
+}

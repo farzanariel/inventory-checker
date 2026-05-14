@@ -1,0 +1,22 @@
+{
+  "id": "har-366",
+  "url": "https://www.google.com/pagead/1p-conversion/700350863/?random=1176121207&cv=9&fst=1778777882629&num=2&npa=1&label=CQx5CJfG_IQaEI-D-s0C&guid=ON&resp=GooglemKTybQhCsO&eid=375603261%2C466465926%2C512247839%2C658953496&u_h=982&u_w=1512&ig=1&gclaw=CjwKCAjw-8vPBhBbEiwAoA39Wh6umrDgUQ9jgSB1BSOAx0hxOIglaK5fL6m51dAKFQsn4ZBM56tVuhoChaUQAvD_BwE&auid=1122299206.1778186260&frm=2&url=https%3A%2F%2F4448269.fls.doubleclick.net%2Factivityi%3Bdc_pre%3DCO_qrf6fuZQDFSutywEd-ygVgw%3Bsrc%3D4448269%3Btype%3Dbbycom%3Bcat%3DBBY-S0%3Brcb%3D11%3Bord%3D6781001422068%3Bnpa%3D0%3Bauiddc%3D1122299206.1778186260%3Bgcldc%3DCjwKCAjw-8vPBhBbEiwAoA39Wh6umrDgUQ9jgSB1BSOAx0hxOIglaK5fL6m51dAKFQsn4ZBM56tVuhoChaUQAvD_BwE%3Bgclgs%3D1%3Bgclst%3D1212198828%3Bgcllp%3D197027391%3Bgclaw%3DCjwKCAjw-8vPBhBbEiwAoA39Wh6umrDgUQ9jgSB1BSOAx0hxOIglaK5fL6m51dAKFQsn4ZBM56tVuhoChaUQAvD_BwE%3Bu3%3Dnot_provided%3Bu5%3D8217524d-4fb4-11f1-a701-0e79396342ad%3Bu6%3Drecognized%3Bu7%3Den-US%3Bu14%3Dundefined%3Bu15%3Dund&ref=https%3A%2F%2Fwww.bestbuy.com%2F&top=https%3A%2F%2Fwww.bestbuy.com%2F&capi=1&hn=www.googleadservices.com&fmt=3&ct_cookie_present=false&crd=CLTesQII8t-xAgit4bECCKG4sQIIscGxAgiwwbECCLHDsQIIisWxAgjCybECCLTGsQIIk9qxAgjb3LECCIfbsQII08WxAgjrzLECCO3OsQII1c-xAgj02rECCJfUsQIIyduxAgix4bECCLPhsQIIpt2xAgiw3rECCIDbsQJKFXRyaWdnZXIsIGV2ZW50LXNvdXJjZVoDCgEBYgQKAgID&cerd=CgSN4b0t&fsk=ChEI8OWV0AYQ5_LMm-6LzZv8ARIsALhQeTJrk-BTPlfEKTLMsUL08kbhcQFKGFKVLKN2-_viVcLFdQfOAhy9qD4aAmgv&pscrd=IhMIy4za_p-5lAMVq_7jBx1muwZTMg8IA2IICAAQABgAIABqAQIyDAgEYggIABAAGAAgADIMCAdiCAgAEAAYACAAMgwICGIICAAQABgAIAAyDAgJYggIABAAGAAgADIMCApiCAgAEAAYACAAMgwIAmIICAAQABgAIAAyDAgLYggIABAAGAAgADIMCBViCAgAEAAYACAAMgwIH2IICAAQABgAIAAyDAgTYggIABAAGAAgADIMCBJiCAgAEAAYACAAOiRodHRwczovLzQ0NDgyNjkuZmxzLmRvdWJsZWNsaWNrLm5ldC9CVkNoQUk4T1dWMEFZUS1xWHVyOXFjN0xrdUVpd0FZbHAxWmlPVzBRMl8yekhEb1BZLUdIQjhHNXkyTktodGdiMFEybnpFQ2JDLTJTTDBXWTlMRDJPRGlnegwICWIICAAQABgAIAA&is_vtc=1&vdi=1&dclk_oo=1&cid=CAQS1gEABaugfbhUbPtTb4horGstMORi4TaHndC2FuDmbT6GbSPeODT2H6Pu0-_7gOIfbG8T7zJFogoaAWoMNzGs-Inx2rkDLK4eOjnaCvdLDPEnFXwP67f79_d9vVNUjib2sAFolyZu-5DeG2BRKkHukpIJIg8yMIGGVvPxlPAmrbijJ1ucfvhGsUBUJjTUrL88RVH_rhPGN8WatrNr6keZ3KafSx8JtTdt-7mV1fO75awsIhYd1pEZ3amtoAMiyv4WYTy9P6PtM_bZiBtlVniKJgqhd2I0i3zp&random=492095492&resp=GooglemKTybQhCsO",
+  "status": 200,
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "content-length": "42",
+    "content-security-policy": "script-src 'none'; object-src 'none'",
+    "content-type": "image/gif",
+    "cross-origin-resource-policy": "cross-origin",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+    "p3p": "policyref=\"https://www.googleadservices.com/pagead/p3p.xml\", CP=\"NOI DEV PSA PSD IVA IVD OTP OUR OTR IND OTC\"",
+    "pragma": "no-cache",
+    "server": "cafe",
+    "timing-allow-origin": "*",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "0"
+  },
+  "body": "GIF89a\u0001\u0000\u0001\u0000�\u0000\u0000\u0000\u0000\u0000���!�\u0004\u0001\u0000\u0000\u0000\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0001D\u0000;"
+}

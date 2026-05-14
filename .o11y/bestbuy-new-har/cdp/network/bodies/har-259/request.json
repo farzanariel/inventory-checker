@@ -1,0 +1,33 @@
+{
+  "id": "har-259",
+  "url": "https://adservice.google.com/ddm/fls/z/dc_pre=COnjrf6fuZQDFfXsKAUdmBwTdA;src=4448269;type=bbycom;cat=bby-p0;rcb=11;ord=9379727587542;npa=0;auiddc=*;gcldc=*;gclgs=1;gclst=1212198825;gcllp=197027391;gclaw=*;u16=6674708;u17=undefined;u18=All%20Laptops;u19=Laptops;u24=Lenovo;uaa=arm;uab=64;uafvl=Google%2520Chrome%3B147.0.7727.138%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.138;uamb=0;uam=;uap=macOS;uapv=26.0.1;uaw=0;pscdl=noapi;frm=0;_tu=IFA;gtm=45fe65c1v9179369925za200zd9179369925xec;gcd=13l3l3l3l1l1;dma=0;dc_fmt=2;tag_exp=0~115938465~115938468~118131810;epver=2;dc_random=1778777881__-9xAXTYH4FKHR91WA6MN0793TrMIM5m3g;_dc_test=1;~oref=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708",
+  "method": "GET",
+  "headers": {
+    ":authority": "adservice.google.com",
+    ":method": "GET",
+    ":path": "/ddm/fls/z/dc_pre=COnjrf6fuZQDFfXsKAUdmBwTdA;src=4448269;type=bbycom;cat=bby-p0;rcb=11;ord=9379727587542;npa=0;auiddc=*;gcldc=*;gclgs=1;gclst=1212198825;gcllp=197027391;gclaw=*;u16=6674708;u17=undefined;u18=All%20Laptops;u19=Laptops;u24=Lenovo;uaa=arm;uab=64;uafvl=Google%2520Chrome%3B147.0.7727.138%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.138;uamb=0;uam=;uap=macOS;uapv=26.0.1;uaw=0;pscdl=noapi;frm=0;_tu=IFA;gtm=45fe65c1v9179369925za200zd9179369925xec;gcd=13l3l3l3l1l1;dma=0;dc_fmt=2;tag_exp=0~115938465~115938468~118131810;epver=2;dc_random=1778777881__-9xAXTYH4FKHR91WA6MN0793TrMIM5m3g;_dc_test=1;~oref=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708",
+    ":scheme": "https",
+    "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "dnt": "1",
+    "pragma": "no-cache",
+    "priority": "u=2, i",
+    "referer": "https://4448269.fls.doubleclick.net/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "image",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-storage-access": "active",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "x-browser-channel": "stable",
+    "x-browser-copyright": "Copyright 2026 Google LLC. All Rights Reserved.",
+    "x-browser-validation": "64OR3Ux/+4qExJmJJ3EGeAcynHM=",
+    "x-browser-year": "2026",
+    "x-client-data": "CKmdygEIlqHLAQiGoM0B"
+  },
+  "body": null
+}

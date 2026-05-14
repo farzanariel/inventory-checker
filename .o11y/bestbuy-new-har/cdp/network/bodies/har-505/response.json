@@ -1,0 +1,24 @@
+{
+  "id": "har-505",
+  "url": "https://api.tx4.pw.adn.cloud/PE4EMM/-4209650271444413949?id=499999",
+  "status": 200,
+  "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "X-Pw-Session,X-Pw-Request,X-Pw-Random-Id",
+    "alt-svc": "h3=\":443\"; ma=2592000",
+    "cache-control": "no-store, no-cache, must-revalidate, max-age=0",
+    "content-encoding": "gzip",
+    "content-length": "30",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:09 GMT",
+    "server": "Google Frontend",
+    "traceparent": "00-a8ca3b70c2245b215cf0c0c1e046d7bd-cbc7f2ae9f302506-00",
+    "vary": "*,Accept-Encoding",
+    "via": "1.1 google",
+    "x-cloud-trace-context": "a8ca3b70c2245b215cf0c0c1e046d7bd/14683971941873755398",
+    "x-pw-random-id": "499999",
+    "x-pw-request": "17784fdc-44a4-4304-909d-e04e9c6db996",
+    "x-pw-session": "35a6dd5b-49f6-46b5-ad85-2c223ac153a7"
+  },
+  "body": "[]"
+}

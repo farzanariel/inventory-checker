@@ -1,0 +1,18 @@
+{
+  "id": "har-191",
+  "url": "https://streams.bestbuy.com/customer/web-streams/v1/events/cjc-page-requests",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "content-length": "200",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "x-cloud-trace-context": "1ba58a35862c7bd44b31310d1e0c0193",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "body": "{\"overallStatus\":\"SUCCESS\",\"counts\":{\"events\":1,\"ok\":1,\"failed\":0},\"batchId\":\"962ceadf-cfd9-4e80-a38f-17cf4a341b18\",\"results\":[{\"eventUuid\":\"962ceadf-cfd9-4e80-a38f-17cf4a341b18\",\"status\":\"SUCCESS\"}]}"
+}

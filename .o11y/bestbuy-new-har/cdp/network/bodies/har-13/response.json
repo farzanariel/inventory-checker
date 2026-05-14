@@ -1,0 +1,19 @@
+{
+  "id": "har-13",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/9930ab7aa6732df0.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777878.18f885cb",
+    "cache-control": "max-age=2513572",
+    "content-encoding": "br",
+    "content-length": "250",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"54e99ad2f1b3d48ab3c5dda68615da74:1778696833.415957\"",
+    "expires": "Fri, 12 Jun 2026 19:10:50 GMT",
+    "last-modified": "Wed, 13 May 2026 18:27:13 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".u2JjTjNQZg1M6NW5{bottom:calc(var(--lower-smart-banner-visible-height, 0px) + 70px);pointer-events:none;>*{pointer-events:auto}button{border-radius:9999px}}.gray-button{background-color:var(--colorBgDefaultSubdued)!important;border:1px solid var(--colorBorderDefaultSubdued)!important;color:var(--colorFgDefaultSubdued)!important}.warranty-product-description li{list-style-type:disc!important}.warranty-carousel-container{max-width:90vw}.warranty-carousel-container button[aria-label=previous]{left:0!important}.warranty-carousel-container button[aria-label=next]{right:0!important}"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "har-406",
+  "url": "https://www.bestbuy.com/ugc/v1/write-a-review",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d589",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-length": "76",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "etag": "W/\"4c-Vv8xGqylQk9Ef0r1CMz4fln5Jzg-gzip\"",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-powered-by": "Express"
+  },
+  "body": "{\"partyId\":\"5117767577\",\"products\":[{\"isReviewable\":false,\"sku\":\"6674708\"}]}"
+}

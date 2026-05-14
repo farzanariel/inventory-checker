@@ -356,3 +356,57 @@ describe("stale-price guard", () => {
     expect(item.pendingHitSeenCount).toBe(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// SPEC §6.8 — J-code fulfillment fallback (Layer 1.5)
+// ---------------------------------------------------------------------------
+
+describe("PENDING_REINDEX → OK via fulfillment-stitched ProductResult", () => {
+  test("exits PENDING_REINDEX, fires stock alert, keeps stitched name/price untouched", async () => {
+    const id = await insertItem(db, {
+      lastStockStatus: "UNKNOWN",
+      healthStatus: "PENDING_REINDEX",
+      lastHealthMessage: "Best Buy's price API doesn't recognize this SKU…",
+      // Last-known values captured by Add-Item lookup; the Layer 1.5 path
+      // must pass these straight through unchanged.
+      name: "Lenovo IdeaPad",
+      brand: "Lenovo",
+      currentPriceCents: 59999,
+      regularPriceCents: 69999,
+      productUrl: "https://www.bestbuy.com/site/-/6674708.p?skuId=6674708",
+    });
+
+    // Shape of a ProductResult that Layer 1.5 produces: stock signal from
+    // fulfillment, everything else stitched from the existing item row.
+    const stitched: ProductResult = {
+      ok: true,
+      sku: "6587182",
+      name: "Lenovo IdeaPad",
+      brand: "Lenovo",
+      currentPriceCents: 59999,
+      regularPriceCents: 69999,
+      buttonState: "ADD_TO_CART",
+      purchasable: true,
+      canonicalUrl: "https://www.bestbuy.com/site/-/6674708.p?skuId=6674708",
+    };
+
+    const outcome = await applyCheckResult(id, stitched, {
+      db,
+      now: NOW,
+      webhookUrl: "https://discord.com/test",
+    });
+
+    expect(outcome.notification).toBe("alert");
+    expect(outcome.transitioned).toBe(true);
+
+    const item = getItem(db, id);
+    expect(item.healthStatus).toBe("OK");
+    expect(item.lastStockStatus).toBe("IN_STOCK");
+    expect(item.lastButtonState).toBe("ADD_TO_CART");
+    // Stitched fields preserved (no clobbering).
+    expect(item.name).toBe("Lenovo IdeaPad");
+    expect(item.brand).toBe("Lenovo");
+    expect(item.currentPriceCents).toBe(59999);
+    expect(item.regularPriceCents).toBe(69999);
+  });
+});

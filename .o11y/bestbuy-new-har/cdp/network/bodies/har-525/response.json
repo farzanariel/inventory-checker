@@ -1,0 +1,28 @@
+{
+  "id": "har-525",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777897.18f98905",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "393",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:17 GMT",
+    "expires": "Thu, 14 May 2026 16:58:17 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "15",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6594068\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.6,\"reviewCount\":5713,\"syndicatedReviewSummary\":[{\"clientDisplayName\":\"bestbuy-ca\",\"overallRating\":3.6,\"totalReviewCount\":10,\"displayLink\":\"https://bestbuy.ugc.bazaarvoice.com/3545syn/6594068/syndicatedreviews.htm?sourcename=bestbuy-ca\",\"__typename\":\"SyndicatedReviewSummary\"}],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/microsoft-office-home-2024-1-device-windows-mac-os-digital/JJGXPXLL4Z\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/microsoft-office-home-2024-1-device-windows-mac-os-digital/JJGXPXLL4Z/sku/6594068\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"Microsoft - Office Home 2024 (1 Device) - Windows, Mac OS [Digital]\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

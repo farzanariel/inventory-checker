@@ -1,0 +1,28 @@
+{
+  "id": "har-270",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8b92d",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "382",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "27",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6576719\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.5,\"reviewCount\":580,\"syndicatedReviewSummary\":[],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL/sku/6576719\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"Dell - Inspiron 14 - 14\\\" 2K 2-in-1 Touchscreen Laptop - AMD Ryzen 5 8640HS 2023 - 8GB Memory - 512 GB Storage - Midnight Blue\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

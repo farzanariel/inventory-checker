@@ -1,0 +1,26 @@
+{
+  "id": "har-159",
+  "url": "https://x.cardpointers.com/api/v1/user/token/refresh?exp=1781742582000&six=1794329880399",
+  "method": "POST",
+  "headers": {
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Content-Length": "0",
+    "DNT": "1",
+    "Host": "x.cardpointers.com",
+    "Origin": "https://www.bestbuy.com",
+    "Pragma": "no-cache",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "accept": "application/json",
+    "content-type": "application/json",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\""
+  },
+  "body": null
+}

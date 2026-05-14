@@ -1,0 +1,952 @@
+{
+  "endpoint": "GET https://www.bestbuy.com/deo-configfile/v1/configfiles",
+  "request": {
+    "status": null,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "GET",
+      ":path": "/deo-configfile/v1/configfiles?configfileKey=dotcom_Prod_bby_dotcom_53F42C3",
+      ":scheme": "https",
+      "accept": "*/*",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-type": "application/json",
+      "dnt": "1",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "akamai-grn": "0.e73dd717.1778777879.18f8912d",
+      "cache-control": "max-age=541",
+      "content-encoding": "br",
+      "content-length": "1280",
+      "content-type": "application/json",
+      "date": "Thu, 14 May 2026 16:57:59 GMT",
+      "expires": "Thu, 14 May 2026 17:07:00 GMT",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding"
+    },
+    "body": {
+      "env": "dotcom Prod",
+      "ck": "dotcom_Prod_bby_dotcom_53F42C3",
+      "rev": 1248,
+      "sch": "V1",
+      "exp": {
+        "exp0563": {
+          "id": "482",
+          "ek": "exp0563",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1132",
+              "k": "A",
+              "sor": 1,
+              "eor": 1000
+            },
+            {
+              "vid": "1133",
+              "k": "B",
+              "sor": 1001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0563A": "A",
+            "exp0563B": "B"
+          }
+        },
+        "exp0387": {
+          "id": "322",
+          "ek": "exp0387",
+          "t": "ABTEST",
+          "ver": "3",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "760",
+              "k": "A",
+              "sor": 1,
+              "eor": 6500
+            },
+            {
+              "vid": "761",
+              "k": "B",
+              "sor": 6501,
+              "eor": 7375
+            },
+            {
+              "vid": "767",
+              "k": "C",
+              "sor": 7376,
+              "eor": 8250
+            },
+            {
+              "vid": "768",
+              "k": "D",
+              "sor": 8251,
+              "eor": 9125
+            },
+            {
+              "vid": "769",
+              "k": "E",
+              "sor": 9126,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0387D": "D",
+            "exp0387C": "C",
+            "exp0387E": "E",
+            "exp0387B": "B",
+            "exp0387A": "A"
+          }
+        },
+        "exp0431": {
+          "id": "353",
+          "ek": "exp0431",
+          "t": "ABTEST",
+          "ver": "2",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "840",
+              "k": "A",
+              "sor": 1,
+              "eor": 4500
+            },
+            {
+              "vid": "841",
+              "k": "B",
+              "sor": 4501,
+              "eor": 9000
+            },
+            {
+              "vid": "842",
+              "k": "C",
+              "sor": 9001,
+              "eor": 9500
+            },
+            {
+              "vid": "843",
+              "k": "D",
+              "sor": 9501,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0431C": "C",
+            "exp0431D": "D",
+            "exp0431A": "A",
+            "ecb25db1-97c1-11f0-ab2e-0a3c2c334a3b": "B",
+            "exp0431B": "B"
+          }
+        },
+        "exp0386": {
+          "id": "321",
+          "ek": "exp0386",
+          "t": "ABTEST",
+          "ver": "3",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "758",
+              "k": "A",
+              "sor": 1,
+              "eor": 3000
+            },
+            {
+              "vid": "759",
+              "k": "B",
+              "sor": 3001,
+              "eor": 4750
+            },
+            {
+              "vid": "764",
+              "k": "C",
+              "sor": 4751,
+              "eor": 6500
+            },
+            {
+              "vid": "765",
+              "k": "D",
+              "sor": 6501,
+              "eor": 8250
+            },
+            {
+              "vid": "766",
+              "k": "E",
+              "sor": 8251,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0386C": "C",
+            "exp0386B": "B",
+            "exp0386E": "E",
+            "exp0386D": "D",
+            "exp0386A": "A"
+          }
+        },
+        "exp0550": {
+          "id": "474",
+          "ek": "exp0550",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1116",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1117",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "6577cc74-1d8d-11f1-893e-06a0b689ec4f": "B",
+            "exp0550A": "A",
+            "exp0550B": "B"
+          }
+        },
+        "exp0561": {
+          "id": "479",
+          "ek": "exp0561",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [
+            "9"
+          ],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "exp0561A": "A",
+            "exp0561B": "B"
+          }
+        },
+        "exp0572": {
+          "id": "497",
+          "ek": "exp0572",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1162",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1163",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0572A": "A",
+            "exp0572B": "B"
+          }
+        },
+        "exp0362": {
+          "id": "274",
+          "ek": "exp0362",
+          "t": "ABTEST",
+          "ver": "6",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 1001,
+              "eor": 1000
+            }
+          ],
+          "f": {
+            "exp0362A": "A",
+            "exp0362B": "B"
+          }
+        },
+        "exp0560": {
+          "id": "478",
+          "ek": "exp0560",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [
+            "11"
+          ],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "exp0560B": "B",
+            "exp0560A": "A"
+          }
+        },
+        "exp0373": {
+          "id": "310",
+          "ek": "exp0373",
+          "t": "ABTEST",
+          "ver": "8",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "729",
+              "k": "A",
+              "sor": 1,
+              "eor": 1000
+            },
+            {
+              "vid": "730",
+              "k": "B",
+              "sor": 1001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0373A": "A",
+            "exp0373B": "B"
+          }
+        },
+        "exp0539": {
+          "id": "468",
+          "ek": "exp0539",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1103",
+              "k": "A",
+              "sor": 1,
+              "eor": 250
+            },
+            {
+              "vid": "1104",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5250
+            }
+          ],
+          "f": {
+            "exp0539B": "B",
+            "exp0539A": "A"
+          }
+        },
+        "exp0506": {
+          "id": "443",
+          "ek": "exp0506",
+          "t": "ABTEST",
+          "ver": "2",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "exp0506B": "B",
+            "exp0506A": "A"
+          }
+        },
+        "exp0528": {
+          "id": "447",
+          "ek": "exp0528",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 3334,
+              "eor": 3333
+            },
+            {
+              "vid": "",
+              "k": "C",
+              "sor": 6667,
+              "eor": 6666
+            }
+          ],
+          "f": {
+            "exp0528B": "B",
+            "exp0528C": "C",
+            "exp0528A": "A"
+          }
+        },
+        "dee_act_node": {
+          "id": "481",
+          "ek": "dee_act_node",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1130",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1131",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {}
+        },
+        "web_integration_test": {
+          "id": "41",
+          "ek": "web_integration_test",
+          "t": "ABTEST",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "webintb": "B",
+            "webinta": "A"
+          }
+        },
+        "exp0523": {
+          "id": "439",
+          "ek": "exp0523",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1034",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1035",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0523A": "A",
+            "exp0523B": "B"
+          }
+        },
+        "exp0544": {
+          "id": "466",
+          "ek": "exp0544",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1099",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1100",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0544A": "A",
+            "exp0544B": "B"
+          }
+        },
+        "exp0488": {
+          "id": "420",
+          "ek": "exp0488",
+          "t": "ABTEST",
+          "ver": "2",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "993",
+              "k": "A",
+              "sor": 1,
+              "eor": 4500
+            },
+            {
+              "vid": "994",
+              "k": "B",
+              "sor": 4501,
+              "eor": 9000
+            },
+            {
+              "vid": "995",
+              "k": "C",
+              "sor": 9001,
+              "eor": 9500
+            },
+            {
+              "vid": "996",
+              "k": "D",
+              "sor": 9501,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0488C": "C",
+            "exp0488D": "D",
+            "exp0488A": "A",
+            "exp0488B": "B"
+          }
+        },
+        "exp0516": {
+          "id": "454",
+          "ek": "exp0516",
+          "t": "ABTEST",
+          "ver": "2",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 3334,
+              "eor": 3333
+            },
+            {
+              "vid": "",
+              "k": "C",
+              "sor": 6667,
+              "eor": 6666
+            }
+          ],
+          "f": {
+            "exp0516C": "C",
+            "exp0516A": "A",
+            "exp0516B": "B"
+          }
+        },
+        "exp0537": {
+          "id": "463",
+          "ek": "exp0537",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1093",
+              "k": "A",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "vid": "1094",
+              "k": "B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0537B": "B",
+            "exp0537A": "A"
+          }
+        },
+        "exp0559": {
+          "id": "477",
+          "ek": "exp0559",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "exp0559B": "B",
+            "exp0559A": "A"
+          }
+        },
+        "exp0526": {
+          "id": "453",
+          "ek": "exp0526",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "1068",
+              "k": "A",
+              "sor": 1,
+              "eor": 2500
+            },
+            {
+              "vid": "1069",
+              "k": "B",
+              "sor": 2501,
+              "eor": 5000
+            },
+            {
+              "vid": "1070",
+              "k": "C",
+              "sor": 5001,
+              "eor": 7500
+            },
+            {
+              "vid": "1071",
+              "k": "D",
+              "sor": 7501,
+              "eor": 10000
+            }
+          ],
+          "f": {
+            "exp0526D": "D",
+            "exp0526B": "B",
+            "exp0526C": "C",
+            "exp0526A": "A"
+          }
+        },
+        "exp0535": {
+          "id": "456",
+          "ek": "exp0535",
+          "t": "ABTEST",
+          "ver": "1",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "A",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "B",
+              "sor": 3334,
+              "eor": 3333
+            },
+            {
+              "vid": "",
+              "k": "C",
+              "sor": 6667,
+              "eor": 6666
+            }
+          ],
+          "f": {
+            "exp0535B": "B",
+            "exp0535C": "C",
+            "exp0535A": "A"
+          }
+        },
+        "exp0304": {
+          "id": "222",
+          "ek": "exp0304",
+          "t": "ABTEST",
+          "a": [],
+          "eg": null,
+          "ac": "OR",
+          "v": [
+            {
+              "vid": "",
+              "k": "304_control",
+              "sor": 1,
+              "eor": 0
+            },
+            {
+              "vid": "",
+              "k": "304_ranker",
+              "sor": 5001,
+              "eor": 5000
+            }
+          ],
+          "f": {
+            "exp0304A": "304_control",
+            "exp0304B": "304_ranker"
+          }
+        }
+      },
+      "aud": {
+        "9": {
+          "n": "largeView_l",
+          "c": {
+            "conditional": "OR",
+            "conditions": [
+              {
+                "conditional": "OR",
+                "matchers": [
+                  {
+                    "matchType": "equals",
+                    "key": "deviceClass",
+                    "values": [
+                      "l"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "11": {
+          "n": "smallView_s",
+          "c": {
+            "conditional": "OR",
+            "conditions": [
+              {
+                "conditional": "OR",
+                "matchers": [
+                  {
+                    "matchType": "equals",
+                    "key": "deviceClass",
+                    "values": [
+                      "s"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "eg": {
+        "deo_1820": {
+          "exp": [
+            {
+              "k": "deo_1820_client_exclusion_1",
+              "sor": 1,
+              "eor": 6000
+            },
+            {
+              "k": "deo_1820_client_exclusion_2",
+              "sor": 6001,
+              "eor": 8000
+            },
+            {
+              "k": "deo_1820_client_exclusion_3",
+              "sor": 8001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo1786Placebo": {
+          "exp": [
+            {
+              "k": "clientPlacebo1786",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "clientPlacebo1786_exclusion",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo_1836_client": {
+          "exp": [
+            {
+              "k": "deo_1838_client_1",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "deo_1838_client_2",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo1816Placebo": {
+          "exp": [
+            {
+              "k": "javaPlacebo1816",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "javaPlacebo1816_exclusion",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo1810Placebo": {
+          "exp": [
+            {
+              "k": "nodePlacebo1810",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "nodePlacebo1810_exclusion",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo2157_qa": {
+          "exp": [
+            {
+              "k": "exp2157",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "exp2157_B",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        },
+        "deo2083egtest": {
+          "exp": [
+            {
+              "k": "exp2148",
+              "sor": 1,
+              "eor": 5000
+            },
+            {
+              "k": "exp2148_eg",
+              "sor": 5001,
+              "eor": 10000
+            }
+          ]
+        }
+      }
+    }
+  }
+}

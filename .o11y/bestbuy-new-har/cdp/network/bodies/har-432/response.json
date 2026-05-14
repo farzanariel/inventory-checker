@@ -1,0 +1,18 @@
+{
+  "id": "har-432",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/8339.f2454da3bc0269c7.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777884.18f8da1b",
+    "cache-control": "max-age=2422258",
+    "content-encoding": "br",
+    "content-length": "140",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "etag": "\"c1cb648aef1999e2cdb3941a0e62a279:1778545607.837268\"",
+    "expires": "Thu, 11 Jun 2026 17:49:02 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:47 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[8339],{18339:(e,a,r)=>{r.r(a),r.d(a,{DrawerWeb:()=>s.a,default:()=>s.b});var s=r(70123);r(93675),r(81392)}}]);"
+}

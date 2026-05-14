@@ -1,0 +1,19 @@
+{
+  "id": "har-204",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/6147.9ed221ecb207b626.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777881.18f8ae0b",
+    "cache-control": "max-age=2422261",
+    "content-encoding": "br",
+    "content-length": "233",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"5fb1a336160c40ee59511b9674c41b0f:1778545600.273684\"",
+    "expires": "Thu, 11 Jun 2026 17:49:02 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:40 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6147],{96147:(e,s,t)=>{t.r(s),t.d(s,{ServiceSelectorComponent:()=>c,default:()=>n});var l=t(73365);t(1521);var r=t(13727),a=t(52279);let c=e=>{let[s]=(0,r.tIE)(),t={stylingClassName:e.stylingClassName,skuId:s};return(0,l.jsx)(a.t,{...t},\"service-selector\")},n=c}}]);"
+}

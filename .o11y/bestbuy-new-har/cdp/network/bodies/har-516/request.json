@@ -1,0 +1,30 @@
+{
+  "id": "har-516",
+  "url": "https://www.bestbuy.com/92LyeeSnEtLeRLwoCQ/XpwuzV5J/a0gtZgE/QGQAKi/ETXhIu",
+  "method": "POST",
+  "headers": {
+    ":authority": "www.bestbuy.com",
+    ":method": "POST",
+    ":path": "/92LyeeSnEtLeRLwoCQ/XpwuzV5J/a0gtZgE/QGQAKi/ETXhIu",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "733",
+    "content-type": "application/json",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "{\"body\":\"\\\"-&I\\\"F:Xf6Z&Aa\\\" hv\\\"N\\\"eRhI1Om{Yvh^*i6{3Pq0Jo(B\\\"|GQI)_drDmV1u]L.j2Vl!O)EI_uY(i9dqLRT9v}9p;1UO82kb2[fvbFZc*M)^9hGd>QP8w8P%]B#-qwUOsOm,u\\\"anGqR!oE~Fu8M;}=J7jcLO8B1(K4^sVMf~^%dG>bV!]r4 i2J1oqN`V`WQ,\\\"oA\\\"K\\\"x]*uSW1!L0?`Z\\\"p@+mg]qs~ws\\\"#<b\\\"&\\\":5l]C[6/V-K,ic:eB<NZFUfzfWJ]I.E%/dRP?;9vD<R6!.*D1r!Ba^!#(zwD]%o:mJ11z/mgWks4S_,gyFiXO:[bme Z4?S$BG!2$0.4QC1UQqQ),4_[0i-cp_YXp36ghC91Ip#-wp<1?_?bXF]p_y?UkmlT\\\"LhD!wn*\\\"}p\\\"J\\\"\\\"dw5#blw3X!;r LUbA%I\\\",nc\\\"@Dcf%z!`@n}wV|{KY>V9Eq(1&c5TD1(\\\".3R\\\"D\\\"-s.1kkINB|9GqFMnQB\\\"3g>3z%&QY34aWtYX E;-Qh8dClPx]h&zq@rbckmDa}/fe,#z>lmo2J{U5kZ/Ns=56m:@1Tm1B{7gs?(6[+9>e%o4z]H!W|8\\\"2b\\\"o\\\"y6i6`uQn:6\\\"aBOS.K0^XD&aMqMH^2rn\\\" /\\\"_\\\"b:\\\"ea\\\"|\\\"\\\"a9lS*&oiJ;a/DR@*%9X*a$p9t7dn+kZsuQ~pWN60\\\"X\\\"$\\\"+\\\"o+9l7s\"}"
+}

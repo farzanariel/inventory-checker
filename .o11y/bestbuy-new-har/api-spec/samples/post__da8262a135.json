@@ -1,0 +1,66 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/ugc/v1/write-a-review",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/ugc/v1/write-a-review",
+      ":scheme": "https",
+      "accept": "*/*",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "97",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-client-id": "upa-rsf",
+      "x-request-id": "5731ca60-d78d-4fea-bbd9-5ddb889634cc"
+    },
+    "body": {
+      "skus": [
+        "6674708"
+      ],
+      "userToken": "8217524d-4fb4-11f1-a701-0e79396342ad",
+      "campaignId": "campaignId"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777881.18f8afbe",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-length": "76",
+      "content-type": "application/json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "etag": "W/\"4c-Vv8xGqylQk9Ef0r1CMz4fln5Jzg-gzip\"",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "pragma": "no-cache",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-powered-by": "Express"
+    },
+    "body": {
+      "partyId": "<redacted>",
+      "products": [
+        {
+          "isReviewable": false,
+          "sku": "6674708"
+        }
+      ]
+    }
+  }
+}

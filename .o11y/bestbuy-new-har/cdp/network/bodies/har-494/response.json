@@ -1,0 +1,14 @@
+{
+  "id": "har-494",
+  "url": "https://bf26528hhp.bf.dynatrace.com/bf?type=js3&sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1&svrid=31&flavor=cors&vi=MEFLCJHFVMVLCKFMCMRHKNVVUCDROLSL-0&modifiedSince=1778765437727&bp=3&app=0f4871fda9ce1d80&crc=1440835249&en=6s9q7ur5&end=1",
+  "status": 200,
+  "headers": {
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "cache-control": "no-cache",
+    "content-length": "330",
+    "content-type": "text/plain;charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:07 GMT",
+    "strict-transport-security": "max-age=31536000"
+  },
+  "body": "OK(BF)|sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1|name=ruxitagent|featureHash=ICANVfhjqru|buildNumber=10327251022105625|lastModification=1778765437727"
+}

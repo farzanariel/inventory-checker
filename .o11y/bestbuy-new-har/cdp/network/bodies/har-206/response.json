@@ -1,0 +1,20 @@
+{
+  "id": "har-206",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/9433.ad627116fc3bbee8.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ae19",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "1491",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"3db016fd5b1e19e0f19eccd7268a7388:1778696822.621047\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:27:02 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9433],{11444:(e,t,a)=>{a.d(t,{E:()=>r.E,P:()=>n.ViewportBoundary});var r=a(20304),n=a(44353)},20425:(e,t,a)=>{function r(){return\"undefined\"!=typeof window}a.d(t,{J:()=>i});var n=a(1521);function i(e){!function(e,t={}){let{persisted:a=!1}=t;(0,n.useEffect)(()=>{let t=t=>{a&&t.persisted?e():a||e()};return r()&&window.addEventListener(\"pageshow\",t),()=>{r()&&window.removeEventListener(\"pageshow\",t)}},[e,a])}(e,{persisted:!0})}},21932:(e,t,a)=>{a.r(t),a.d(t,{default:()=>v});var r=a(73365),n=a(1521),i=a(7270),l=a(13727),s=a(58080),o=a(11444),c=a(39235),d=a(72310),u=a(57426);let p=null,f=null,v=()=>{let[e]=(0,l.gQK)(),[t]=(0,l.tIE)(),[a]=(0,c.cN)({provideFallbacks:!0}),v=(0,s.lT)(),m=n.useContext(d.default),h=m?.getBucket(u.L?.ROOT),b=h?.sponsoredCarouselViewportOffset,g=h?.enableSponsoredCarouselViewportBoundary;if(t!==p&&(p=t,f=null),a&&null===f&&(f={deviceClass:e?\"s\":\"l\",pageType:\"pdp\",query:t,mediationData:{selfRequest:!0},partyId:v.get(\"pt\")??void 0,storeId:a.preferences?.store?.locationId??void 0,visitorId:v.get(\"vt\")??void 0,zipCode:a.contact?.primaryShippingAddress?.zip??void 0,pageNumber:1}),!a&&null===f)return(0,r.jsx)(\"div\",{className:\"atwa-ninja-carousel\",children:(0,r.jsx)(\"div\",{className:\"a-skeleton-shimmer\",style:{height:\"230px\"}})});let w=f;return w?(0,r.jsx)(\"div\",{className:\"atwa-ninja-carousel\",children:(0,r.jsx)(o.P,{marginBottom:b,enable:g,loadingFallback:(0,r.jsx)(\"div\",{className:\"a-skeleton-shimmer\",style:{height:\"230px\"}}),children:(0,r.jsx)(i.FN,{...w})})}):null}},57974:(e,t,a)=>{a.d(t,{k:()=>c,u:()=>o});var r=a(1521),n=a(47495),i=a(53659),l=[\"ariaLabel\",\"aria-expanded\",\"buttonRef\",\"className\"];function s(){return(s=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var a=arguments[t];for(var r in a)({}).hasOwnProperty.call(a,r)&&(e[r]=a[r])}return e}).apply(null,arguments)}var o=r.forwardRef(function(e,t){var a=e.ariaLabel,o=e[\"aria-expanded\"],c=e.buttonRef,d=e.className,u=function(e,t){if(null==e)return{};var a,r,n=function(e,t){if(null==e)return{};var a={};for(var r in e)if(({}).hasOwnProperty.call(e,r)){if(-1!==t.indexOf(r))continue;a[r]=e[r]}return a}(e,t);if(Object.getOwnPropertySymbols){var i=Object.getOwnPropertySymbols(e);for(r=0;r<i.length;r++)a=i[r],-1===t.indexOf(a)&&({}).propertyIsEnumerable.call(e,a)&&(n[a]=e[a])}return n}(e,l),p=(0,i.N)(t,c);return r.createElement(\"button\",s({\"aria-expanded\":o,\"aria-label\":\"\".concat(a,\" info\"),className:(0,n.x)(\"c-info-i\",o&&\"v-active\",d),ref:p,type:\"button\"},u),r.createElement(\"svg\",{\"aria-hidden\":\"true\",viewBox:\"0 0 32 32\"},r.createElement(\"path\",{className:\"c-info-i-circle\",d:\"M26.26,5.74 L26.26,5.74 C20.60,0.086 11.4,0.086 5.74,5.74 C0.086,11.4 0.086,20.60 5.74,26.26 C11.4,31.91 20.60,31.91 26.26,26.26 C31.91,20.6 31.91,11.4 26.26,5.74 Z\"}),r.createElement(\"g\",{className:\"c-info-i-text\",transform:\"translate(13, 5)\"},r.createElement(\"path\",{d:\"M3,0.23 C1.47,0.23 0.29,1.44 0.29,2.82 C0.29,4.24 1.47,5.42 3,5.42 C4.5,5.42 5.71,4.29 5.71,2.82 C5.71,1.38 4.5,0.23 3,0.23 Z\"}),r.createElement(\"rect\",{height:\"14.36\",width:\"4.73\",x:\"0.63\",y:\"7.41\"}))))});o.displayName=\"BrixInformationIcon\";var c=o}}]);"
+}

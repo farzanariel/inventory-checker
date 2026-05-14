@@ -1,0 +1,21 @@
+{
+  "id": "har-289",
+  "url": "https://www.google.com/gmp/conversion/_dc_unique_id=11464144321084755312;_dc_ptd=ChEI8OWV0AYQn9r60MW36e_2ARIfAFxADp_CtHes_BgilmOlVj8yqIKkHuP0NjW_a3h5Kg;_dc_time=1778777882;cid=CAQSvgEABaugfV730YpzbeahPPCcnHFR1q3oExXf28AmNQxQcV_TCWWKah-SwhSAzy8kWagzgxVdwSmuZvuFgdDBURZe54Jf43iHAJcUCx1sEZ-1EkiQ23JkVIug6AMIgnhkd309Ea2cYELFk4J2Dk5_9B-DFaeR6M2bpR03RJ05jLdaFiOwAJ6fILtXW9gg8EQjIDWemebi0z76BL8UA5q8pWIgNKEimEhH7P6RIw4DNM8HI9y-GMxYMyyJ7tblrnw6;eps=AHas8cBcm53XrnwRyhACJpABu0mbNdJ-sQPw89_x-rlr1DKZK9kVJXH27hXhUKurSR2WzLPQ2H6jEl6h9YsebdDtNffTdlQLX-Mc1kx01UWWpE4LpBOw2E0;dc_pre=CPPwtP6fuZQDFaUiTwgduGcjHw;src=4448269;type=bbycom;cat=BBY-S0;rcb=11;ord=6781001422068;npa=0;auiddc=1122299206.1778186260;gcldc=CjwKCAjw-8vPBhBbEiwAoA39Wh6umrDgUQ9jgSB1BSOAx0hxOIglaK5fL6m51dAKFQsn4ZBM56tVuhoChaUQAvD_BwE;gclgs=1;gclst=1212198828;gcllp=197027391;gclaw=CjwKCAjw-8vPBhBbEiwAoA39Wh6umrDgUQ9jgSB1BSOAx0hxOIglaK5fL6m51dAKFQsn4ZBM56tVuhoChaUQAvD_BwE;u3=not_provided;u5=8217524d-4fb4-11f1-a701-0e79396342ad;u6=recognized;u7=en-US;u14=undefined;u15=undefined;u16=6674708;u18=All%20Laptops;u19=Laptops;u20=67812132220295860793416528519573407015;uaa=arm;uab=64;uafvl=Google%2520Chrome%3B147.0.7727.138%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.138;uamb=0;uam=;uap=macOS;uapv=26.0.1;uaw=0;pscdl=noapi;frm=0;_tu=IFA;gtm=45fe65c1v9179369925za200zd9179369925xec;gcd=13l3l3l3l1l1;dma=0;dc_fmt=3;tag_exp=0~115938465~115938468~118131810;epver=2;dc_random=1778777881_98rki5Uj_US2-0-L1yyftqF75iRKUOiihQ;~oref=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708?",
+  "status": 200,
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+    "cache-control": "no-cache, must-revalidate",
+    "content-length": "42",
+    "content-type": "image/gif",
+    "cross-origin-resource-policy": "cross-origin",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+    "p3p": "policyref=\"https://www.googleadservices.com/pagead/p3p.xml\", CP=\"NOI DEV PSA PSD IVA IVD OTP OUR OTR IND OTC\"",
+    "pragma": "no-cache",
+    "server": "cafe",
+    "timing-allow-origin": "*",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "0"
+  },
+  "body": "GIF89a\u0001\u0000\u0001\u0000�\u0000\u0000\u0000\u0000\u0000���!�\u0004\u0001\u0000\u0000\u0000\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0001D\u0000;"
+}

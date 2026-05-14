@@ -1,0 +1,28 @@
+{
+  "id": "har-395",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777883.18f8ce7c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "314",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "16",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6610891\",\"name\":{\"short\":\"Lenovo - IdeaPad Slim 3i 15.6\\\" Full HD Laptop - Intel Core i3-N305 2023 - 8GB Memory - 128GB UFS - Arctic Grey\",\"__typename\":\"ProductName\"},\"reviewInfo\":{\"reviewCount\":1212,\"__typename\":\"ProductReviewInfo\"},\"url\":{\"reviewStandaloneUrl\":\"/product/lenovo-ideapad-slim-3i-15-6-full-hd-laptop-intel-core-i3-n305-2023-8gb-memory-128gb-ufs-arctic-grey/JJGSHX7VWQ/sku/6610891/reviews\",\"__typename\":\"ProductUrl\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

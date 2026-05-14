@@ -1,0 +1,28 @@
+{
+  "id": "har-388",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777883.18f8ca54",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "339",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "17",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6619147\",\"name\":{\"short\":\"Lenovo - IdeaPad Slim 3x - Copilot+ PC - 15.3\\\" 2k Touchscreen Laptop - Snapdragon X X1-26-100 2025 - 16GB Memory - 256GB SSD - Luna Grey\",\"__typename\":\"ProductName\"},\"reviewInfo\":{\"reviewCount\":270,\"__typename\":\"ProductReviewInfo\"},\"url\":{\"reviewStandaloneUrl\":\"/product/lenovo-ideapad-slim-3x-copilot-pc-15-3-2k-touchscreen-laptop-snapdragon-x-x1-26-100-2025-16gb-memory-256gb-ssd-luna-grey/JJGSH82JL5/sku/6619147/reviews\",\"__typename\":\"ProductUrl\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

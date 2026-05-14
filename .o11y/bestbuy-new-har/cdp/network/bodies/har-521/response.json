@@ -1,0 +1,28 @@
+{
+  "id": "har-521",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777897.18f98855",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "351",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:17 GMT",
+    "expires": "Thu, 14 May 2026 16:58:17 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "12",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6630534\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.3,\"reviewCount\":3,\"syndicatedReviewSummary\":[],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/microsoft-365-personal-1-person-3-month-subscription-activation-required-windows-mac-os-apple-ios-android-digital/J3ZKKFJSLW\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/microsoft-365-personal-1-person-3-month-subscription-activation-required-windows-mac-os-apple-ios-android-digital/J3ZKKFJSLW/sku/6630534\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"Microsoft - 365 Personal (1 Person) (3-Month Subscription) - Activation Required - Windows, Mac OS, Apple iOS, Android [Digital]\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "har-141",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/analytics-dotcom/chunks/interaction-01d33e2b062bc79cce7f.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777880.18f89bff",
+    "cache-control": "max-age=1300086",
+    "content-encoding": "br",
+    "content-length": "1021",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:00 GMT",
+    "etag": "\"d1a270e09265d0339c82cb84fb0b0d22:1777485030.771191\"",
+    "expires": "Fri, 29 May 2026 18:06:06 GMT",
+    "last-modified": "Wed, 29 Apr 2026 17:50:30 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "/*! For license information please see interaction-01d33e2b062bc79cce7f.js.LICENSE.txt */\n\"use strict\";(self.webpackJsonpAnalytics=self.webpackJsonpAnalytics||[]).push([[8273],{68027(t,e,a){a.r(e),a.d(e,{default:()=>T,domHelper:()=>N}),Object.defineProperty(T,\"name\",{value:\"default\",configurable:!0});var n=a(53811),r=a(48079),c=a.n(r),i=a(18979),l=a.n(i),s=a(86226),o=a.n(s),d=a(31721),u=a.n(d),v=a(50697),f=a.n(v),g=a(8628),p=a.n(g),h=a(73421),E=a.n(h),k=a(13585),m=a(46803),D=a(45819),N={getAttrNames:function(t){var e,a=[];return t&&t.attributes&&(a=c()(e=l()(Array.prototype).call(t.attributes)).call(e,function(t){return t.name})),a},getDataset:function(t){if(!t)return{};if(!t.dataset){var e=this.getAttrNames(t);t.dataset={},o()(e).call(e,function(e){if(/^data-.*/.test(e)){var a=e.split(\"-\")[1];t.dataset[a]=\"\".concat(t.attributes[e])}})}return t.dataset},getDataTrackElement:function(t){var e=/^data-(lid|track|analytics-).*/;if(t&&\"BODY\"!=t.tagName){var a=this.getAttrNames(t);return u()(a).call(a,function(t){return e.test(t)})?t:this.getDataTrackElement(t.parentNode)}},dispatchDataTrackDaiEvent:function(){var t,e,a=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};/browse,pdp/.test((0,D.Vr)())&&(e={skus:[{id:(0,m.Wn)()}],interaction:{name:a.track||a.lid},event:{type:\"interaction\"},content:[{name:a.track||a.lid,type:\"data-\".concat(a.track?\"track\":\"lid\"),isClick:!0}]}),0!=f()(a).length&&(null===E()||void 0===E()||null===(t=E().dispatch)||void 0===t||t.call(E(),(0,k.v)({context:\"INTERACTION\",event:\"INTERACTION\",eventData:(0,n.A)({},a),schemaData:e||null})))},selectChangeEvent:function(){var t=l()(Array.prototype).call(this.childNodes);o()(t).call(t,function(t){if(\"OPTION\"==t.tagName){var e=N.getDataset(t);(e.track||e.lid)&&t.selected&&N.dispatchDataTrackDaiEvent(e)}})},interactionEvent:function(t){var e,a=t.target,n=[\"SELECT\"];if(p()(n).call(n,null===(e=a)||void 0===e?void 0:e.tagName))a.removeEventListener(\"change\",N.selectChangeEvent),a.addEventListener(\"change\",N.selectChangeEvent);else{a=N.getDataTrackElement(t.target);var r=N.getDataset(a);N.dispatchDataTrackDaiEvent(r)}}};function T(){document.addEventListener(\"click\",N.interactionEvent,{capture:!0})}}}]);\n//# sourceMappingURL=interaction-01d33e2b062bc79cce7f.js.map"
+}

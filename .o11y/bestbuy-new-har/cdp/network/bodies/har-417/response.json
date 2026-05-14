@@ -1,0 +1,20 @@
+{
+  "id": "har-417",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/analytics-dotcom/chunks/pdp-8992704538696467c7da.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d78e",
+    "cache-control": "max-age=1300126",
+    "content-encoding": "br",
+    "content-length": "1393",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "etag": "\"73aab77692d84c29a6dd571b3f8bdad8:1777485035.069747\"",
+    "expires": "Fri, 29 May 2026 18:06:50 GMT",
+    "last-modified": "Wed, 29 Apr 2026 17:50:35 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "/*! For license information please see pdp-8992704538696467c7da.js.LICENSE.txt */\n\"use strict\";(self.webpackJsonpAnalytics=self.webpackJsonpAnalytics||[]).push([[6185],{32327(e,t,a){a.r(t),a.d(t,{default:()=>l});var r=a(64007),i=a.n(r),n=a(71426),s=a.n(n),c=a(39240),o=a(10312),u=a(84793),d=a(84863);o.ZM.setData(\"isGeekSquadScenario\",!1),o.ZM.setData(\"appleCareString\",\"\");const l={moduleName:\"pdp\",_buildSearchRank:function(){var e={};return e.searchRank?e.searchRank:\"\"},_buildPageHierarchy:function(){return o.ZM.buildTrackingValue([\"uberCatName\",\"parentCatName\",\"catId\"],\",\")},_getReferrer:function(){return document.referrer||\"\"},_buildMerchCategory:function(){var e,t=\"\",a=this._getReferrer();return a?i()(e=a.toLowerCase()).call(e,\"bestbuy.com\")>-1&&(t=o.fY.ref&&o.fY.loc?\"External Campaign\":\"Referrer\"):t=\"Direct\",t},_buildProductAvailability:function(){var e=o.ZM.getData(),t=!1,a=\"\",r=e.buttonStateId;if(r&&o.kT.setContextData(\"bb.primaryButtonState\",r),e.isCloud&&r)switch(r){case\"SOLD_OUT_ONLINE\":case\"SOLD_OUT\":t=!0,a=\"soldOutOnline\";break;case\"IN_STORE_ONLY\":t=!0,a=\"inStoreOnly\";break;case\"COMING_SOON\":t=!0,a=\"comingSoon\";break;case\"Out of Stock\":case\"OUT_OF_STOCK\":t=!0,a=\"outOfStock\"}return t&&o.ZM.addEvents(\"event13\"),e.notifyMe&&(a+=\":notifyMe\"),a},_checkPricingOptions:function(){var e=o.ZM.getData(),t=d.A.getPricingType(e.pricingType);if(e.pricingType)switch(t){case\"icr\":o.ZM.addEvents(\"event95\"),o.ZM.setData(\"isIcrSku\",!0);break;case\"map\":o.ZM.addEvents(\"event94\"),o.ZM.setData(\"isMapSku\",!0)}},_AccessoryFinderPDPClick:function(){var e=u.av.get(\"accessoryFinderClick\");u.av.remove(\"accessoryFinderClick\"),e&&\"lbox:PDPclick\"===e?(o.ZM.addEvents(\"event33\"),o.ZM.setData({clickAction:e})):e&&o.ZM.setData({clickAction:e})},_searchRelevancy:function(){u.av.get(\"searchTerm\")&&u.av.get(\"searchRank\")&&o.ZM.setData({searchRelevancyTerm:u.av.get(\"searchTerm\"),searchRelevancyRank:u.av.get(\"searchRank\")}),u.av.remove(\"searchTerm\"),u.av.remove(\"searchRank\")},_BVEntryClick:function(){u.av.get(\"ratingsClick\")&&(o.ZM.addEvents(\"event78\"),o.ZM.setData({BVload:u.av.get(\"ratingsClick\")})),u.av.remove(\"ratingsClick\")},_setData:function(){var e=o.ZM.getData();o.ZM.addEvents(\"event3\",\"prodView\"),this._AccessoryFinderPDPClick(),this._searchRelevancy(),this._BVEntryClick(),this._checkPricingOptions();var t=d.A.getRatings(e),a=d.A.getQuestionsAndAnswers(e),r=o.ZM.getStoreData().skuData,i=(s()(d.A)(r,function(e){return!0===e.isPrimarySku})||{}).sku||e.skuId,n={merchCategory:this._buildMerchCategory(),productAvailability:this._buildProductAvailability(),pageHierarchy:this._buildPageHierarchy(),searchRank:this._buildSearchRank()};e._PRODUCT_STRING_SET_||(n.scProducts=c.A.build({sku:i,eVars:{eVar35:a,eVar23:t,eVar9:d.A._handleGetItByDate()}})),e.price&&(e.contextData=e.contextData||{},e.contextData[\"bb.priceImpression\"]=e.price),o.ZM.setData(n)},addDriverSku:function(e){if(\"undefined\"!==e){var t,a=o.ZM.getData(\"skuId\");return e&&e.requestOptions&&e.requestOptions.skuId?t=e.requestOptions.skuId:e.skuId&&(t=e.skuId),t&&t!==a&&(e.requestOptions.driverSku=a),e}},_setEvents:function(){},initialize:function(e){return o.ZM.setData(\"isAccessoryFinderOpen\",!1),this._setData(),this._setEvents(),e.resolve(this)}}}}]);\n//# sourceMappingURL=pdp-8992704538696467c7da.js.map"
+}

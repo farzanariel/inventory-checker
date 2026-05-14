@@ -1,0 +1,26 @@
+{
+  "id": "har-452",
+  "url": "https://syndicatedsearch.goog/afs/ads/i/iframe.html",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+    "cache-control": "no-cache, must-revalidate",
+    "content-encoding": "gzip",
+    "content-length": "729",
+    "content-security-policy": "script-src 'nonce-0uzsDdM_JMGTzUHH-nk68Q' 'report-sample' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' http: https:; object-src 'none'; report-uri https://csp.withgoogle.com/csp/ads-afs-ui; base-uri 'none'",
+    "content-type": "text/html",
+    "cross-origin-opener-policy": "same-origin; report-to=\"ads-afs-ui\"",
+    "cross-origin-resource-policy": "cross-origin",
+    "date": "Thu, 14 May 2026 16:58:05 GMT",
+    "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+    "last-modified": "Tue, 17 Sep 2024 06:00:00 GMT",
+    "pragma": "no-cache",
+    "report-to": "{\"group\":\"ads-afs-ui\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/ads-afs-ui\"}]}",
+    "server": "sffe",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "0"
+  },
+  "body": "<!doctype html><html><head><meta name=\"ROBOTS\" content=\"NOINDEX, NOFOLLOW\"><meta name=\"format-detection\" content=\"telephone=no\"><meta content=\"origin\" name=\"referrer\"></head><body><div id=\"adBlock\"></div><script nonce=\"0uzsDdM_JMGTzUHH-nk68Q\">if (window.name.match(/^{\"name\":\"master-\\d+\"/)) {var script = document.createElement('script');script.src = \"/adsense/search/ads.js\";var href = window.location.href;if (!!href && (href.indexOf('?pac=') > 0 || href.indexOf('&pac=') > 0)) {if (href.indexOf('?pac=1') > 0 || href.indexOf('&pac=1') > 0) {script.src += '?pac=1';} else if (href.indexOf('?pac=2') > 0 || href.indexOf('&pac=2') > 0) {script.src += '?pac=2';} else {script.src += '?pac=0';}}document.head.appendChild(script);window.IS_GOOGLE_AFS_IFRAME_ = true;}function populate(el) {var adBlock = document.getElementById('adBlock');adBlock.innerHTML += el;}function getMaster() {var m = null;var pIndex = window.name.indexOf('|');if (pIndex > -1 && window.name.charAt(0) != '{') {try {m = window.parent.frames[window.name.substring(pIndex + 1)];} catch (e) {}if (m) {return m;}var nameInfo = window.name.match(/^(slave-\\d+)-(\\d+)/);var masterNum = (nameInfo && nameInfo[2]) ? nameInfo[2] : null;if (masterNum) {try {m = window.parent.frames['master-' + masterNum];} catch (e) {}}}return m;}window.onresize = function() {var resizeMaster = getMaster();try {resizeMaster && resizeMaster.sPH && resizeMaster.sPH();} catch(e) {}};var masterFrame = getMaster();try {masterFrame && masterFrame.mPAASH && masterFrame.mPAASH();} catch(e) {}</script></body></html>\n"
+}

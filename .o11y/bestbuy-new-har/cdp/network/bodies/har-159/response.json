@@ -1,0 +1,19 @@
+{
+  "id": "har-159",
+  "url": "https://x.cardpointers.com/api/v1/user/token/refresh?exp=1781742582000&six=1794329880399",
+  "status": 200,
+  "headers": {
+    "Access-Control-Allow-Origin": "https://www.bestbuy.com",
+    "Access-Control-Expose-Headers": "link",
+    "Cache-Control": "no-cache, private",
+    "Connection": "Keep-Alive",
+    "Content-Encoding": "gzip",
+    "Content-Length": "784",
+    "Content-Type": "application/json",
+    "Date": "Thu, 14 May 2026 16:58:00 GMT",
+    "Keep-Alive": "timeout=2, max=99",
+    "Server": "Apache/2.4.25 (Debian)",
+    "Vary": "Authorization,Accept-Encoding"
+  },
+  "body": "{\"success\":true,\"token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3Nzg3Nzc4ODAsImV4cCI6MTgxMDMxMzg4MCwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoiYXJpZWxmYXJ6YW5AZ21haWwuY29tIiwidXVpZCI6ImEzMzU2NzQ0LTE5OTgtNGY1Mi05MzkxLWNlY2Y0Yzk0M2NjMyJ9.m9Jcb614tPxHA23VHwtRSbW1dpmBPTyNQTojp__1VYu6MnSzrPNIpnMBsKDpe8-xFwiJ-hrvQrU1dZKexi4LEARZXAdZ-DNKeaC2b2Gx5u5Hvp80XrbngdiRJ394KvANWj4-tZLXtiW3XfABiGfXDInOzgQajHQWHnA7d1PsLELIWw52JXGkR2jzNYHTpzDfkN_AR6pBwBx2ndYZBF_x23mJCp7ppR4Xrr2olgkWruQ5o9I8YtX896CRh02eLq5agp8RWtDHaPYEJo-RtlkzsKniJx07-M1VY7Y3uMRP9i_vcMiJ7A_rxX0ftrWhbmVby2lUaMqtu_1j2p1hxka4vJSGBRO_KXVb-ZZIhTB3ktSHLJu6-LDDwetwiWg9AQmyIrQw83V7ICwQ_WDfa5e9ke1aOGXClUCl9V-YY0ux7HSZdtodqTvrwJ6BxDpBS0uTAMIJngUSZCElKWNeCLgLXB8_fYCvQG6m2QUdUrP1sFKRR6XFPDkbyLXU8k7pVaCK3uKQh602TAapg1hG7YcwODKTIEITGYXjXbkmn4StKd2ERN5j-5oOl4KbCJTOQsoTAPpZuapB57CME7uEZgbLDHfyf3jYEZVVWqC-w4C4730iZcgiORA8p9f6JMYMzjNpP211EjBVixnQiQ0hCBMCwrVLAM1nfzKMfXYrj-P5t38\",\"email\":\"arielfarzan@gmail.com\"}"
+}

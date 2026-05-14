@@ -1,0 +1,30 @@
+{
+  "id": "har-420",
+  "url": "https://bf26528hhp.bf.dynatrace.com/bf?type=js3&sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1&svrid=31&flavor=cors&vi=MEFLCJHFVMVLCKFMCMRHKNVVUCDROLSL-0&modifiedSince=1778765437727&bp=3&app=0f4871fda9ce1d80&crc=2254738443&en=6s9q7ur5&end=1",
+  "method": "POST",
+  "headers": {
+    ":authority": "bf26528hhp.bf.dynatrace.com",
+    ":method": "POST",
+    ":path": "/bf?type=js3&sn=v_4_srv_31_sn_CD4H1K56BDLGGEJDNGATJIS23I6TCVA7_app-3A0f4871fda9ce1d80_1_app-3Ace21993b1022d2c8_1_app-3Ab774fff4d2488716_1_app-3A93898aeba08e8a3b_1_app-3A5b501d6af921272d_1_app-3Af129aa4906ad5144_1_ol_0_perc_100000_mul_1&svrid=31&flavor=cors&vi=MEFLCJHFVMVLCKFMCMRHKNVVUCDROLSL-0&modifiedSince=1778765437727&bp=3&app=0f4871fda9ce1d80&crc=2254738443&en=6s9q7ur5&end=1",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "3682",
+    "content-type": "text/plain;charset=UTF-8",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "$a=1%7C44%7CMinified%20React%20error%20%23419%5Es%20visit%20https%3A%2F%2Freact.dev%2Ferrors%2F419%20for%20the%20full%20message%20or%20use%20the%20non-minified%20dev%20environment%20for%20full%20errors%20and%20additional%20helpful%20warnings.%7C_error_%7C-%7C1778777884270%7C1778777884270%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0%2C2%7C45%7CError%7C_type_%7C-%7C1778777884271%7C1778777884271%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0%2C2%7C46%7Chttps%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2F5158-460f1b875ecdb69f.js%5Ep1%5Ep11104%7C_location_%7C-%7C1778777884271%7C1778777884271%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0%2C2%7C47%7C%3Cgenerated%3E%5EpError%5Ep%20%20%20%20at%20Object.fk%20%5Bas%20re%5D%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_js%2Fext%2Fbbydyn%2Fdyn_digital_pdp.js%3A165%3A122%29%5Ep%20%20%20%20at%20ab%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_js%2Fext%2Fbbydyn%2Fdyn_digital_pdp.js%3A333%3A183%29%5Ep%20%20%20%20at%20f%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2F5158-460f1b875ecdb69f.js%3A1%3A11104%29%5Ep%20%20%20%20at%20sE%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2Fc7879cf7-ddfbe24ef51d196c.js%3A1%3A145175%29%5Ep%20%20%20%20at%20sy%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2Fc7879cf7-ddfbe24ef51d196c.js%3A1%3A142915%29%5Ep%20%20%20%20at%20st%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2Fc7879cf7-ddfbe24ef51d196c.js%3A1%3A126174%29%5Ep%20%20%20%20at%20sn%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2Fc7879cf7-ddfbe24ef51d196c.js%3A1%3A124412%29%5Ep%20%20%20%20at%20sQ%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2Fc7879cf7-ddfbe24ef51d196c.js%3A1%3A149436%29%5Ep%20%20%20%20at%20MessagePort.M%20%28https%3A%2F%2Fwww.bestbuy.com%2F%7Eassets%2Fbby%2F_com%2Fshop%2Fpdp%2F_next%2Fstatic%2Fchunks%2F5158-460f1b875ecdb69f.js%3A2%3A21858%29%7C_stack_%7C-%7C1778777884272%7C1778777884272%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0%2C2%7C48%7C4048%7C_ts_%7C-%7C1778777884272%7C1778777884272%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0%2C2%7C49%7C1%7C_source_%7C-%7C1778777884272%7C1778777884272%7Cdn%7C-1%7Ctvtrg%7C1%7Ctvm%7Ci1%5Esk0%5Esh0$rId=RID_961$rpId=$domR=1778777880908$tvn=%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708$tvt=1778777876473$tvm=i1%3Bk0%3Bh0$tvtrg=1$w=632$h=812$sw=1512$sh=982$md=mdcc1%2CdT_pv%3Bmdcc6%2CdT_pv%3Bmdcc7%2CdT_pv%3Bmdcc8%2CdT_pv%3Bmdcc9%2CdT_pv%3Bmdcc11%2CdT_pv%3Bmdcc12%2CdT_pv%3Bmdcc23%2CdT_pv%3Bmdcc26%2CdT_pv%3Bmdcc28%2CdT_pv%3Bmdcc29%2CdT_pv%3Bmdcc30%2CdT_pv%3Bmdcc31%2Cpdp%3Bmdcc32%2Cupa%3Bmdcc35%2CdT_pv%3Bmdcc38%2CdT_pv$url=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708$title=Lenovo%20IdeaPad%20Slim%203%2015.3%22%202k%20Touchscreen%20Laptop%20AMD%20Ryzen%207%20170%202025%2016GB%20Memory%20512GB%20SSD%20Luna...$latC=0$app=0f4871fda9ce1d80$vi=MEFLCJHFVMVLCKFMCMRHKNVVUCDROLSL-0$dnt=1$fId=377880222_935$v=10327251022105625$vID=1778261921837PV7S9GOIRDNL89UFUE2PA4MEGLUPMN3D$rf=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708$time=1778777884274"
+}

@@ -1,0 +1,380 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [PageLoadAnalyticsData_Init_Pdp]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "4283",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "pdp-web",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "PageLoadAnalyticsData_Init_Pdp"
+    },
+    "body": {
+      "operationName": "PageLoadAnalyticsData_Init_Pdp",
+      "variables": {
+        "isBestbuyMember": true,
+        "skuId": "6674708",
+        "input": {
+          "salesChannel": "LargeView"
+        },
+        "isBadgeEnabled": false,
+        "isBadgeV2Enabled": true,
+        "bsinBuyingOptionsInput": {
+          "skuId": "6674708",
+          "bsin": "JJGH3KQYP8",
+          "salesChannel": "LargeView",
+          "postalCode": "",
+          "locationId": "1436"
+        }
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query PageLoadAnalyticsData_Init_Pdp($skuId: String!, $input: ProductItemPriceInput!, $isBestbuyMember: Boolean!, $isBadgeEnabled: Boolean!, $isBadgeV2Enabled: Boolean!, $bsinBuyingOptionsInput: BsinBuyingOptionsInput!) {\n  productBySkuId(skuId: $skuId) {\n    skuId\n    ...AnalyticsFulfillmentOptionsFragment\n    buyingOptions {\n      skuId\n      type\n      product {\n        ...AnalyticsFulfillmentOptionsFragment\n        __typename\n        skuId\n        openBoxCondition\n      }\n      __typename\n    }\n    seller {\n      id\n      __typename\n    }\n    whatItIs\n    hierarchy {\n      bbypres {\n        id\n        primary\n        categoryDetail {\n          name\n          seoUrl\n          broaderTerms {\n            primaryLineage {\n              id\n              name\n              seoUrl\n              sequence\n              __typename\n            }\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    arModels {\n      uri\n      format\n      __typename\n    }\n    reviewInfo {\n      averageRating\n      reviewCount\n      __typename\n    }\n    price(input: $input) {\n      customerPrice\n      currentPrice\n      priceEventType\n      puckDisplayMessage\n      heroRenderPriceOptions\n      paymentOptions {\n        numberOfInstallments\n        installmentAmount\n        vendor\n        isDisplayable\n        type\n        __typename\n      }\n      financeOption {\n        monthlyPayment\n        offerId\n        __typename\n      }\n      tieredOffersTracking {\n        amountConsideredToNextTier\n        amountRemainingToNextTier\n        nextTierId\n        quantityConsideredToNextTier\n        quantityRemainingToNextTier\n        savings\n        savingsType\n        tieredOffersGroupName\n        trackingBy\n        tiers {\n          discountValue\n          minPurchaseAmount\n          minQuantity\n          offerId\n          qualified\n          tierId\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    productVariationDetailDisplay {\n      type\n      title\n      variationTypes {\n        definition\n        displayName\n        rawName\n        __typename\n      }\n      productVariations {\n        shortName\n        color\n        colorCategory\n        sku\n        variations {\n          rawName\n          value\n          __typename\n        }\n        product {\n          name {\n            short\n            __typename\n          }\n          seller {\n            classification\n            id\n            __typename\n          }\n          __typename\n          skuId\n          openBoxCondition\n        }\n        __typename\n      }\n      __typename\n    }\n    ...AnalyticsBadgesFragment @include(if: $isBadgeEnabled)\n    ...AnalyticsBadgesV2Fragment @include(if: $isBadgeV2Enabled)\n    operationalAttributes {\n      values\n      __typename\n    }\n    ...featuredSkuRankingId\n    __typename\n    openBoxCondition\n  }\n  bsinBuyingOptions(input: $bsinBuyingOptionsInput) {\n    lowestAvailableBSINPrice\n    highestAvailableBSINPrice\n    __typename\n    bsin\n  }\n}\n\nfragment AnalyticsFulfillmentOptionsFragment on Product {\n  __typename\n  skuId\n  openBoxCondition\n}\n\nfragment featuredSkuRankingId on Product {\n  featuredSkuRank(filter: {isBestbuyMember: $isBestbuyMember}) {\n    rankingId\n    __typename\n  }\n  __typename\n  skuId\n  openBoxCondition\n}\n\nfragment AnalyticsBadgesFragment on Product {\n  badges {\n    detailsHref\n    displayName\n    endDate\n    imageHref\n    sortOrder\n    startDate\n    typeCode\n    __typename\n  }\n  __typename\n  skuId\n  openBoxCondition\n}\n\nfragment AnalyticsBadgesV2Fragment on Product {\n  badgesV2 {\n    badgeId\n    label\n    __typename\n  }\n  __typename\n  skuId\n  openBoxCondition\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777881.18f8b20a",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "1760",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "113",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "errors": [
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "productBySkuId",
+            "arModels"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        }
+      ],
+      "data": {
+        "productBySkuId": {
+          "skuId": "6674708",
+          "__typename": "Product",
+          "openBoxCondition": null,
+          "buyingOptions": [
+            {
+              "skuId": "6674708",
+              "type": "New",
+              "product": {
+                "__typename": "Product",
+                "skuId": "6674708",
+                "openBoxCondition": null
+              },
+              "__typename": "InboundBuyingOption"
+            }
+          ],
+          "seller": {
+            "id": "bby",
+            "__typename": "Seller"
+          },
+          "whatItIs": [
+            "Laptop Computer"
+          ],
+          "hierarchy": {
+            "bbypres": [
+              {
+                "id": "pcmcat138500050001",
+                "primary": true,
+                "categoryDetail": {
+                  "name": "All Laptops",
+                  "seoUrl": "https://www.bestbuy.com/site/laptop-computers/all-laptops/pcmcat138500050001.c?id=pcmcat138500050001",
+                  "broaderTerms": {
+                    "primaryLineage": [
+                      {
+                        "id": "abcat0502000",
+                        "name": "Laptops",
+                        "seoUrl": "https://www.bestbuy.com/site/computers-pcs/laptop-computers/abcat0502000.c?id=abcat0502000",
+                        "sequence": 0,
+                        "__typename": "HierarchyLineage"
+                      },
+                      {
+                        "id": "abcat0500000",
+                        "name": "Computers & Tablets",
+                        "seoUrl": "https://www.bestbuy.com/site/electronics/computers-pcs/abcat0500000.c?id=abcat0500000",
+                        "sequence": 1,
+                        "__typename": "HierarchyLineage"
+                      },
+                      {
+                        "id": "cat00000",
+                        "name": "Best Buy",
+                        "seoUrl": "https://www.bestbuy.com/",
+                        "sequence": 2,
+                        "__typename": "HierarchyLineage"
+                      }
+                    ],
+                    "__typename": "HierarchyBroaderTerms"
+                  },
+                  "__typename": "CategoryDetail"
+                },
+                "__typename": "ProductHierarchyLink"
+              }
+            ],
+            "__typename": "ProductHierarchy"
+          },
+          "arModels": null,
+          "reviewInfo": {
+            "averageRating": 0,
+            "reviewCount": 0,
+            "__typename": "ProductReviewInfo"
+          },
+          "price": {
+            "customerPrice": 599.99,
+            "currentPrice": 599.99,
+            "priceEventType": "onSale",
+            "puckDisplayMessage": null,
+            "heroRenderPriceOptions": "FINANCE_OPTIONS",
+            "paymentOptions": [
+              {
+                "numberOfInstallments": 8,
+                "installmentAmount": 75,
+                "vendor": "zip",
+                "isDisplayable": true,
+                "type": "BNPL",
+                "__typename": "ItemPricePaymentOption"
+              }
+            ],
+            "financeOption": {
+              "monthlyPayment": 50,
+              "offerId": "384913",
+              "__typename": "ItemPriceFinanceOption"
+            },
+            "tieredOffersTracking": null,
+            "__typename": "ItemPrice"
+          },
+          "productVariationDetailDisplay": {
+            "type": "detailDisplay",
+            "title": null,
+            "variationTypes": [
+              {
+                "definition": "Size of the screen, measured diagonally from corner to corner.",
+                "displayName": "Screen Size",
+                "rawName": "Laptop_Computers:Screen_Size",
+                "__typename": "ProductVariationType"
+              },
+              {
+                "definition": null,
+                "displayName": "Total Storage Capacity",
+                "rawName": "Desktop_and_Laptop_Computers:Total_Storage_Capacity",
+                "__typename": "ProductVariationType"
+              },
+              {
+                "definition": "Random-access memory (RAM) is a computing device's short-term data storage, which allows active information to be accessed quickly. The size and type of RAM determines how efficiently the device can handle large amounts of information at one time. For example, gaming or video editing requires more RAM for optimal performance.",
+                "displayName": "System Memory (RAM)",
+                "rawName": "Desktop_and_Laptop_Computers:System_Memory_RAM",
+                "__typename": "ProductVariationType"
+              },
+              {
+                "definition": "Your computer's processor is like its brain. Working in combination with system memory, the power of the processor determines the complexity of software you can run, how many programs you can have open at the same time, and how fast those programs will run. Most computers feature an AMD, Intel or Snapdragon processor.",
+                "displayName": "Processor Model",
+                "rawName": "Desktop_and_Laptop_Computers:Processor_Model",
+                "__typename": "ProductVariationType"
+              },
+              {
+                "definition": null,
+                "displayName": "Color",
+                "rawName": "Desktop_and_Laptop_Computers:Color",
+                "__typename": "ProductVariationType"
+              }
+            ],
+            "productVariations": [
+              {
+                "shortName": "Lenovo - IdeaPad Slim 3 15.3\" 2K Touchscreen Laptop - AMD Ryzen 7 170 2025 - 16GB Memory - 512GB SSD - Luna Grey",
+                "color": "Luna Grey",
+                "colorCategory": null,
+                "sku": "6668502",
+                "variations": [
+                  {
+                    "rawName": "Laptop_Computers:Screen_Size",
+                    "value": "15.3\"",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Total_Storage_Capacity",
+                    "value": "512GB",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:System_Memory_RAM",
+                    "value": "16GB",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Processor_Model",
+                    "value": "AMD Ryzen 100 Series",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Color",
+                    "value": "Luna Grey",
+                    "__typename": "ProductVariationDetails"
+                  }
+                ],
+                "product": {
+                  "name": {
+                    "short": "Lenovo - IdeaPad Slim 3 15.3\" 2K Touchscreen Laptop - AMD Ryzen 7 170 2025 - 16GB Memory - 512GB SSD - Luna Grey",
+                    "__typename": "ProductName"
+                  },
+                  "seller": {
+                    "classification": "1P",
+                    "id": "bby",
+                    "__typename": "Seller"
+                  },
+                  "__typename": "Product",
+                  "skuId": "6668502",
+                  "openBoxCondition": null
+                },
+                "__typename": "ProductVariation"
+              },
+              {
+                "shortName": "Lenovo - IdeaPad Slim 3 15.3\" 2k Touchscreen Laptop - AMD Ryzen 7 170 2025 - 16GB Memory - 512GB SSD - Luna Grey",
+                "color": "Luna Grey",
+                "colorCategory": null,
+                "sku": "6674708",
+                "variations": [
+                  {
+                    "rawName": "Laptop_Computers:Screen_Size",
+                    "value": "15.3\"",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Total_Storage_Capacity",
+                    "value": "512GB",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:System_Memory_RAM",
+                    "value": "16GB",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Processor_Model",
+                    "value": "AMD Ryzen 100 Series",
+                    "__typename": "ProductVariationDetails"
+                  },
+                  {
+                    "rawName": "Desktop_and_Laptop_Computers:Color",
+                    "value": "Luna Grey",
+                    "__typename": "ProductVariationDetails"
+                  }
+                ],
+                "product": {
+                  "name": {
+                    "short": "Lenovo - IdeaPad Slim 3 15.3\" 2k Touchscreen Laptop - AMD Ryzen 7 170 2025 - 16GB Memory - 512GB SSD - Luna Grey",
+                    "__typename": "ProductName"
+                  },
+                  "seller": {
+                    "classification": "1P",
+                    "id": "bby",
+                    "__typename": "Seller"
+                  },
+                  "__typename": "Product",
+                  "skuId": "6674708",
+                  "openBoxCondition": null
+                },
+                "__typename": "ProductVariation"
+              }
+            ],
+            "__typename": "InboundProductVariation"
+          },
+          "badgesV2": [],
+          "operationalAttributes": [
+            {
+              "values": [
+                "https://media.flixcar.com/delivery/webcall/content/160/us/mpn/83K700TUUS?force_cache=43013&pn=https://api.bestbuy.com/click/-/6674708/pdp"
+              ],
+              "__typename": "ProductOperationalAttribute"
+            },
+            {
+              "values": [
+                "https://media.flixcar.com/delivery/webcall/content/160/us/mpn/83K700TUUS?force_cache=20260418000000&pn=https://api.bestbuy.com/click/-/6674708/pdp"
+              ],
+              "__typename": "ProductOperationalAttribute"
+            },
+            {
+              "values": [
+                "Laptop",
+                "User Guide",
+                "65W Charger"
+              ],
+              "__typename": "ProductOperationalAttribute"
+            },
+            {
+              "values": [
+                "Lenovo Ideapad"
+              ],
+              "__typename": "ProductOperationalAttribute"
+            },
+            {
+              "values": [
+                "General purpose"
+              ],
+              "__typename": "ProductOperationalAttribute"
+            }
+          ],
+          "featuredSkuRank": {
+            "rankingId": "0001bXS_BvmBtJrc:tFiZig3Wel7Ge36",
+            "__typename": "FeaturedSkuRank"
+          }
+        },
+        "bsinBuyingOptions": {
+          "lowestAvailableBSINPrice": 599.99,
+          "highestAvailableBSINPrice": 879.99,
+          "__typename": "BsinBuyingOptions",
+          "bsin": "JJGH3KQYP8"
+        }
+      }
+    }
+  }
+}

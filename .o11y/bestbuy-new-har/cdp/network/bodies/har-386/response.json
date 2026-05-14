@@ -1,0 +1,20 @@
+{
+  "id": "har-386",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/interruptions-manager/dist/client/791-0e0927cba1775b963bc54772d17769f2.mjs",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-amd-bc-debug": "[a=23.11.229.174,b=18929601,c=c,d=1771259525,h=200,k=4,l=0,n=US_GA_ATLANTA,o=20940,r=4,p=329]",
+    "akamai-grn": "0.e73dd717.1778777883.18f8ca52",
+    "cache-control": "max-age=1931673",
+    "content-encoding": "br",
+    "content-length": "329",
+    "content-type": "text/javascript",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "etag": "\"14853e6181d32c542e29b589e9183a6a:1771259483.961999\"",
+    "expires": "Sat, 06 Jun 2026 01:32:36 GMT",
+    "last-modified": "Mon, 16 Feb 2026 16:31:23 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "\"use strict\";(self.webpackChunkgvpc_shop_interruptions_manager_v1_25_34_18=self.webpackChunkgvpc_shop_interruptions_manager_v1_25_34_18||[]).push([[791],{791:(n,r,e)=>{e.d(r,{O0:()=>i,d4:()=>t,jx:()=>p});var t=\"REQUEST_INTERRUPTION_PERMISSION\",i=function(n){return{type:\"INTERRUPTION_PERMISSION_RESPONSE\",payload:{interruptionDuration:n.interruptionDuration,interruptionId:n.interruptionId,interruptionType:n.interruptionType,permissionGranted:n.permissionGranted,reason:n.reason}}},p=\"INTERRUPTION_STATUS_UPDATE\"}}]);\n//# sourceMappingURL=791-0e0927cba1775b963bc54772d17769f2.mjs.map"
+}

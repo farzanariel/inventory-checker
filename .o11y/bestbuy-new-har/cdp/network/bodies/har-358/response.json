@@ -1,0 +1,26 @@
+{
+  "id": "har-358",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777883.18f8c56c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-length": "32",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "5",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"__typename\":\"Query\"}}\n"
+}

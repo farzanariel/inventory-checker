@@ -1,0 +1,366 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [AccessoriesInVariations_ConfigData]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "1041",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "attach-accessories-in-variations",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "AccessoriesInVariations_ConfigData"
+    },
+    "body": {
+      "operationName": "AccessoriesInVariations_ConfigData",
+      "variables": {
+        "deviceClass": "LV",
+        "aiv": "accessories-in-variations",
+        "nodeId": "recs-components-typeinfo-mapping",
+        "key": "recommendations-experience-configs",
+        "driverSkuId": "6674708"
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query AccessoriesInVariations_ConfigData($aiv: String!, $driverSkuId: String!, $deviceClass: String!, $nodeId: String!, $key: String!) {\n  aivMatchTypeInfo: recommendationsComponentExperience(\n    input: {componentName: $aiv, driverSkuId: $driverSkuId, deviceClass: $deviceClass, nodeId: $nodeId}\n  ) {\n    isDisplayable\n    __typename\n  }\n  ...ManagedContentByTypeAndId\n}\n\nfragment ManagedContentByTypeAndId on Query {\n  managedContentByTypeAndId(managedContentInput: {type: \"key-value\", id: $key}) {\n    ...ManagedContentDocument\n    __typename\n    catalog\n    id\n    type\n  }\n  __typename\n}\n\nfragment ManagedContentDocument on ManagedContent {\n  document\n  id\n  type\n  catalog\n  __typename\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777882.18f8b4a9",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "1417",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "21",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "aivMatchTypeInfo": {
+          "isDisplayable": true,
+          "__typename": "RecommendationsComponentExperienceConnection"
+        },
+        "managedContentByTypeAndId": {
+          "document": {
+            "abTest353ScalingStrategy": {
+              "scaleAIVPostcardSpacing": false,
+              "scalePackageDealsCarouselNewLayout": true,
+              "scaleUREHorizontalLayout": true,
+              "scaleWarrantySelectorInterruptor": true,
+              "scaleWarrantySelectorPostcardSpacing": false
+            },
+            "abTest354ScalingStrategy": {
+              "scaleAIVPostcardSpacing": false,
+              "scaleWarrantySelectorInterruptor": true,
+              "scaleWarrantySelectorPostcardSpacing": false
+            },
+            "abTest365ScalingStrategy": {
+              "scaleAIVPostcardSpacing": false,
+              "scaleWarrantySelectorInterruptor": true,
+              "scaleWarrantySelectorPostcardSpacing": false
+            },
+            "accessories-in-variations": {
+              "isUREEnabled": true
+            },
+            "badgeConfig": {
+              "bestSelling": {},
+              "default": {},
+              "gandalf": {},
+              "overallPick": {
+                "badgeBackgroundStyle": "bg-default-emphasis",
+                "badgeIcon": "Tag",
+                "badgeIconStyle": "fill-secondary-on-emphasis w-150 h-150",
+                "badgeImageStyle": {
+                  "app": {
+                    "height": 12,
+                    "width": 12
+                  },
+                  "web": {
+                    "lg": "w-200 h-200",
+                    "md": "w-150 h-150",
+                    "sm": "w-150 h-150"
+                  }
+                },
+                "badgeImageUrl": "https://pisces.bbystatic.com/image2/vector/BestBuy_US/dam/Tag-24-f1896454-dd92-4fa6-a189-71dab5f11372.svg"
+              },
+              "topRated": {},
+              "trendingDeal": {}
+            },
+            "defaultImageUrl": "https://pisces.bbystatic.com/image2/BestBuy_US/store/images/global/misc/unavailable.png",
+            "enableRecsMarketplace": {
+              "app": true,
+              "web": true
+            },
+            "installation-services": {
+              "App": {
+                "enableTVInstall2_0": true
+              },
+              "Web": {
+                "enableTVInstall2_0": true
+              }
+            },
+            "isAppWebpEnabled": true,
+            "isWebpEnabled": true,
+            "pdp": {
+              "ure": {
+                "egpQueryPlacementValue": "pdp-ure",
+                "mobileApp": {
+                  "UREMainTitle": "Customers often buy these together",
+                  "additionalMinRelatedProductsCount": 1,
+                  "limit": 15,
+                  "relatedProductsCount": 2
+                },
+                "web": {
+                  "lv": {
+                    "UREMainTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  },
+                  "sv": {
+                    "UREMainTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  }
+                }
+              }
+            },
+            "product-carousel": {
+              "APP": {
+                "disableAddToCart": false,
+                "disableCriteo": false,
+                "disableWebp": false
+              },
+              "DEFAULT": {
+                "allowBadgeTypesList": [
+                  "BUY_AGAIN",
+                  "RECENTLY_VIEWED"
+                ],
+                "enableGlobalPlacementBadge": false,
+                "enablePlacementListBadge": []
+              },
+              "GVP": {
+                "disableCriteo": false,
+                "disableWebp": false
+              },
+              "INTERRUPTOR-APP": {
+                "disableMatchType": true,
+                "disablePills": true
+              },
+              "INTERRUPTOR-MF": {
+                "disableCombo": true,
+                "disableMatchType": true,
+                "disablePills": true
+              },
+              "MF": {
+                "disableCombo": true,
+                "disableCriteo": false,
+                "disableWebp": false
+              }
+            },
+            "recs-interruptor": {
+              "deoEnvironment": "production",
+              "eligibleComponentList": [
+                "warranty-selector",
+                "product-carousel",
+                "product-installation",
+                "service-selector",
+                "installation-service"
+              ],
+              "enableFocusedInterruptorAbtest": true,
+              "enableProductCarouselForAll": true,
+              "hideComponentsForApp": [
+                "URE"
+              ],
+              "hideComponentsForWeb": [
+                "URE"
+              ],
+              "product-installation": {
+                "mobileApp": {
+                  "disableSelfInstallTypeInfos": [
+                    "Remote_Starters"
+                  ],
+                  "enableProductInstallation": true,
+                  "enableProductInstallationOnOpenBox": true
+                },
+                "web": {
+                  "lv": {
+                    "disableSelfInstallTypeInfos": [
+                      "Remote_Starters"
+                    ],
+                    "enableProductInstallation": true,
+                    "enableProductInstallationOnOpenBox": true
+                  },
+                  "sv": {
+                    "disableSelfInstallTypeInfos": [
+                      "Remote_Starters"
+                    ],
+                    "enableProductInstallation": true,
+                    "enableProductInstallationOnOpenBox": true
+                  }
+                }
+              },
+              "productCarouselValidator": {
+                "All": [
+                  "All_in_One_Desktop_Computers",
+                  "Desktop_Computer_Towers",
+                  "Laptop_Computers",
+                  "Monitors",
+                  "Processors",
+                  "Studio_Monitors",
+                  "Antivirus_and_Internet_Security_Software"
+                ],
+                "Apple": [
+                  "Tablets"
+                ],
+                "Beats": [
+                  "Tablets"
+                ],
+                "Beats by Dr. Dre": [
+                  "Tablets"
+                ]
+              },
+              "scaleFocusedInterruptor": false,
+              "shouldReturnWarrantyData": true,
+              "unified-recommendations-experience": {
+                "egpQueryPlacementValue": "interruptor-ure",
+                "mobileApp": {
+                  "UREInterruptorTitle": "Customers often buy these together",
+                  "additionalMinRelatedProductsCount": 1,
+                  "limit": 15,
+                  "relatedProductsCount": 2
+                },
+                "web": {
+                  "lv": {
+                    "UREInterruptorTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  },
+                  "sv": {
+                    "UREInterruptorTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  }
+                }
+              },
+              "ure": {
+                "egpQueryPlacementValue": "interruptor-ure",
+                "mobileApp": {
+                  "UREInterruptorTitle": "Customers often buy these together",
+                  "additionalMinRelatedProductsCount": 1,
+                  "limit": 15,
+                  "relatedProductsCount": 2
+                },
+                "web": {
+                  "lv": {
+                    "UREInterruptorTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  },
+                  "sv": {
+                    "UREInterruptorTitle": "Customers often buy these together",
+                    "additionalMinRelatedProductsCount": 1,
+                    "limit": 15,
+                    "relatedProductsCount": 2
+                  }
+                }
+              }
+            },
+            "referer": "www.bestbuy.com",
+            "referrer": "www.bestbuy.com",
+            "service-selector": {
+              "App": {
+                "enableServiceSelector": true
+              },
+              "Web": {
+                "enableServiceSelector": true
+              },
+              "mountSkusForTVInstall": [
+                "6629013",
+                "6629018",
+                "6629025"
+              ],
+              "titleForTVInstall": "Professional mounting with additional service options available"
+            },
+            "unified-recommendations-experience": {
+              "egpQueryPlacementValue": "pdp-ure",
+              "mobileApp": {
+                "UREColdstartTitle": "Find more like this",
+                "UREMainTitle": "Customers often buy these together",
+                "additionalMinRelatedProductsCount": 1,
+                "limit": 15,
+                "relatedProductsCount": 2
+              },
+              "web": {
+                "lv": {
+                  "UREColdstartTitle": "Find more like this",
+                  "UREMainTitle": "Customers often buy these together",
+                  "additionalMinRelatedProductsCount": 1,
+                  "limit": 15,
+                  "relatedProductsCount": 2
+                },
+                "sv": {
+                  "UREColdstartTitle": "Find more like this",
+                  "UREMainTitle": "Customers often buy these together",
+                  "additionalMinRelatedProductsCount": 1,
+                  "limit": 15,
+                  "relatedProductsCount": 2
+                }
+              }
+            }
+          },
+          "id": "recommendations-experience-configs",
+          "type": "key-value",
+          "catalog": "platform-manager",
+          "__typename": "ManagedContent"
+        },
+        "__typename": "Query"
+      }
+    }
+  }
+}

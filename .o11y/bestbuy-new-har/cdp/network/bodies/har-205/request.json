@@ -1,0 +1,15 @@
+{
+  "id": "har-205",
+  "url": "https://servedby.flashtalking.com/container/7922;86518;8908;iframe/?spotName=Product_View&U1=V&U2=All%20Laptops&U3=Laptops&U4=6674708&U5=Lenovo&cachebuster=7344932190497148",
+  "method": "GET",
+  "headers": {
+    "DNT": "1",
+    "Referer": "https://www.bestbuy.com/",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\""
+  },
+  "body": null
+}

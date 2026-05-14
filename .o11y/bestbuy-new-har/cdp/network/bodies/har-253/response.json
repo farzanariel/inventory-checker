@@ -1,0 +1,22 @@
+{
+  "id": "har-253",
+  "url": "https://www.bestbuy.com/site/canopy/component/pricing/price-change-notification/v1?deviceClass=l&locale=en-US",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777882.18f8b66f",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "695",
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 1541 0 -",
+    "x-bby-instance-id": "unknown",
+    "x-forwarded-proto": "https",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "body": "\n                            \n                         <div id=\"pricing-price-change-notification-3586933\" class=\"_none\" data-version=\"1.2617.4\"><div class=\"pricing-price-change-notification\"><div class=\"appContainer\" data-testid=\"appContainer\" style=\"position:relative\"></div></div><script type=\"module\" src=\"https://assets.bbystatic.com/pricing/price-change-notification/dist/client/client-2bffc379e0856705455d590cef9f63f1.mjs\"></script><script nomodule defer src=\"https://assets.bbystatic.com/pricing/price-change-notification/dist/client/client-5af544b58eef7cea0081bfc590e1f81b.js\"></script><script>getInitializer().then(initializer => initializer.initializeComponent({\"creatorNamespace\":\"pricing\",\"componentId\":\"price-change-notification\",\"contractVersion\":\"v1\",\"componentVersion\":\"1.2617.4\"}, \"pricing-price-change-notification-3586933\", \"{\\\"app\\\":{\\\"instanceId\\\":\\\"pricing-price-change-notification-3586933\\\",\\\"abTests\\\":{},\\\"config\\\":{\\\"interruptionDuration\\\":7000,\\\"ignoreClickAway\\\":false,\\\"fetchPacman\\\":true,\\\"pacmanTtlms\\\":10800000,\\\"fetched\\\":true,\\\"fbiState\\\":\\\"on\\\",\\\"fbiSvThrottle\\\":false,\\\"browseOffsetSelector\\\":\\\"button[data-lid*=hdr_shistory]\\\",\\\"browseOffsetX\\\":16,\\\"browseOffsetY\\\":10,\\\"disableExpirationTimer\\\":true,\\\"expirationDateThreshold\\\":336,\\\"disableBFF\\\":true},\\\"isModalOpen\\\":false},\\\"metaLayer\\\":{\\\"env_assets\\\":\\\"https:\\\\u002F\\\\u002Fassets.bbystatic.com\\\",\\\"env_piscesUrl\\\":\\\"https:\\\\u002F\\\\u002Fpisces.bbystatic.com\\\",\\\"env_appServer\\\":\\\"https:\\\\u002F\\\\u002Fwww.bestbuy.com\\\"}}\", \"en-US\"));</script></div>"
+}

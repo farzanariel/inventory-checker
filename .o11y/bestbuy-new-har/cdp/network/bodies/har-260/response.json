@@ -1,0 +1,28 @@
+{
+  "id": "har-260",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8b7b8",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "966",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "50",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"completeYourPurchase\":{\"products\":[{\"skuId\":\"6630534\",\"product\":{\"bsinProduct\":{\"bsin\":\"J3ZKKFJSLW\",\"featuredSKU\":{\"product\":{\"skuId\":\"6630534\",\"name\":{\"short\":\"Microsoft - 365 Personal (1 Person) (3-Month Subscription) - Activation Required - Windows, Mac OS, Apple iOS, Android [Digital]\",\"__typename\":\"ProductName\"},\"url\":{\"skuSpecificUrl\":\"https://www.bestbuy.com/product/microsoft-365-personal-1-person-3-month-subscription-activation-required-windows-mac-os-apple-ios-android-digital/J3ZKKFJSLW/sku/6630534\",\"relativePdp\":\"/product/microsoft-365-personal-1-person-3-month-subscription-activation-required-windows-mac-os-apple-ios-android-digital/J3ZKKFJSLW\",\"pdp\":\"https://www.bestbuy.com/product/microsoft-365-personal-1-person-3-month-subscription-activation-required-windows-mac-os-apple-ios-android-digital/J3ZKKFJSLW\",\"__typename\":\"ProductUrl\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/1a3ca6db-e1d3-4e1f-a121-21728ec455e7.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"totalSavings\":0,\"customerPrice\":29.99,\"regularPrice\":29.99,\"preferredBadging\":null,\"isMAP\":false,\"icrCode\":null,\"strictMapIcr\":null,\"saleEventMessageType\":null,\"__typename\":\"ItemPrice\"},\"__typename\":\"Product\",\"openBoxCondition\":null},\"__typename\":\"FeaturedSkuByBsin\"},\"__typename\":\"BsinProduct\"},\"__typename\":\"Product\",\"skuId\":\"6630534\",\"openBoxCondition\":null},\"__typename\":\"InboundCompleteYourPurchaseProduct\"},{\"skuId\":\"6554351\",\"product\":{\"bsinProduct\":{\"bsin\":\"J7H7ZYG78F\",\"featuredSKU\":{\"product\":{\"skuId\":\"6554351\",\"name\":{\"short\":\"Logitech - M240 Silent Bluetooth Wireless Optical Ambidextrous Mouse - Wireless - Graphite\",\"__typename\":\"ProductName\"},\"url\":{\"skuSpecificUrl\":\"https://www.bestbuy.com/product/logitech-m240-silent-bluetooth-wireless-optical-ambidextrous-mouse-wireless-graphite/J7H7ZYG78F/sku/6554351\",\"relativePdp\":\"/product/logitech-m240-silent-bluetooth-wireless-optical-ambidextrous-mouse-wireless-graphite/J7H7ZYG78F\",\"pdp\":\"https://www.bestbuy.com/product/logitech-m240-silent-bluetooth-wireless-optical-ambidextrous-mouse-wireless-graphite/J7H7ZYG78F\",\"__typename\":\"ProductUrl\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6554/6554351_sd.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"totalSavings\":0,\"customerPrice\":22.99,\"regularPrice\":22.99,\"preferredBadging\":null,\"isMAP\":false,\"icrCode\":null,\"strictMapIcr\":null,\"saleEventMessageType\":null,\"__typename\":\"ItemPrice\"},\"__typename\":\"Product\",\"openBoxCondition\":null},\"__typename\":\"FeaturedSkuByBsin\"},\"__typename\":\"BsinProduct\"},\"__typename\":\"Product\",\"skuId\":\"6554351\",\"openBoxCondition\":null},\"__typename\":\"InboundCompleteYourPurchaseProduct\"}],\"useRecommendedProduct\":false,\"__typename\":\"CompleteYourPurchase\"},\"__typename\":\"Product\",\"skuId\":\"6674708\",\"openBoxCondition\":null},\"recommendationsV2\":{\"subPlacements\":[{\"id\":\"JJGH3KQYP8\",\"name\":\"cyp\",\"recommendations\":[{\"id\":\"6593497\",\"item\":{\"skuId\":\"6593497\",\"name\":{\"short\":\"Logitech - M196 Lightweight Bluetooth Wireless Optical Mouse Compact 3-Button Ambidextrous Mouse with Smooth Tracking - Wireless - Graphite\",\"__typename\":\"ProductName\"},\"url\":{\"skuSpecificUrl\":\"https://www.bestbuy.com/product/logitech-m196-lightweight-bluetooth-wireless-optical-mouse-compact-3-button-ambidextrous-mouse-with-smooth-tracking-wireless-graphite/J7H7ZYG47F/sku/6593497\",\"relativePdp\":\"/product/logitech-m196-lightweight-bluetooth-wireless-optical-mouse-compact-3-button-ambidextrous-mouse-with-smooth-tracking-wireless-graphite/J7H7ZYG47F\",\"pdp\":\"https://www.bestbuy.com/product/logitech-m196-lightweight-bluetooth-wireless-optical-mouse-compact-3-button-ambidextrous-mouse-with-smooth-tracking-wireless-graphite/J7H7ZYG47F\",\"__typename\":\"ProductUrl\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/9ec3cbaa-25eb-4e40-bffe-5ef69a8fdff9.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"totalSavings\":1,\"customerPrice\":11.99,\"regularPrice\":12.99,\"preferredBadging\":null,\"isMAP\":false,\"icrCode\":null,\"strictMapIcr\":null,\"saleEventMessageType\":null,\"__typename\":\"ItemPrice\"},\"__typename\":\"Product\",\"openBoxCondition\":null},\"__typename\":\"RecommendedItem\"}],\"__typename\":\"RecommendationSubPlacement\"}],\"__typename\":\"RecommendationPlacement\"}}}\n"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "har-565",
+  "url": "https://b.us5.us.criteo.com/rm?u=1&rm_e=1MAYNWiOpmQEl5r4sycDueJ5OxKfFHQVNee9naL7zf8ZXUWTF7qD5ILUWkr5gcLr6BgqaC5z83NYTFO3gDiu6-MZ1yWViDylpLfcUmA75eGlZdyYmAz6sN66pFnMk-LkB1SRENFm5z3ykEI2KSd1pJH5DHdLI8eHnVC_wi7D9zktn6ckorphd1xFgGJbJC-juPmA_whRgDdUUpgTBxnA-UWj7JYMESL5vbdecsz_NOtXMgh0yrBtbpsD9M7JM1KR_yKABM-zIzY5RGZMgd2pIwpvNH0-e2gMoonmgRZu0fIL9H3mYMV8ilSK4uj4gsuzuebYffwaiA4g6prCu5aQrnOBsu9GaYHExSOfq-2WsjL-kS7jri_R8SlAfH2lbK68H7Y0a1D9ddNPctJtkkpVcPx8uFUKvCxQr3gxN4ZbMXRL3xQ_T0v0yX6hCNYVFGtU&ev=4",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "cache-control": "no-cache",
+    "content-type": "image/gif",
+    "cross-origin-resource-policy": "cross-origin",
+    "date": "Thu, 14 May 2026 16:58:17 GMT",
+    "server": "Kestrel",
+    "server-processing-duration-in-ticks": "1311857",
+    "strict-transport-security": "max-age=31536000; preload;",
+    "vary": "Origin"
+  },
+  "body": "GIF89a\u0001\u0000\u0001\u0000�\u0000\u0000���\u0000\u0000\u0000!�\u0004\u0000\u0000\u0000\u0000\u0000,\u0000\u0000\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0002\u0002D\u0001\u0000;"
+}

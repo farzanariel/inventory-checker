@@ -1,0 +1,28 @@
+{
+  "id": "har-565",
+  "url": "https://b.us5.us.criteo.com/rm?u=1&rm_e=1MAYNWiOpmQEl5r4sycDueJ5OxKfFHQVNee9naL7zf8ZXUWTF7qD5ILUWkr5gcLr6BgqaC5z83NYTFO3gDiu6-MZ1yWViDylpLfcUmA75eGlZdyYmAz6sN66pFnMk-LkB1SRENFm5z3ykEI2KSd1pJH5DHdLI8eHnVC_wi7D9zktn6ckorphd1xFgGJbJC-juPmA_whRgDdUUpgTBxnA-UWj7JYMESL5vbdecsz_NOtXMgh0yrBtbpsD9M7JM1KR_yKABM-zIzY5RGZMgd2pIwpvNH0-e2gMoonmgRZu0fIL9H3mYMV8ilSK4uj4gsuzuebYffwaiA4g6prCu5aQrnOBsu9GaYHExSOfq-2WsjL-kS7jri_R8SlAfH2lbK68H7Y0a1D9ddNPctJtkkpVcPx8uFUKvCxQr3gxN4ZbMXRL3xQ_T0v0yX6hCNYVFGtU&ev=4",
+  "method": "GET",
+  "headers": {
+    ":authority": "b.us5.us.criteo.com",
+    ":method": "GET",
+    ":path": "/rm?u=1&rm_e=1MAYNWiOpmQEl5r4sycDueJ5OxKfFHQVNee9naL7zf8ZXUWTF7qD5ILUWkr5gcLr6BgqaC5z83NYTFO3gDiu6-MZ1yWViDylpLfcUmA75eGlZdyYmAz6sN66pFnMk-LkB1SRENFm5z3ykEI2KSd1pJH5DHdLI8eHnVC_wi7D9zktn6ckorphd1xFgGJbJC-juPmA_whRgDdUUpgTBxnA-UWj7JYMESL5vbdecsz_NOtXMgh0yrBtbpsD9M7JM1KR_yKABM-zIzY5RGZMgd2pIwpvNH0-e2gMoonmgRZu0fIL9H3mYMV8ilSK4uj4gsuzuebYffwaiA4g6prCu5aQrnOBsu9GaYHExSOfq-2WsjL-kS7jri_R8SlAfH2lbK68H7Y0a1D9ddNPctJtkkpVcPx8uFUKvCxQr3gxN4ZbMXRL3xQ_T0v0yX6hCNYVFGtU&ev=4",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": null
+}

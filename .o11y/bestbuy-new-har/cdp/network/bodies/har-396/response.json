@@ -1,0 +1,28 @@
+{
+  "id": "har-396",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d309",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "1182",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "29",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6610891\",\"buyingOptions\":[{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3i-15-6-full-hd-laptop-intel-core-i3-n305-2023-8gb-memory-128gb-ufs-arctic-grey/JJGSHX7VWQ/sku/6610891\",\"type\":\"New\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3i-15-6-full-hd-laptop-intel-core-i3-n305-2023-8gb-memory-128gb-ufs-arctic-grey/JJGSHX7VWQ/sku/6610891/openbox?condition=excellent\",\"type\":\"Excellent\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3i-15-6-full-hd-laptop-intel-core-i3-n305-2023-8gb-memory-128gb-ufs-arctic-grey/JJGSHX7VWQ/sku/6610891/openbox?condition=good\",\"type\":\"Good\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3i-15-6-full-hd-laptop-intel-core-i3-n305-2023-8gb-memory-128gb-ufs-arctic-grey/JJGSHX7VWQ/sku/6610891/openbox?condition=fair\",\"type\":\"Fair\"}],\"termLength\":null,\"name\":{\"short\":\"Lenovo - IdeaPad Slim 3i 15.6\\\" Full HD Laptop - Intel Core i3-N305 2023 - 8GB Memory - 128GB UFS - Arctic Grey\",\"__typename\":\"ProductName\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/224718eb-1cfe-415c-871b-61ee8b1b9f78.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"__typename\":\"ItemPrice\",\"showTotalSavings\":true,\"totalSavings\":100,\"totalSavingsPercent\":22,\"totalPaidMemberSavings\":0,\"totalNonPaidMemberSavings\":100,\"preferredBadging\":null,\"puckDisplayMessage\":null,\"puckMessageURL\":null,\"dealExpirationTimeStamp\":null,\"restrictedPriceDisplayMessage\":null,\"displayableCustomerPrice\":349.99,\"displayableRegularPrice\":449.99,\"icrCode\":null,\"isEcoRebateEligible\":false,\"heroRenderPriceOptions\":\"FINANCE_OPTIONS\",\"openBoxPrice\":null,\"openBoxSavings\":null,\"openBoxCondition\":null,\"lowestOpenboxPrice\":null,\"showLeasingOption\":true,\"connectionType\":\"3\",\"skuId\":\"6610891\",\"regularPriceMessageType\":\"WAS\",\"subscriptionSummary\":null,\"paymentOptions\":[{\"__typename\":\"ItemPricePaymentOption\",\"numberOfInstallments\":4,\"installmentAmount\":87.5,\"installmentServiceFee\":1,\"vendor\":\"zip\",\"isDisplayable\":true,\"type\":\"BNPL\"}],\"isBbyCardMember\":null,\"financeOption\":{\"__typename\":\"ItemPriceFinanceOption\",\"financeTerm\":12,\"monthlyPayment\":29.17,\"offerId\":\"384913\",\"planType\":\"Deferred\",\"rate\":0,\"totalCost\":349.99,\"totalCostIncludingTax\":349.99},\"mobileContracts\":null,\"giftSkus\":[{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"735933\",\"parentSkus\":null,\"quantity\":1,\"savings\":0.01,\"skuId\":\"6549173\"},{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"636289\",\"parentSkus\":null,\"quantity\":1,\"savings\":0,\"skuId\":\"6548823\"}],\"priceWithCart\":null,\"customerSelectedDiscountsAvailable\":null,\"spendAndGetCabosAvailable\":null,\"tieredOffersTracking\":null,\"whatIfPrice\":null},\"offers\":{\"__typename\":\"SkuOffersConnection\",\"offers\":[{\"__typename\":\"SkuOffer\",\"hotOffer\":true,\"offerId\":\"752472\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"759129\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"873929\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"883629\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"799781\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"802121\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"871854\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"875740\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"861136\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"512227\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false}]},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

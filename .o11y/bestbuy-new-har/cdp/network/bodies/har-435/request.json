@@ -1,0 +1,30 @@
+{
+  "id": "har-435",
+  "url": "https://www.bestbuy.com/awacs-ingestor/api/airport",
+  "method": "POST",
+  "headers": {
+    ":authority": "www.bestbuy.com",
+    ":method": "POST",
+    ":path": "/awacs-ingestor/api/airport",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "846",
+    "content-type": "application/json",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "{\"component\":\"NINJA\",\"componentVersion\":\"0.73.0\",\"detected\":1,\"event\":\"AIRPORT\",\"mversion\":1,\"deviceAndBrowser\":\"Mozilla5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit537.36 (KHTML like Gecko) Chrome147.0.0.0 Safari537.36\",\"pageTransactionId\":\"7e3b6204-6c8a-40b4-ac3d-574d9eaf7888\",\"pageType\":\"PDP\",\"partyId\":\"5117767577\",\"platform\":\"L\",\"sessionId\":\"1c4a7049-5345-400a-af37-ad3f937d8f99\",\"userId\":\"a4e56918-fc43-46a3-a65f-abce7625852a\",\"userToken\":\"8217524d-4fb4-11f1-a701-0e79396342ad\",\"visitorId\":\"e616ea95-4828-4b2a-a078-2bf0bb59f33c\",\"breadcrumb\":\"/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops\",\"keywords\":\"All Laptops\",\"pageSkuId\":\"6674708\",\"componentInstanceId\":\"undefined\",\"pageCategoryId\":\"\",\"memberType\":\"UNPAID\",\"osType\":\"Mozilla/5.0_(Macintosh;_Intel_Mac_OS_X_10_15_7)_AppleWebKit/537.36_(KHTML,_like_Gecko)_Chr\"}"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "har-437",
+  "url": "https://d.us.criteo.com/delivery/retailmedia?criteo-partner-id=41829&environment=d&page-id=viewItem_API_Rec_desktop&event-type=viewItem&availability=1&category=pcmcat138500050001&item=6674708&price=599.99&item-whitelist=6619147%7C6610891%7C12349291&retailer-visitor-id=e616ea95-4828-4b2a-a078-2bf0bb59f33c&forceuniversal=1",
+  "status": 200,
+  "headers": {
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "access-control-expose-headers": "Server-Timing",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "content-encoding": "br",
+    "content-type": "application/json",
+    "cross-origin-resource-policy": "cross-origin",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Sat, 26 Jul 1997 05:00:00 GMT",
+    "server": "Kestrel",
+    "server-timing": "total;dur=5.0",
+    "strict-transport-security": "max-age=31536000; preload;",
+    "timing-allow-origin": "*",
+    "vary": "Accept-Encoding",
+    "x-criteo-endpoint-action": "GetRetailMedia",
+    "x-criteo-endpoint-controller": "Delivery",
+    "x-criteo-endpoint-version": "none"
+  },
+  "body": "{\"status\":\"OK\",\"placements\":[{\"viewItem_API_Rec_desktop-Carousel\":[{\"format\":\"sponsored_products\",\"products\":[{\"ProductId\":\"6619147\",\"ParentSKU\":\"6619147\",\"CampaignId\":\"829368985281937408\",\"OnLoadBeacon\":\"\",\"OnViewBeacon\":\"//b.us5.us.criteo.com/rm?rm_e=A9lL2G7GpyXOhAp6D_qqcLlVT9_L9z7lQjcs6UhOLqRMcKzWX1_lbsajFMPCzufJqndt3N-tsBc0lKYXdg-xtg6batGzPFGkFkVFV4kJnVHZVutROIlF1XGEz-aVZyIhWRkxP12_jYP13heQ7ZbGV9I2OBE1LF5FL2Vy9N_VK5ze3PK0x2_9x9bbA8sEaPARim6-63faWxlfbPLnL22tKPW2gOef8hfHGPim1F8hYHQYtOP2l13uscXQb1BoB6BJC8e03i9ko6UPjAsuYD_-nooFVHJptKXOsC3sSysYCisZcNEq9m3x12Kjg2MESWOhn9O5qMBBYJ8gMgbbY3TmHTFMAWzQTRQkhGZELqxYncN7pnifglr6qlJHwESuHAs2nIjaigLG5ZpcR2nZNGsC_Q&ev=4\",\"OnClickBeacon\":\"//b.us5.us.criteo.com/rm?rm_e=BKavjic8oxta0712txGHQzumBqD69PIK7NiZO0dkD0uMAOpOH84dT9sQb6UMsuLdI2orcFAD289yVt5MPtjin4t7v3yREsN4IEle2XabPn7N9RKwsz-ndIe2a3tVTUWY-XDIA2DEc_iX2KdRzGBqFMLYOCTh_fGFVv70wSCWpN0q_C9m_H0vlNdL3qyMfjt1h3AdiXZYeChTGWRR08lXezfIkuJrtv0B2G__ebZON6RcMkyccotTlYLjoZKGRysVr2uuaCq8cMMP85hzwi14DXiLfCmYIAFped1XoEtZ9SMPeLA2V6KGXwlh1WbC808BoqzzM4TbfRk8rCHjpmMBVE4C4gYFUrXYMjxyuOyGENB5-_6Ibu1KAKqhOi0URTX5_Gswz72ktICQU5eeu8LA7A&ev=4\",\"OnBasketChangeBeacon\":\"//b.us5.us.criteo.com/rm?rm_e=_FKpJMPbbENUMimHn4usC4TGfMyRofZDvkiNPpg7Dn1w2vNXNddCN0l8DnxVemow8pZaAwndSuJA3sLmoqTUQ6rzV0JY05Lsu9CWxcV3r-JHaOq1-fcD07v0lLC8MuzVkc8MDmfbItmVXpNx736fUSKnXf4xF1SR7kW6q3jz1aVBw3kl0inDsTg7PT5_D3n9MvOIfhhg3xijLF2LyNVGr51G0dgTfAj-0f-uSF47bl0IM9BZn5_0nURLTMOCFHJQO3SWDwusPgdmzmROdYvUx8TCcLJ1x7tTuXWHI_uNCaiZkGgY8-FukGTJIldz6SUQWgwAiYqRGe4UNyr0L_F0JrugMppjdI9aJiKeRxmxUCVFT3Dyr7Ncc9Ny_1KqD0n1w16sQ5gscFGyotJ1gfK-hEM_46Dv0ItueSw83q8VbmI&ev=4\",\"OnWishlistBeacon\":\"//b.us5.us.criteo.com/rm?rm_e=GOXvZWTKfvSP0JnJEKKXPA4E1Cf9a64VLNIGIDkzHwjF8xvJeosdxIuNrT20gU28UuiSX-jw_thiWMnd8wDOyYL6BYO2lcQMgfVKd6uaC-Rhh5cfLoemq28DcFkf_1he8bv7SMJyWevdRhUcVA0KTwDX-bBT_wJewtQX-UC2x6KxPTxc8lCR26CHv9HzvqPJGZbaXLWOEJgYq0hkgjpMzGhiN5j24_wiGRpejrk_ETXY6NVOWgduOF17XHVuD0p1Oc9AykH7tLNoANkkoFrpt-UBvTpMcADd_TpyJBr0LLumdbZQIGYN3NR_4bgreNZazaxaLUyz0u0hl3DXU9akEeoZPsPEhbay_bTzQtnwpt1SyRP-0E3RghL0j24Nt9kDu-aHLYnuJ7yt8u_30F-U6Q&ev=4\",\"LineItemID\":\"829369220783353856\",\"bid\":\"2.00\",\"RegionId\":\"\"}],\"rendering\":\"\",\"OnLoadBeacon\":\"//b.us5.us.criteo.com/rm?u=1&rm_e=vXQHhUXJ_fdcFN7FZhDwh3ELGHkedDvpeEkZGOPJVpixlwzq85P0d6E5cH24fe67dx5bMA3c2-QTqTbHz2MzEnmOqc65dx9jv_cWS9APvK1hZaPvFBIGFA1dsG0A3jR8qxfrErvsimUr_Z3ikkR1HUpBLlIr52cVl9KJ5Uv3CYj0IsqoaHOLgqTVBy97AcXuSLKAiu0Uo22rFI9bt5BiXGs0uIc4N4Q69ArpAzcv9LvPVziPyekf3Zz4idNMWibuaMzbNnfGpCDQGSDJQEe6nu0J8SqQSXjxR03dn-pVrwMeBZCf3FpnbB80ylHzFLY7eWRn1A8g5d3mk9fPVgWgQM1dE943dXYoaUYE5czOOgxANjg8tMb2eIS5R3rqul8uCVG9ixsB28g1sqIiieeIkA&ev=4\",\"OnViewBeacon\":\"//b.us5.us.criteo.com/rm?rm_e=u1A57SQ8aS2UzHC7m99zmmuOW4C2i74eWGqnuOe8Bnq30l1n_BFeJchvYt-lsHv7oDmBDj-mngoo0FW8JziRlMTlg9IfdS_TqoM8gpsyV8aW9DAoD45JwlvfPqedofuVFuXGntFWg19JgnbvvjagF0PR_UnwT7lIx7nH3oMEfg0lpJHQ6Kpi8mSliv1xsAHD9WrioeC_1a3ZQzPpdYx7bGaYswdL16ubLom7_t1WWBQB3_m2PLkAues4AYMdhstnFgosXCJtqgzqTRzw-0ngTFkiR0MWYj-9qIsvMRaFcAiya7b8oMKefWPSvF26HPDatPIyINW0wPw0_YZ8kuIUCcYCNiVAx6W_URbTEczi_98&ev=4\",\"OnClickBeacon\":\"\"}]}],\"page-uid\":\"1f1213b7-c823-48c0-a830-82bbc9fef6cd\"}"
+}

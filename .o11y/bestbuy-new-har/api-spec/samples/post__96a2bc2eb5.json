@@ -1,0 +1,449 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [PriceExperience_OfferListSiteControlTimeline]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "2710",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "pdp-web",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "PriceExperience_OfferListSiteControlTimeline"
+    },
+    "body": {
+      "operationName": "PriceExperience_OfferListSiteControlTimeline",
+      "variables": {},
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query PriceExperience_OfferListSiteControlTimeline {\n  offer873929: siteControlTimeline(\n    siteControlTimelineInput: {page: \"873929\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer752472: siteControlTimeline(\n    siteControlTimelineInput: {page: \"752472\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer759129: siteControlTimeline(\n    siteControlTimelineInput: {page: \"759129\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer512227: siteControlTimeline(\n    siteControlTimelineInput: {page: \"512227\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer775653: siteControlTimeline(\n    siteControlTimelineInput: {page: \"775653\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer795607: siteControlTimeline(\n    siteControlTimelineInput: {page: \"795607\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer799781: siteControlTimeline(\n    siteControlTimelineInput: {page: \"799781\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer803492: siteControlTimeline(\n    siteControlTimelineInput: {page: \"803492\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer808318: siteControlTimeline(\n    siteControlTimelineInput: {page: \"808318\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n  offer821378: siteControlTimeline(\n    siteControlTimelineInput: {page: \"821378\", view: \"native\"}\n  ) {\n    rows {\n      __typename\n      columns {\n        __typename\n        widgets\n      }\n    }\n    __typename\n    timelineID\n  }\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777884.18f8d705",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "1595",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:04 GMT",
+      "expires": "Thu, 14 May 2026 16:58:04 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "30",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "errors": [
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer873929",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer873929",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer795607",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer795607",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer759129",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer759129",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer799781",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer799781",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer775653",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer775653",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer512227",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer512227",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer808318",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer808318",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer821378",
+            "rows"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        },
+        {
+          "message": "Error - Not Found",
+          "locations": [],
+          "path": [
+            "offer821378",
+            "timelineID"
+          ],
+          "extensions": {
+            "code": "NOT_FOUND"
+          }
+        }
+      ],
+      "data": {
+        "offer873929": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer752472": {
+          "rows": [
+            {
+              "__typename": "SiteControlRow",
+              "columns": [
+                {
+                  "__typename": "SiteControlColumn",
+                  "widgets": [
+                    {
+                      "content": {
+                        "_meta": {
+                          "guid": "591451f1-33b2-4ef2-9e3e-6035ccec72ea",
+                          "ignoreOnSmall": []
+                        },
+                        "backgroundImage": null,
+                        "bodyCopy": null,
+                        "callToActionButton": null,
+                        "callToActionText": null,
+                        "disclaimer": "Limit one discount per order. Markdown taken from regular or Was prices. Excludes clearance computers, monitors and desks, and open-box, pre-owned and refurbished items. Items may ship separately.",
+                        "disclaimerCallToActionLinkTo": null,
+                        "disclaimerCallToActionText": null,
+                        "foregroundImage": null,
+                        "guid": "021dd37e-b7ce-42e4-bd56-9d59eaab7b95",
+                        "headline": "Save 25% on select Logitech accessories when you buy a computer, monitor or desk",
+                        "linkTo": null,
+                        "longDisclaimer": null,
+                        "mainMessageImage": null,
+                        "metadata": {
+                          "created": null,
+                          "id": "e062fe5a-9757-4c06-9386-0e161dfa2d94",
+                          "lastModified": "2026-02-10T11:19:35.451-06:00",
+                          "lastPublishedVersion": null,
+                          "version": null
+                        },
+                        "name": "computing_2101825_RushSave20onSelectLogitechItemswithPurchaseofHardware_OfferText_01062025",
+                        "object-key": "e062fe5a-9757-4c06-9386-0e161dfa2d94",
+                        "ref-type": "experience-fragment",
+                        "secondaryCallToActionText": null,
+                        "secondaryLinkTo": null,
+                        "skuPromotionalMessage": "25% off Logitech accessories w/ hardware",
+                        "subhead": null,
+                        "thumbnailImage": null,
+                        "thumbnailText": null,
+                        "topperText": null
+                      },
+                      "guid": "e8d024dd-85ca-422b-b3fb-2284de790736",
+                      "krakenNodeConfigVersion": "2.0",
+                      "offer": {
+                        "guid": "a11da580-ac2c-4d94-b122-57116d0a0933",
+                        "offerId": "752472",
+                        "offerName": "Save 20% on Select Logitech Items with Purchase of Hardware",
+                        "qualifiers": [
+                          {
+                            "guid": "0a0e3b50-d026-4503-b663-034f01510ab3",
+                            "qualifierId": 752472002
+                          }
+                        ],
+                        "ref-type": "offer-object",
+                        "targets": [
+                          {
+                            "guid": "eb61fb1e-fbdf-4b19-98d3-54189617db11",
+                            "targetId": 752472003
+                          }
+                        ]
+                      },
+                      "tags": [],
+                      "widgetHash": "3f1d5fb5",
+                      "widgetType": "omtOfferV2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "__typename": "SiteControlTimeline",
+          "timelineID": 252778144
+        },
+        "offer759129": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer512227": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer775653": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer795607": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer799781": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer803492": {
+          "rows": [
+            {
+              "__typename": "SiteControlRow",
+              "columns": [
+                {
+                  "__typename": "SiteControlColumn",
+                  "widgets": [
+                    {
+                      "content": {
+                        "_meta": {
+                          "guid": "83b25026-8bc9-414d-9fbb-1de7e0c93f2f",
+                          "ignoreOnSmall": []
+                        },
+                        "backgroundImage": null,
+                        "bodyCopy": "Choose from a vast assortment of televisions, laptops, tablets and other devices, and save on a Microsoft Xbox wireless controller when you buy them together.",
+                        "callToActionButton": null,
+                        "callToActionText": null,
+                        "disclaimer": "Not valid in combination with other offers or savings. Excludes open-box and clearance items. Items may ship separately.",
+                        "disclaimerCallToActionLinkTo": null,
+                        "disclaimerCallToActionText": null,
+                        "foregroundImage": null,
+                        "guid": "bdf94fb6-0431-4375-8d2f-4233fc0f45da",
+                        "headline": "Save $10 on an Xbox controller with eligible device",
+                        "linkTo": "/site/offerbuilder/803492",
+                        "longDisclaimer": null,
+                        "mainMessageImage": null,
+                        "metadata": {
+                          "created": null,
+                          "id": "5328cdb9-45e3-4b8b-b155-3a02ba789ff9",
+                          "lastModified": "2025-11-20T16:34:01.602-06:00",
+                          "lastPublishedVersion": null,
+                          "version": null
+                        },
+                        "name": "video-games_3239899_Save10onXboxControllerwithpurchase_OfferText_11192025",
+                        "object-key": "5328cdb9-45e3-4b8b-b155-3a02ba789ff9",
+                        "ref-type": "experience-fragment",
+                        "secondaryCallToActionText": null,
+                        "secondaryLinkTo": null,
+                        "skuPromotionalMessage": "Save $10 on controller w/ select devices",
+                        "subhead": null,
+                        "thumbnailImage": null,
+                        "thumbnailText": null,
+                        "topperText": null
+                      },
+                      "guid": "d5ac3d96-e5f9-41db-ba98-ac6ed2dc23c2",
+                      "krakenNodeConfigVersion": "2.0",
+                      "offer": {
+                        "guid": "de0164a4-1549-417b-a31e-814cb3134ccc",
+                        "offerId": "803492",
+                        "offerName": "Save $10 on Xbox Controller with purchase of eligible device",
+                        "qualifiers": [
+                          {
+                            "guid": "ef516b33-58f9-40e9-a063-f4b16cf1c85c",
+                            "qualifierId": 803492002
+                          }
+                        ],
+                        "ref-type": "offer-object",
+                        "targets": [
+                          {
+                            "guid": "37e3314c-d522-47fd-a9c8-ce9540fa1c92",
+                            "targetId": 803492003
+                          }
+                        ]
+                      },
+                      "tags": [],
+                      "widgetHash": "13edd669",
+                      "widgetType": "omtOfferV2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "__typename": "SiteControlTimeline",
+          "timelineID": 233916394
+        },
+        "offer808318": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        },
+        "offer821378": {
+          "rows": null,
+          "__typename": "SiteControlTimeline",
+          "timelineID": null
+        }
+      }
+    }
+  }
+}

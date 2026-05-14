@@ -1,0 +1,20 @@
+{
+  "id": "har-133",
+  "url": "https://pisces.bbystatic.com/prescaled/180/320/image2/BestBuy_US/images/videos/1941189712.jpg;maxHeight=128;maxWidth=64?format=webp",
+  "status": 200,
+  "headers": {
+    "cache-control": "public,max-age=14400",
+    "content-language": "en-US",
+    "content-length": "384",
+    "content-type": "image/webp;charset=ISO-8859-1",
+    "date": "Thu, 14 May 2026 16:57:59 GMT",
+    "etag": "\"06f5a2761767f7667b297497e74b308cb\"",
+    "expires": "Thu, 14 May 2026 17:48:20 GMT",
+    "last-modified": "Thu, 14 May 2026 13:48:20 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "timing-allow-origin": "https://www.bestbuy.com",
+    "x-frame-options": "SAMEORIGIN",
+    "x-image-source": "pixie"
+  },
+  "body": "RIFFx\u0001\u0000\u0000WEBPVP8 l\u0001\u0000\u0000�\t\u0000�\u0001*@\u0000$\u0000>y2�G��!�:�8\u0000�\u000f\te\u0000�lP\b��s�\u001e\u0000�0??y\u001b\u001e��\fmbVn*\\d�s�$h�\b�TB��!o�ȼ�f\rtXKªE:��/+{x\u0000�������\u0004���a\u001a�B���G7�\\�\u0016ʚ\u0000W�<m\u0019�\u001e;�j{A�_��rlơ���1`c<@Vbm'N����)�\u0006b�jX��]@hZ�Q�\u001e�\u001c���k�6�#E�:\u001cA�d\u00148�\u001b�z���{\u0003�'>J�K-���p�\u000b=������?\n\u00010$\"\\�V$\u0002�vo�~'.d���~�n\b�\b���pX\"mQ��;\u0010Q\u000eъtlb���v�\u001c�V\u001cɩ�@\u001a�8�Q�\u001d+�q,�\nH-�5�V����C��\u0014[�YU\u001e�\u0006����\u0000�G�r\u000e����\u0001u�|�Na��\u0017ɛ{�s�Ȟ������LW�\u0000"
+}

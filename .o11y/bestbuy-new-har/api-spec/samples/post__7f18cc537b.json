@@ -1,0 +1,176 @@
+{
+  "endpoint": "POST https://www.bestbuy.com/gateway/graphql [GetSpotlightAd]",
+  "request": {
+    "status": 200,
+    "headers": {
+      ":authority": "www.bestbuy.com",
+      ":method": "POST",
+      ":path": "/gateway/graphql",
+      ":scheme": "https",
+      "accept": "application/graphql-response+json,application/json;q=0.9",
+      "accept-encoding": "gzip, deflate, br, zstd",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-length": "2950",
+      "content-type": "application/json",
+      "dnt": "1",
+      "origin": "https://www.bestbuy.com",
+      "pragma": "no-cache",
+      "priority": "u=1, i",
+      "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+      "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "true-client-ip": "172.56.33.147",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "x-akamai-edgescape": "georegion=262,country_code=US,region_code=MD,city=BALTIMORE,dma=512,pmsa=0720,msa=8872,areacode=410,county=BALTIMORECITY+ANNEARUNDEL,fips=24510+24003+24005,lat=39.2940,long=-76.6226,timezone=EST,zip=21201-21203+21205-21206+21209-21218+21223-21224+21229-21231+21233+21235+21239-21241+21250-21252+21263-21264+21270+21273+21275+21278-21282+21284-21285+21287-21290+21297-21298,continent=NA,throughput=vhigh,bw=5000,network=tmobile,asnum=21928,network_type=mobile,location_id=0",
+      "x-client-id": "pdp-web",
+      "x-dynatrace": "",
+      "x-page-request-id": "ba7301fa-d8a6-4828-a9db-6fc6983a6c40",
+      "x-request-id": "xrequest::1778777876::23.215.61.231::18f86753::1597550",
+      "x-requested-for-operation-name": "GetSpotlightAd"
+    },
+    "body": {
+      "operationName": "GetSpotlightAd",
+      "variables": {
+        "pageSkus": "6674708",
+        "partyId": "<redacted>",
+        "placements": {
+          "name": "PDP_SPONSORED_SPOTLIGHT",
+          "minSkus": 1,
+          "maxSkus": 1,
+          "pageType": ""
+        },
+        "platform": "L",
+        "salesChannel": "LARGE_VIEW",
+        "storeId": "1436",
+        "userAgent": "Mozilla5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit537.36 (KHTML like Gecko) Chrome147.0.0.0 Safari537.36",
+        "visitorId": "e616ea95-4828-4b2a-a078-2bf0bb59f33c",
+        "zipcode": "21117"
+      },
+      "extensions": {
+        "clientLibrary": {
+          "name": "@apollo/client",
+          "version": "4.1.6"
+        }
+      },
+      "query": "query GetSpotlightAd($pageSkus: [String], $partyId: String, $placements: [BestMediaAdsPlacementInput], $platform: String!, $storeId: String, $userAgent: String!, $visitorId: String!, $xForwardedFor: String, $zipcode: String, $salesChannel: String!, $membershipTier: String, $cartTimestamp: String, $customerId: String) {\n  bestMediaV3(\n    input: {pageSkus: $pageSkus, partyId: $partyId, placements: $placements, platform: $platform, storeId: $storeId, visitorId: $visitorId, userAgent: $userAgent, xForwardedFor: $xForwardedFor, zipcode: $zipcode}\n  ) {\n    onLoadBeaconsForPage {\n      source\n      beacon\n      __typename\n    }\n    placements {\n      id\n      name\n      accepted {\n        source\n        sku\n        onLoadBeaconForSku\n        onClickBeaconForSku\n        onViewBeaconForSku\n        onWishlistBeaconForSku\n        onBasketChangeBeaconForSku\n        primaryCategoryId\n        rank\n        campaignId\n        product {\n          bsin\n          name {\n            short\n            __typename\n          }\n          skuId\n          primaryImage {\n            piscesHref\n            __typename\n          }\n          url {\n            pdp\n            skuSpecificUrl\n            __typename\n          }\n          reviewInfo {\n            averageRating\n            reviewCount\n            syndicatedReviewSummary {\n              clientDisplayName\n              overallRating\n              totalReviewCount\n              __typename\n            }\n            __typename\n          }\n          price(\n            input: {salesChannel: $salesChannel, planPaidMemberType: $membershipTier, usePriceWithCart: true, cartTimestamp: $cartTimestamp, customerId: $customerId, visitorId: $visitorId}\n          ) {\n            customerPrice\n            icrCode\n            isMAP\n            regularPrice\n            preferredBadging\n            saleEventMessageType\n            strictMapIcr\n            totalSavings\n            __typename\n          }\n          __typename\n          openBoxCondition\n        }\n        __typename\n      }\n      rejected {\n        reason\n        sku\n        source\n        __typename\n      }\n      onLoadBeaconsForPlacement {\n        beacon\n        source\n        __typename\n      }\n      onViewBeaconsForPlacement {\n        beacon\n        source\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "access-control-allow-credentials": "true",
+      "access-control-allow-origin": "https://www.bestbuy.com",
+      "akamai-grn": "0.e73dd717.1778777881.18f8b230",
+      "cache-control": "max-age=0, no-cache, no-store",
+      "content-encoding": "br",
+      "content-length": "3107",
+      "content-type": "application/graphql-response+json; charset=utf-8",
+      "date": "Thu, 14 May 2026 16:58:02 GMT",
+      "expires": "Thu, 14 May 2026 16:58:02 GMT",
+      "gatewaystatus": "200",
+      "pragma": "no-cache",
+      "proxied": "True",
+      "referrer-policy": "no-referrer",
+      "service-response-time": "150",
+      "spstatus": "200",
+      "strict-transport-security": "max-age=15768000",
+      "vary": "Accept-Encoding",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "body": {
+      "data": {
+        "bestMediaV3": {
+          "onLoadBeaconsForPage": [],
+          "placements": [
+            {
+              "id": "<redacted>",
+              "name": "PDP_SPONSORED_SPOTLIGHT",
+              "accepted": [
+                {
+                  "source": "A",
+                  "sku": "6576719",
+                  "onLoadBeaconForSku": "",
+                  "onClickBeaconForSku": "https://b.us5.us.criteo.com/rm?rm_e=CsgQG3KxpZXX7v90pOIDDbnULE5fRLN69MZTy3I1uTnUEmuYaMQiIzBlulBUnsiLFIyG6Lp9S1YquhIU8vvC7sgTjDm_htMwE9Kqu7DH8GbSxxwkTSGSSnm5UzuldnRR0shTAcYqaP2ZEgrNqeEIZnKEjsk-PfecrvsMZhtvswJ_lzJXEf8Zcs8xRp8dH-r4LxMtuyAm5kytdcXmSCG9wO-cF4hhuAMiBDbvdC0WaMajz2PsCI9vw8XbsXQBwRMR8A9f-cOBgOd7v1ycHK3q3hbC4WVCnME7Bp9BuwIzI_eRB2WvrG0JC71_rSJX3CoSmwtuuYU4sAIn6E_WITD1L4WgsVVLqS8Y_MnzomAMWQhHqSP6adJD6f8c6IIoJOeaULlHZB_x5vLTAna5BF0cnuKwGmhyv_DNg7N2XRBk5PxlqI66mDQ6kUua9cPy9PwK_OEM_bsdw2J48j7XvhE4Ig&ev=4",
+                  "onViewBeaconForSku": "https://b.us5.us.criteo.com/rm?rm_e=9g1UIQUSpiLYdeMAf6A-NmWTRVJXmR02XRarf-ukdD315OwqMTENjca1zQ_2M49DkEl0UX3lg_xp48eCLErSTAM5J5TLFpQc-EAvmo6BBpS-Dl-8TtAMwhAb-VR4DZ617Al_VeS8jmWFWDpElUsbGDa74bM0aXC0nwHPuAxPHCaD-JwWgnWSoVtbmT2jyB7uB42vyzlIU1YuBdOxnlrn2EJ_2MopJTuG3eNOjTbtO_SVfGr2OIXN4SXiHom1MqZ5gXtZ3ZNxpf2cLR4CJ-m8qc91Qb0GP_MKubFZSL_Ci49tsAO58iMG0dYg9HYJ3FEvii3E1vwQ2N47z62aXy59WaB3bjhgN5EfR3I4JnMxowv3zItNU3DZom8ZXepTA4KME3Vwf1BWiQ2oXvPU9DccwSBlCz277QGSemCZYmtnOuB8_KLkteIzAh17PJdmUvsmcYgUwPFxhQbyECrmRhihMQ&ev=4",
+                  "onWishlistBeaconForSku": "https://b.us5.us.criteo.com/rm?rm_e=JxB_-UuVRClL8sEcy4xiKirIbp-D5FaG6N_2KN-mtURM1lAqLAZKah6-97nu4IiIEkNFX1QecmCuwJU3S5NAvp8R8-cJ5eUqfhGgGvhcVIplXY9ks9lvWwkhUJsbSzW_3l4fov8WYcZ_zjD6W_87l-8KYOrA3DFZ3uBH8O87QxInNjK0lWaOiF_3v6s9PL0EczS3X_zGfsRD5yI4H3aCb-W2X-tDD9dibG1CxJUBiu7oXZbULwb5AvjJdZEve6BgA-YHE3D9Ocn8LFAPznFUEXbumMzaj9EuhOr3yok2sunU_F3OlrDuQIdpI4-NPR5VTnROU-oGgSmqdEuh5G15XQcwi8qgV-KBK0180npQOmzNVLtvWX1kFpLRtbX1mRgw-c6PXgMOjx_wjCJMNcKwBFsxtGyKJ137ED8zJ-J8PEPjoSxqlULBC2SBYerKpGNaaBDY2e_FYQV6cnOpjqApRA&ev=4",
+                  "onBasketChangeBeaconForSku": "https://b.us5.us.criteo.com/rm?rm_e=3JvcgIU78EhNw7QqjGsiluhuK6solGwJin8TKKtN3fCr-Pj6bSRdmBGf5U3gKmiplKuBBJyOqQOhSZP89D25WKkGT5onIns5ypJeNgsYZhMxxnmLaX8rZmoqMVgDk1y89VBxlTHWAjEQcN_IGvMpMR_vw1_GdyosLi13qK9fr1JEiHne-e-8_xgGddiS08XlZuqHgru_cc3ec7NErrN5tdbfpIftDGycYvebt8whzULJKNzUZAHdQ50G3r0PeaQUBqUkskL1iYjMxXgpv3F6hFwlfired23zbt5sKBLnTiQvfihKQQn2GFqExzPt559txdgSk0J8xqB3smKAvUX_RXLI1Z1DA96bNaDvy_yCcn4kz219IUbI7KjXBA-vTvASMSjYdSgrATr-YanrbWQWj66zFAyt-A8qyqaRXbNtf4w20ULj3rklt3S7Ov-flBXRU9BxS9a_tu6TwJPkUDP3GuQvn8MSKmEjgbLUuNTFYJo&ev=4",
+                  "primaryCategoryId": "pcmcat138500050001",
+                  "rank": 1,
+                  "campaignId": "<redacted>",
+                  "product": {
+                    "bsin": "J3K4L6JSFL",
+                    "name": {
+                      "short": "Dell - Inspiron 14 - 14\" 2K 2-in-1 Touchscreen Laptop - AMD Ryzen 5 8640HS 2023 - 8GB Memory - 512 GB Storage - Midnight Blue",
+                      "__typename": "ProductName"
+                    },
+                    "skuId": "6576719",
+                    "primaryImage": {
+                      "piscesHref": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6576/6576719_sd.jpg",
+                      "__typename": "ProductImage"
+                    },
+                    "url": {
+                      "pdp": "https://www.bestbuy.com/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL",
+                      "skuSpecificUrl": "https://www.bestbuy.com/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL/sku/6576719",
+                      "__typename": "ProductUrl"
+                    },
+                    "reviewInfo": {
+                      "averageRating": 4.5,
+                      "reviewCount": 580,
+                      "syndicatedReviewSummary": [],
+                      "__typename": "ProductReviewInfo"
+                    },
+                    "price": {
+                      "customerPrice": 547.99,
+                      "icrCode": null,
+                      "isMAP": false,
+                      "regularPrice": 729.99,
+                      "preferredBadging": "Clearance",
+                      "saleEventMessageType": "CLEARANCE",
+                      "strictMapIcr": null,
+                      "totalSavings": 182,
+                      "__typename": "ItemPrice"
+                    },
+                    "__typename": "Product",
+                    "openBoxCondition": null
+                  },
+                  "__typename": "BestMediaAdsAcceptedSku"
+                }
+              ],
+              "rejected": [
+                {
+                  "reason": "NOT_AVAILABLE",
+                  "sku": "6668502",
+                  "source": "A",
+                  "__typename": "BestMediaAdsRejectedSku"
+                }
+              ],
+              "onLoadBeaconsForPlacement": [
+                {
+                  "beacon": "https://b.us5.us.criteo.com/rm?u=1&rm_e=8Y4M7pj_-uMMajBmGNtBl9FNi7nGCiyM-RXXiQ6PASvKUIgGiDsz92S3MxaP_1aww5RkmyMlLR3E2RqVtMTZZAIEPLiEiUSxOr5yZEAnKddpN6v1wCRSiFTEjop5VS1nbM-8iZ06ZlIwP_OVd-0c01hfoMUWWtwpa6RejoQlcXJ6d1QZ-PAchSRxO95VTTkc-oiDwnosbK6y2QXdfBkTZwukWplE8TfsDFELW48CwMOdhg3-p4Qo_uxurwvsdVL5UhRPl3zcQREBb_jNP80MRw4i_0Kmt_G5wtrZT0f-urzBJaqXmWliSqgw4IJeZyMAE2OEqvP2YGJvhpS5Ok782GKDY1ydNVev_JzJovfSIht13Gy8njWJrO-Y0iQrndYGV_LE3Vj9UeMfEiR8m6PyB8cBIIQJsR-RKXbR7jPowlOz4jGjGCPT5IEH-PHloKQGaKKCXMrzddyxlN5MVbEDYYg1vPf1cIE3dcQq8CVsEc0&ev=4&ex=6668502",
+                  "source": "A",
+                  "__typename": "BestMediaAdsBeacon"
+                }
+              ],
+              "onViewBeaconsForPlacement": [
+                {
+                  "beacon": "https://b.us5.us.criteo.com/rm?rm_e=YBIB2QJrmjWGY2qlE2c9Dc68BFg6cD0DpkbzIphqF--9No29PIJJrwIfdkf0Yn8UmuQxI8K-jDHNmQnnp0N6WrItwN0ovPhtntfqjDG6N8wmpxHJCYldWXJVs7PfYNRW_MZxNihQW_W9iMzL4NazctsJhVYpdkfJuxINyV_cAraEOym7SGZTIw3m5Y3Aw7SvNVeMrnWIovCDtVKISSwxhHm0PNMFRlnDIIZYSoCrsSLE1N-EOASPl9nU_2ljTEg0xpuZhJsXmvxP3-_ouhx_kQMVgJ2NIZBf6Lvoie_PKeZ1ZLi7k_OmwZXUhGoqlng2JKRxIPFhVx_YM8xjlNsg0eu7nuwYdu1MAC_PHgc4mO8rsPPX4sk4sqITVZzLl_cXY0XGEKIsWTjbmxD_bzEZaVjJ-f_gKm79yRNLb51lNcc&ev=4",
+                  "source": "A",
+                  "__typename": "BestMediaAdsBeacon"
+                }
+              ],
+              "__typename": "BestMediaAdsPlacement"
+            }
+          ],
+          "__typename": "BestMediaV3Connection"
+        }
+      }
+    }
+  }
+}

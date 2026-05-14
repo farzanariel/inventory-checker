@@ -1,0 +1,14 @@
+{
+  "id": "har-442",
+  "url": "https://pixel.adsafeprotected.com/services/pub?anId=931017&slot=%7Bid:gpt-pencil-banner-pencil,ss:%5B970.50%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-customleaderboard-position1,ss:%5B970.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position1,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position2,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-programmatic,ss:%5B160.600%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&wr=632.812&sr=1512.982&sessionId=9ad3eed2-8818-4144-1385-416fab933bd9&url=https%253A%252F%252Fwww.bestbuy.com%252Fproduct%252Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%252FJJGH3KQYP8%252Fsku%252F6674708",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "access-control-expose-headers": "X-Server-Name",
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "timing-allow-origin": "*"
+  },
+  "body": "{\"fr\":\"false\",\"brandSafety\":{\"adt\":\"veryLow\",\"alc\":\"veryLow\",\"dlm\":\"veryLow\",\"drg\":\"veryLow\",\"hat\":\"veryLow\",\"off\":\"veryLow\",\"vio\":\"veryLow\"},\"slots\":{\"gpt-pencil-banner-pencil\":{\"id\":\"134c8555-4fb6-11f1-b501-56b8b11f0442\"},\"gpt-leaderboardfooter-position2\":{\"id\":\"134c8558-4fb6-11f1-b501-56b8b11f0442\"},\"gpt-leaderboardfooter-position1\":{\"id\":\"134c8557-4fb6-11f1-b501-56b8b11f0442\"},\"gpt-programmatic\":{\"id\":\"134c8559-4fb6-11f1-b501-56b8b11f0442\"},\"gpt-customleaderboard-position1\":{\"id\":\"134c8556-4fb6-11f1-b501-56b8b11f0442\"}},\"custom\":{\"ias-kw\":[\"IAS_SET\"]}}"
+}

@@ -1,0 +1,1108 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Best Buy HAR captured endpoints",
+    "version": "0.1.0-discovered",
+    "description": "Spec discovered from a browser-trace capture by the browser-to-api skill. Inductive, not contractual — see `report.md` and `x-confidence` extensions for caveats."
+  },
+  "servers": [
+    {
+      "url": "https://www.bestbuy.com"
+    }
+  ],
+  "paths": {
+    "/gateway/graphql/fulfillment": {
+      "get": {
+        "summary": "GET /gateway/graphql/fulfillment",
+        "operationId": "get_gateway_graphql_fulfillment",
+        "parameters": [
+          {
+            "name": "variables",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "fulfillmentOptions": {
+                          "$ref": "#/components/schemas/FulfillmentOptions"
+                        }
+                      },
+                      "required": [
+                        "fulfillmentOptions"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "fulfillmentOptions": {
+                      "__typename": "FulfillmentOptionsList",
+                      "buttonStates": [
+                        {
+                          "__typename": "ButtonState",
+                          "buttonState": "ADD_TO_CART",
+                          "condition": "NEW",
+                          "displayText": "Add to Cart",
+                          "fulfillmentOption": "SHIPPING",
+                          "hyperlinkUrl": null,
+                          "planButtonState": null,
+                          "planDisplayText": null,
+                          "secondaryButtonState": null,
+                          "secondaryDisplayText": null,
+                          "skuId": "6674708"
+                        }
+                      ],
+                      "deliveryDetails": [
+                        {
+                          "__typename": "FulfillmentDeliveryDetail",
+                          "deliveryAvailability": [
+                            {
+                              "__typename": "FulfillmentDeliveryAvailability",
+                              "condition": "NEW",
+                              "backordered": null,
+                              "deliverable": null,
+                              "deliveryEligible": null,
+                              "deliveryServices": null,
+                              "deliverySlots": null,
+                              "forceSkipScheduling": null,
+                              "forceSkipSchedulingReasonCode": null,
+                              "homeDeliveryDisplayDateType": null,
+                              "inStoreOnly": null,
+                              "installationEligible": null,
+                              "installationSlots": null,
+                              "productAppointmentType": null,
+                              "salLocationId": null,
+                              "restrictions": null
+                            }
+                          ],
+                          "destinationZipCode": null,
+                          "sku": "6674708"
+                        }
+                      ],
+                      "ispuDetails": [
+                        {
+                          "__typename": "InStorePickupDetail",
+                          "installationEligible": null,
+                          "ispuAvailability": [
+                            {
+                              "__typename": "InStorePickupAvailability",
+                              "whenAvailableFlag": null,
+                              "restrictions": null,
+                              "quantity": null,
+                              "promiseByStreetDate": null,
+                              "preorderable": null,
+                              "pickupEligible": true,
+                              "minPickupInHours": null,
+                              "minDate": null,
+                              "maxDate": null,
+                              "instoreInventoryAvailable": false,
+                              "inStoreServices": null,
+                              "inStoreOnly": false,
+                              "fulfillmentType": null,
+                              "fulfillDate": null,
+                              "emailEligible": null,
+                              "downloadEligible": null,
+                              "displayDateType": null,
+                              "condition": "NEW",
+                              "backordered": null
+                            }
+                          ],
+                          "maximumDistanceChecked": null,
+                          "nearbyLocation": null,
+                          "numberOfStoresChecked": null,
+                          "sku": "6674708",
+                          "nearbyLocations": null,
+                          "store": {
+                            "__typename": "FulfillmentPickUpStore",
+                            "city": "Owings Mills",
+                            "name": "Owings Mills",
+                            "storeId": "1436",
+                            "zip": "21117"
+                          }
+                        }
+                      ],
+                      "shippingDetails": [
+                        {
+                          "__typename": "FulfillmentShippingDetail",
+                          "destinationZipCode": "97230",
+                          "sku": "6674708",
+                          "shippingAvailability": [
+                            {
+                              "__typename": "FulfillmentShippingAvailability",
+                              "backordered": null,
+                              "condition": "NEW",
+                              "customerLOSGroup": [
+                                {
+                                  "__typename": "FulfillmentCustomerLOSGroup",
+                                  "customerLosGroupId": 1,
+                                  "displayDateType": "IN_HAND",
+                                  "maxLineItemMaxDate": "<redacted>",
+                                  "name": "Standard",
+                                  "minLineItemMaxDate": "<redacted>",
+                                  "price": 0
+                                }
+                              ],
+                              "defaultCustomerLosGroupId": 1,
+                              "directToBoxEligible": false,
+                              "downloadEligible": false,
+                              "emailEligible": false,
+                              "fulfillByVendor": false,
+                              "inStoreOnly": false,
+                              "installationEligible": false,
+                              "levelOfServices": [
+                                {
+                                  "__typename": "FulfillmentShippingLevelOfService",
+                                  "code": "Standard National",
+                                  "id": 1,
+                                  "isLessThanTruckload": false,
+                                  "isScheduleParcelDelivery": false
+                                }
+                              ],
+                              "preorderable": null,
+                              "promiseByStreetDate": null,
+                              "restrictions": null,
+                              "shippingEligible": true,
+                              "whenAvailableFlag": null
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-confidence": {
+          "samples": 16,
+          "statusCodes": [
+            200
+          ],
+          "normalizationFlags": [
+            "single-status"
+          ],
+          "confidence": "low"
+        },
+        "x-sample-count": 16,
+        "x-origin": "https://www.bestbuy.com"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FulfillmentOptions": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentOptionsList"
+            ]
+          },
+          "buttonStates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ButtonStates"
+            }
+          },
+          "deliveryDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeliveryDetails"
+            }
+          },
+          "ispuDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IspuDetails"
+            }
+          },
+          "shippingDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShippingDetails"
+            }
+          }
+        },
+        "required": [
+          "__typename",
+          "buttonStates",
+          "deliveryDetails",
+          "ispuDetails",
+          "shippingDetails"
+        ]
+      },
+      "ButtonStates": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "ButtonState"
+            ]
+          },
+          "buttonState": {
+            "type": "string",
+            "enum": [
+              "ADD_TO_CART",
+              "SOLD_OUT"
+            ]
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "OPEN_BOX_EXCELLENT"
+            ]
+          },
+          "displayText": {
+            "type": "string",
+            "enum": [
+              "Add to Cart",
+              "Sold Out",
+              "Unavailable Nearby"
+            ]
+          },
+          "fulfillmentOption": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "SHIPPING"
+            ]
+          },
+          "hyperlinkUrl": {
+            "type": []
+          },
+          "planButtonState": {
+            "type": []
+          },
+          "planDisplayText": {
+            "type": []
+          },
+          "secondaryButtonState": {
+            "type": []
+          },
+          "secondaryDisplayText": {
+            "type": []
+          },
+          "skuId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "__typename",
+          "buttonState",
+          "condition",
+          "displayText",
+          "fulfillmentOption",
+          "hyperlinkUrl",
+          "planButtonState",
+          "planDisplayText",
+          "secondaryButtonState",
+          "secondaryDisplayText",
+          "skuId"
+        ]
+      },
+      "DeliveryDetails": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentDeliveryDetail"
+            ]
+          },
+          "deliveryAvailability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeliveryAvailability"
+            }
+          },
+          "destinationZipCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sku": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "__typename",
+          "deliveryAvailability",
+          "destinationZipCode",
+          "sku"
+        ]
+      },
+      "DeliveryAvailability": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentDeliveryAvailability"
+            ]
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "OPEN_BOX_EXCELLENT"
+            ]
+          },
+          "backordered": {
+            "type": []
+          },
+          "deliverable": {
+            "type": []
+          },
+          "deliveryEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "deliveryServices": {
+            "type": []
+          },
+          "deliverySlots": {
+            "type": []
+          },
+          "forceSkipScheduling": {
+            "type": []
+          },
+          "forceSkipSchedulingReasonCode": {
+            "type": []
+          },
+          "homeDeliveryDisplayDateType": {
+            "type": []
+          },
+          "inStoreOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "installationEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "installationSlots": {
+            "type": []
+          },
+          "productAppointmentType": {
+            "type": []
+          },
+          "salLocationId": {
+            "type": []
+          },
+          "restrictions": {
+            "type": []
+          }
+        },
+        "required": [
+          "__typename",
+          "backordered",
+          "condition",
+          "deliverable",
+          "deliveryEligible",
+          "deliveryServices",
+          "deliverySlots",
+          "forceSkipScheduling",
+          "forceSkipSchedulingReasonCode",
+          "homeDeliveryDisplayDateType",
+          "inStoreOnly",
+          "installationEligible",
+          "installationSlots",
+          "productAppointmentType",
+          "restrictions",
+          "salLocationId"
+        ]
+      },
+      "IspuDetails": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "InStorePickupDetail"
+            ]
+          },
+          "installationEligible": {
+            "type": []
+          },
+          "ispuAvailability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IspuAvailability"
+            }
+          },
+          "maximumDistanceChecked": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "nearbyLocation": {
+            "$ref": "#/components/schemas/NearbyLocation"
+          },
+          "numberOfStoresChecked": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "sku": {
+            "type": "string"
+          },
+          "nearbyLocations": {
+            "type": []
+          },
+          "store": {
+            "$ref": "#/components/schemas/Store_1"
+          }
+        },
+        "required": [
+          "__typename",
+          "installationEligible",
+          "ispuAvailability",
+          "maximumDistanceChecked",
+          "nearbyLocation",
+          "nearbyLocations",
+          "numberOfStoresChecked",
+          "sku",
+          "store"
+        ]
+      },
+      "IspuAvailability": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "InStorePickupAvailability"
+            ]
+          },
+          "whenAvailableFlag": {
+            "type": []
+          },
+          "restrictions": {
+            "type": []
+          },
+          "quantity": {
+            "type": []
+          },
+          "promiseByStreetDate": {
+            "type": []
+          },
+          "preorderable": {
+            "type": []
+          },
+          "pickupEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              true
+            ]
+          },
+          "minPickupInHours": {
+            "type": []
+          },
+          "minDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "maxDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "instoreInventoryAvailable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false,
+              true
+            ]
+          },
+          "inStoreServices": {
+            "type": []
+          },
+          "inStoreOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "fulfillmentType": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fulfillDate": {
+            "type": []
+          },
+          "emailEligible": {
+            "type": []
+          },
+          "downloadEligible": {
+            "type": []
+          },
+          "displayDateType": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "OPEN_BOX_EXCELLENT"
+            ]
+          },
+          "backordered": {
+            "type": []
+          }
+        },
+        "required": [
+          "__typename",
+          "backordered",
+          "condition",
+          "displayDateType",
+          "downloadEligible",
+          "emailEligible",
+          "fulfillDate",
+          "fulfillmentType",
+          "inStoreOnly",
+          "inStoreServices",
+          "instoreInventoryAvailable",
+          "maxDate",
+          "minDate",
+          "minPickupInHours",
+          "pickupEligible",
+          "preorderable",
+          "promiseByStreetDate",
+          "quantity",
+          "restrictions",
+          "whenAvailableFlag"
+        ]
+      },
+      "NearbyLocation": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "__typename": {
+            "type": "string"
+          },
+          "availability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Availability"
+            }
+          },
+          "distance": {
+            "type": "number"
+          },
+          "installationEligible": {
+            "type": []
+          },
+          "store": {
+            "$ref": "#/components/schemas/Store"
+          }
+        },
+        "required": [
+          "__typename",
+          "availability",
+          "distance",
+          "installationEligible",
+          "store"
+        ]
+      },
+      "Availability": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string"
+          },
+          "backordered": {
+            "type": []
+          },
+          "condition": {
+            "type": "string"
+          },
+          "displayDateType": {
+            "type": "string"
+          },
+          "downloadEligible": {
+            "type": []
+          },
+          "emailEligible": {
+            "type": []
+          },
+          "fulfillDate": {
+            "type": []
+          },
+          "fulfillmentType": {
+            "type": "string"
+          },
+          "inStoreOnly": {
+            "type": "boolean"
+          },
+          "inStoreServices": {
+            "type": []
+          },
+          "instoreInventoryAvailable": {
+            "type": "boolean"
+          },
+          "maxDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "minDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "minPickupInHours": {
+            "type": "string"
+          },
+          "pickupEligible": {
+            "type": "boolean"
+          },
+          "preorderable": {
+            "type": []
+          },
+          "promiseByStreetDate": {
+            "type": []
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "restrictions": {
+            "type": []
+          },
+          "whenAvailableFlag": {
+            "type": []
+          }
+        },
+        "required": [
+          "__typename",
+          "backordered",
+          "condition",
+          "displayDateType",
+          "downloadEligible",
+          "emailEligible",
+          "fulfillDate",
+          "fulfillmentType",
+          "inStoreOnly",
+          "inStoreServices",
+          "instoreInventoryAvailable",
+          "maxDate",
+          "minDate",
+          "minPickupInHours",
+          "pickupEligible",
+          "preorderable",
+          "promiseByStreetDate",
+          "quantity",
+          "restrictions",
+          "whenAvailableFlag"
+        ]
+      },
+      "Store": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "storeId": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "__typename",
+          "city",
+          "name",
+          "storeId",
+          "zip"
+        ]
+      },
+      "Store_1": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentPickUpStore"
+            ]
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "Owings Mills"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "Owings Mills"
+            ]
+          },
+          "storeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "1436"
+            ]
+          },
+          "zip": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "21117"
+            ]
+          }
+        },
+        "required": [
+          "__typename",
+          "city",
+          "name",
+          "storeId",
+          "zip"
+        ]
+      },
+      "ShippingDetails": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentShippingDetail"
+            ]
+          },
+          "destinationZipCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "97230"
+            ]
+          },
+          "sku": {
+            "type": "string"
+          },
+          "shippingAvailability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShippingAvailability"
+            }
+          }
+        },
+        "required": [
+          "__typename",
+          "destinationZipCode",
+          "shippingAvailability",
+          "sku"
+        ]
+      },
+      "ShippingAvailability": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentShippingAvailability"
+            ]
+          },
+          "backordered": {
+            "type": []
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "OPEN_BOX_EXCELLENT"
+            ]
+          },
+          "customerLOSGroup": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/CustomerLOSGroup"
+            }
+          },
+          "defaultCustomerLosGroupId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "enum": [
+              1
+            ]
+          },
+          "directToBoxEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "downloadEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "emailEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "fulfillByVendor": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "inStoreOnly": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "installationEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              false
+            ]
+          },
+          "levelOfServices": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/LevelOfServices"
+            }
+          },
+          "preorderable": {
+            "type": []
+          },
+          "promiseByStreetDate": {
+            "type": []
+          },
+          "restrictions": {
+            "type": []
+          },
+          "shippingEligible": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "enum": [
+              true
+            ]
+          },
+          "whenAvailableFlag": {
+            "type": []
+          }
+        },
+        "required": [
+          "__typename",
+          "backordered",
+          "condition",
+          "customerLOSGroup",
+          "defaultCustomerLosGroupId",
+          "directToBoxEligible",
+          "downloadEligible",
+          "emailEligible",
+          "fulfillByVendor",
+          "inStoreOnly",
+          "installationEligible",
+          "levelOfServices",
+          "preorderable",
+          "promiseByStreetDate",
+          "restrictions",
+          "shippingEligible",
+          "whenAvailableFlag"
+        ]
+      },
+      "CustomerLOSGroup": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentCustomerLOSGroup"
+            ]
+          },
+          "customerLosGroupId": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "displayDateType": {
+            "type": "string",
+            "enum": [
+              "IN_HAND"
+            ]
+          },
+          "maxLineItemMaxDate": {
+            "type": "string",
+            "format": "date-time",
+            "enum": [
+              "2026-05-22"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "enum": [
+              "Standard"
+            ]
+          },
+          "minLineItemMaxDate": {
+            "type": "string",
+            "format": "date-time",
+            "enum": [
+              "2026-05-22"
+            ]
+          },
+          "price": {
+            "type": "integer",
+            "enum": [
+              0
+            ]
+          }
+        },
+        "required": [
+          "__typename",
+          "customerLosGroupId",
+          "displayDateType",
+          "maxLineItemMaxDate",
+          "minLineItemMaxDate",
+          "name",
+          "price"
+        ]
+      },
+      "LevelOfServices": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "enum": [
+              "FulfillmentShippingLevelOfService"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "Standard National"
+            ]
+          },
+          "id": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "isLessThanTruckload": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "isScheduleParcelDelivery": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          }
+        },
+        "required": [
+          "__typename",
+          "code",
+          "id",
+          "isLessThanTruckload",
+          "isScheduleParcelDelivery"
+        ]
+      }
+    }
+  }
+}

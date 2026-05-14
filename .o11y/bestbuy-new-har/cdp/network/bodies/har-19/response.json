@@ -1,0 +1,18 @@
+{
+  "id": "har-19",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/1b997c26ccb85b27.css",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777878.18f885e9",
+    "cache-control": "max-age=1915129",
+    "content-encoding": "br",
+    "content-length": "610",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"30e965f3c67d9a5108d8edb77443a960:1778099572.660964\"",
+    "expires": "Fri, 05 Jun 2026 20:56:47 GMT",
+    "last-modified": "Wed, 06 May 2026 20:32:52 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".rJ0gprgsU0EloBHH{--sticky-atc-transition-duration:150ms;z-index:90;background:var(--color-background,#fff);box-shadow:0 4px 12px rgba(0,0,0,.12);border-bottom:1px solid rgba(0,0,0,.08);transform:translateY(-100%);opacity:0;transition:transform var(--sticky-atc-transition-duration) ease,opacity var(--sticky-atc-transition-duration) ease}.rJ0gprgsU0EloBHH.bRcqyj1AF1wTbsLA{transform:translateY(0);opacity:1}.rJ0gprgsU0EloBHH.AS9qWroJW2YyN1FO{transform:translateY(-100%);opacity:0;display:none}.xoHJyVNHmpIKRG_u{max-width:1520px}@media (min-width:768px){.xoHJyVNHmpIKRG_u{padding:9px 24px}}@media (min-width:1200px){.xoHJyVNHmpIKRG_u{padding:1rem 4rem}}@media (min-width:1366px){.xoHJyVNHmpIKRG_u{padding:1rem 5rem}}@media (min-width:1601px){.xoHJyVNHmpIKRG_u{padding:1rem 0;max-width:1520px;margin:0 auto}}:root{--pdp-wrapper-visible-height:0px;--pdp-wrapper-hidden-height:42px}.UD_3O_xMnOgzMTBg{--pdp-wrapper-visible-height:42px;--pdp-wrapper-hidden-height:0px}.u6ph_1g4MGc5Bm3Y{background-color:#ffffff;z-index:90}.gYxH9HmWYcAElXIs{list-style:none;gap:20px}.SbJnOQHh9ZsX3oQL{text-decoration:none;color:#030303;font-size:13px;font-weight:500;line-height:16px;background-color:transparent;border:none;padding:0 0 4px}.BTq56zlKT7E_OTie{border-bottom:2px solid #014fd3;color:#014fd3}.FO08BkrcGg8bGGa8{transform:translateY(-100%);transition:transform .3s ease-out,top .3s ease 0s}.Gld3JUrKoAAZi3iY{transform:translateY(0);transition:transform .3s ease-in,top .3s ease 0s}.yh3DlZUggWgTvWKL{border-bottom:2px solid #014fd3;color:#014fd3}"
+}

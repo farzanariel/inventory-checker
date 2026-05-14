@@ -1,0 +1,28 @@
+{
+  "id": "har-315",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8beb8",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "274",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:03 GMT",
+    "expires": "Thu, 14 May 2026 16:58:03 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "13",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6626901\",\"orderCode\":\"4\",\"reviewInfo\":{\"averageRating\":4.6,\"reviewCount\":11933,\"syndicatedReviewSummary\":[],\"__typename\":\"ProductReviewInfo\"},\"url\":{\"relativePdp\":\"/product/1-year-accidental-geek-squad-protection/JCQ6HKH3P9\",\"skuSpecificUrl\":\"https://www.bestbuy.com/product/1-year-accidental-geek-squad-protection/JCQ6HKH3P9/sku/6626901\",\"__typename\":\"ProductUrl\"},\"name\":{\"short\":\"1-Year Accidental Geek Squad Protection\",\"__typename\":\"ProductName\"},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

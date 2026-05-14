@@ -1,0 +1,26 @@
+{
+  "id": "har-268",
+  "url": "https://www.bestbuy.com/gateway/graphql/fulfillment?variables=%7B%22fulfillmentOptionsInput%22%3A%7B%22sku%22%3A%226674708%22%2C%22shipping%22%3A%7B%22destinationZipCode%22%3A%2297230%22%7D%2C%22inStorePickup%22%3A%7B%22storeId%22%3A%221436%22%7D%2C%22buttonState%22%3A%7B%22storeId%22%3A%221436%22%2C%22destinationZipCode%22%3A%2297230%22%2C%22context%22%3A%22PDP%22%2C%22fulfillmentOption%22%3A%22SHIPPING%22%7D%7D%7D",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777882.18f8b91d",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "857",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "34",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"fulfillmentOptions\":{\"__typename\":\"FulfillmentOptionsList\",\"buttonStates\":[{\"__typename\":\"ButtonState\",\"buttonState\":\"ADD_TO_CART\",\"condition\":\"NEW\",\"displayText\":\"Add to Cart\",\"fulfillmentOption\":\"SHIPPING\",\"hyperlinkUrl\":null,\"planButtonState\":null,\"planDisplayText\":null,\"secondaryButtonState\":null,\"secondaryDisplayText\":null,\"skuId\":\"6674708\"}],\"deliveryDetails\":[{\"__typename\":\"FulfillmentDeliveryDetail\",\"deliveryAvailability\":[{\"__typename\":\"FulfillmentDeliveryAvailability\",\"condition\":\"NEW\",\"backordered\":null,\"deliverable\":null,\"deliveryEligible\":null,\"deliveryServices\":null,\"deliverySlots\":null,\"forceSkipScheduling\":null,\"forceSkipSchedulingReasonCode\":null,\"homeDeliveryDisplayDateType\":null,\"inStoreOnly\":null,\"installationEligible\":null,\"installationSlots\":null,\"productAppointmentType\":null,\"salLocationId\":null,\"restrictions\":null}],\"destinationZipCode\":null,\"sku\":\"6674708\"}],\"ispuDetails\":[{\"__typename\":\"InStorePickupDetail\",\"installationEligible\":null,\"ispuAvailability\":[{\"__typename\":\"InStorePickupAvailability\",\"whenAvailableFlag\":null,\"restrictions\":null,\"quantity\":null,\"promiseByStreetDate\":null,\"preorderable\":null,\"pickupEligible\":true,\"minPickupInHours\":null,\"minDate\":null,\"maxDate\":null,\"instoreInventoryAvailable\":false,\"inStoreServices\":null,\"inStoreOnly\":false,\"fulfillmentType\":null,\"fulfillDate\":null,\"emailEligible\":null,\"downloadEligible\":null,\"displayDateType\":null,\"condition\":\"NEW\",\"backordered\":null}],\"maximumDistanceChecked\":null,\"nearbyLocation\":null,\"numberOfStoresChecked\":null,\"sku\":\"6674708\",\"nearbyLocations\":null,\"store\":{\"__typename\":\"FulfillmentPickUpStore\",\"city\":\"Owings Mills\",\"name\":\"Owings Mills\",\"storeId\":\"1436\",\"zip\":\"21117\"}}],\"shippingDetails\":[{\"__typename\":\"FulfillmentShippingDetail\",\"destinationZipCode\":\"97230\",\"sku\":\"6674708\",\"shippingAvailability\":[{\"__typename\":\"FulfillmentShippingAvailability\",\"backordered\":null,\"condition\":\"NEW\",\"customerLOSGroup\":[{\"__typename\":\"FulfillmentCustomerLOSGroup\",\"customerLosGroupId\":1,\"displayDateType\":\"IN_HAND\",\"maxLineItemMaxDate\":\"2026-05-22\",\"name\":\"Standard\",\"minLineItemMaxDate\":\"2026-05-22\",\"price\":0}],\"defaultCustomerLosGroupId\":1,\"directToBoxEligible\":false,\"downloadEligible\":false,\"emailEligible\":false,\"fulfillByVendor\":false,\"inStoreOnly\":false,\"installationEligible\":false,\"levelOfServices\":[{\"__typename\":\"FulfillmentShippingLevelOfService\",\"code\":\"Standard National\",\"id\":1,\"isLessThanTruckload\":false,\"isScheduleParcelDelivery\":false}],\"preorderable\":null,\"promiseByStreetDate\":null,\"restrictions\":null,\"shippingEligible\":true,\"whenAvailableFlag\":null}]}]}}}"
+}

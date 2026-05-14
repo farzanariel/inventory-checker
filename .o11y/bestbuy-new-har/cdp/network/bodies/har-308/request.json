@@ -1,0 +1,30 @@
+{
+  "id": "har-308",
+  "url": "https://streams.bestbuy.com/customer/web-streams/v1/events/digital-experience-event",
+  "method": "POST",
+  "headers": {
+    ":authority": "streams.bestbuy.com",
+    ":method": "POST",
+    ":path": "/customer/web-streams/v1/events/digital-experience-event",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "2878",
+    "content-type": "application/json",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "{\"eventUuid\":\"da99196d-c730-8489-2a30-52d4e738d630\",\"contract\":[{\"id\":\"0a3112b5-31dc-4cad-8f36-11274f8aaa35\",\"version\":\"2\"}],\"application\":{\"schemaName\":\"digital-experience-event\",\"schemaUri\":\"dar://dar.edp.bestbuy.com/entries/engagement/digital-experience-event/v1\",\"schemaVersion\":\"v1\",\"source\":\"cj-web-mixed\",\"version\":\"26.16.2\"},\"appState\":{\"breadCrumbIds\":[\"cat00000\",\"abcat0500000\",\"pcmcat138500050001\"],\"layout\":\"pdp-upsell-l\",\"name\":\"Product Detail Page\",\"nodeId\":\"pcmcat138500050001\",\"previousName\":\"Product Detail Page\",\"previousUuid\":\"079965f0-d3a4-4498-ba58-dd2babac80cf\",\"referrerUrl\":\"https://www.bestbuy.com/\",\"uuid\":\"c6a8654e-1be9-45d6-a5d6-667910c31c94\"},\"account\":{\"memberships\":[{\"type\":\"NULL\"}]},\"basket\":{\"displayCount\":4,\"offers\":[{\"type\":\"sug_monthly_pay\",\"amount\":50,\"id\":\"384913\"}]},\"browser\":{\"height\":812,\"width\":632,\"isCookiesDisabled\":false,\"title\":\"Lenovo IdeaPad Slim 3 15.3\\\" 2k Touchscreen Laptop AMD Ryzen 7 170 2025 16GB Memory 512GB SSD Luna Grey 83K700TUUS - Best Buy\",\"url\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"language\":\"en-US\",\"isWrapped\":false,\"rumId\":\"177877490394632520\",\"fetchToResponseDuration\":1980,\"pathName\":\"/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"hash\":\"\",\"queryParams\":[]},\"decisions\":[],\"device\":{\"screenHeight\":982,\"screenWidth\":1512,\"timeZone\":\"UTC-04:00\",\"time\":\"2026-05-14T16:58:01.401Z\",\"connectionDownlink\":10,\"connectionEffectiveType\":\"4g\",\"osVersion\":null,\"orientation\":\"landscape-primary\"},\"event\":{\"hitIncrement\":30,\"type\":\"pageLoad\"},\"identities\":{\"adobeId\":\"67812132220295860793416528519573407015\",\"isEmployeeMode\":false,\"visitorId\":\"3161e7d0-5497-11f0-bd66-12204ace29a7\",\"userId\":\"8217524d-4fb4-11f1-a701-0e79396342ad\",\"partyId\":\"5117767577\",\"browserSessionId\":\"1c4a7049-5345-400a-af37-ad3f937d8f99\"},\"location\":{\"defaultStoreId\":\"1436\",\"defaultStoreZipCode\":\"97230\"},\"purchases\":[],\"source\":{\"name\":\"BBY-US-Web\",\"viewType\":\"l\",\"userAgent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"},\"search\":{},\"skus\":[{\"rankingId\":\"0001bXS_BvmBtJrc:tFiZig3Wel7Ge36\",\"condition\":\"new\",\"id\":\"6674708\",\"isPDP\":true,\"priceType\":\"onSale\",\"primaryButtonState\":\"ADD_TO_CART\",\"unitPrice\":599.99,\"userGeneratedContent\":{},\"fulfillment\":{\"type\":\"shipping\",\"daysOut\":8},\"altSellerPriceMin\":599.99,\"altSellerPriceMax\":879.99}],\"content\":[{\"name\":\"More Buying Options\",\"type\":\"Buying Options\",\"sellerId\":\"bby\"},{\"name\":\"Product Variation\",\"type\":\"Component\",\"widgetType\":\"shop-product-variations\"}],\"listResult\":{},\"task\":{},\"session\":{\"id\":\"bc09bd60-1a39-49cb-9f67-36a174074726\",\"startTimestamp\":\"2026-05-14T16:41:47.306Z\",\"sessionCount\":220}}"
+}

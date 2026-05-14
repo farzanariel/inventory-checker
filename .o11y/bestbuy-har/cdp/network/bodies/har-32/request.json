@@ -1,0 +1,28 @@
+{
+  "id": "har-32",
+  "url": "https://pixel.adsafeprotected.com/services/pub?anId=931017&slot=%7Bid:gpt-pencil-banner-pencil,ss:%5B970.50%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-customleaderboard-position1,ss:%5B970.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position1,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position2,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-programmatic,ss:%5B160.600%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&wr=632.812&sr=1512.982&sessionId=7463a3d2-5fc5-c199-3372-6b60c1abb4fe&url=https%253A%252F%252Fwww.bestbuy.com%252Fproduct%252Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%252FJJGH3KQYP8%252Fsku%252F6674708",
+  "method": "GET",
+  "headers": {
+    ":authority": "pixel.adsafeprotected.com",
+    ":method": "GET",
+    ":path": "/services/pub?anId=931017&slot=%7Bid:gpt-pencil-banner-pencil,ss:%5B970.50%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-customleaderboard-position1,ss:%5B970.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position1,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-leaderboardfooter-position2,ss:%5B728.90%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&slot=%7Bid:gpt-programmatic,ss:%5B160.600%5D,p:/6011/BestBuyDesktopWeb/computers_x_tablets/laptops/all_laptops,t:display%7D&wr=632.812&sr=1512.982&sessionId=7463a3d2-5fc5-c199-3372-6b60c1abb4fe&url=https%253A%252F%252Fwww.bestbuy.com%252Fproduct%252Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%252FJJGH3KQYP8%252Fsku%252F6674708",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": null
+}

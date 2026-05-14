@@ -1,0 +1,19 @@
+{
+  "id": "har-280",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/6403.3b2a4787982c9b2a.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777882.18f8bb15",
+    "cache-control": "max-age=2422270",
+    "content-encoding": "br",
+    "content-length": "334",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "etag": "\"b890a4b94a9aea8e99d38d0cbc3b4045:1778545601.274433\"",
+    "expires": "Thu, 11 Jun 2026 17:49:12 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:41 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6403],{26403:(a,t,e)=>{e.r(t),e.d(t,{default:()=>l});var s=e(73365);e(1521);var c=e(13727),r=e(7008);let l=a=>{let[t]=(0,c.tIE)();return(0,s.jsx)(r.oz,{creatorNamespace:\"shop\",componentId:\"package-deals-carousel\",contractVersion:\"v1\",layoutClassList:\"mt-400\",query:{deviceClass:\"l\",skuId:t,displayLocation:\"Product Detail Page\",pageName:\"Product Detail Page\",abtest353ScalingStrategy:a.abtest353ScalingStrategy,abtest353Variant:a.abtest353Variant},onInitSuccess:()=>{}})}}}]);"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "har-16",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/673a663214799bd4.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777878.18f88560",
+    "cache-control": "max-age=621259",
+    "content-encoding": "br",
+    "content-length": "796",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"ba591ac0af2782270e88c5a9f38ac0c2:1774546053.446361\"",
+    "expires": "Thu, 21 May 2026 21:32:17 GMT",
+    "last-modified": "Thu, 26 Mar 2026 17:27:33 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": ".priceView-cabo{margin-top:16px;padding:0 10px 10px!important;border:1px solid #c5cbd5;border-radius:4px}.priceView-cabo__member-badge{margin-top:10px}.priceView-cabo__offer-value{font-weight:400;font-size:16px;line-height:18px;color:#1d252c;margin-top:10px;margin-right:2px}.priceView-cabo__offer-value2{margin:10px 2px 8px 0;display:inline-block;letter-spacing:-.26px}.priceView-cabo__offer-value2 strong{font-weight:700}.priceView-cabo__apply-offer{font-weight:400;font-size:13px;line-height:16px;color:#1d252c;display:inline-block}.priceView-cabo__apply-offer .checkbox{display:inline}.priceView-cabo__apply-offer label{padding:0}.priceView-cabo__check-offer-details{display:inline-block;font-weight:400;font-size:11px;line-height:14px;color:#1d252c}.priceView-cabo__expire-disclaimer{color:#bb0628;font-size:12px}.priceView-cabo .help-block{display:none!important}.priceView-cabo .v-m-vertical{margin-bottom:0}.priceView-cabo-offer-detail__header{margin:0 0 8px;border-bottom:1px solid #c5cbd5}.priceView-cabo-offer-detail__header-bby-offer{font-size:20px;font-weight:500;color:#1d252c;letter-spacing:0;text-align:left;display:inline-block}.priceView-cabo-offer-detail__header-bby-offer .icon{background-image:url(/~assets/bby/_com/shop/pdp/_next/static/images/1537667d1642724d.svg)!important;background-size:cover;height:24px!important;width:78px!important;margin-right:4px}.priceView-cabo-offer-detail__header-OFFER{vertical-align:top;padding-top:3px;font-size:12px}.priceView-cabo-offer-detail__disclaimer{font-weight:400;font-size:11px;line-height:14px;color:#55555a;display:inline-block;margin-top:10px;margin-bottom:10px}.priceView-cabo-offer-detail__disclaimer1{font-weight:500;font-size:13px;padding-bottom:8px}.priceView-cabo-offer-detail__disclaimer2{line-height:13px}.priceView-cabo-offer-detail__description{display:inline-block;padding:20px 0;width:100%}.priceView-cabo-offer-detail__effectiveDate{font-weight:400;font-size:13px;line-height:16px;color:#1d252c;padding-top:15px}.priceView-cabo-offer-detail__offer-image-wrapper{margin-right:10px;width:45%;float:left}.priceView-cabo-offer-detail__body{width:50%;float:left;margin-top:25px;min-width:170px;color:#1d252c}.priceView-cabo-offer-detail__image{display:block;width:auto;height:auto;max-width:100%;max-height:100%}.priceView-cabo-offer-detail__default-image{background-image:url(/~assets/bby/_com/shop/pdp/_next/static/images/6553c424790d27d9.svg)!important;height:185px!important;background-repeat:no-repeat;background-size:contain}.priceView-cabo-offer-detail__headline{font-weight:600;font-size:17px;line-height:18px}.priceView-cabo-offer-detail__copy{padding-top:15px}#bestbuy-pricing-web-ui-1-2543-3 .medium-layout{margin-top:12px}#bestbuy-pricing-web-ui-1-2543-3 .medium-layout-badge-container{display:flex;gap:4px;flex-direction:column}#bestbuy-pricing-web-ui-1-2543-3 .badge{white-space:nowrap;align-content:flex-end}#bestbuy-pricing-web-ui-1-2543-3 .bundlePrice .package-price{font-family:Human BBY Digital;font-size:10px;font-weight:500;line-height:12px;text-align:left}.price-disclaimer{font-family:Human BBY Digital;font-size:12px;font-weight:400;line-height:18px;text-align:left}"
+}

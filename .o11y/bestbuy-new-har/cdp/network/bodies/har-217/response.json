@@ -1,0 +1,19 @@
+{
+  "id": "har-217",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/9378.094e9a598b794b92.js",
+  "status": 200,
+  "headers": {
+    "akamai-grn": "0.e73dd717.1778777881.18f8b0ff",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "1040",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"f50f120b449ca5fdc1797a71ebd864f6:1778696822.350907\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:27:02 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9378],{49378:(e,n,a)=>{a.r(n),a.d(n,{DeviceClass:()=>y,default:()=>S});var l,o=a(73365);a(1521);var r=a(13727),t=a(14008),s=a(99020),d=a(86714);let i=(0,d.default)(()=>a.e(6403).then(a.bind(a,26403)),{loadableGenerated:{webpack:()=>[26403]},ssr:!1,loading:()=>null}),c=(0,d.default)(()=>a.e(1603).then(a.bind(a,21603)),{loadableGenerated:{webpack:()=>[21603]},ssr:!1,loading:()=>null}),p=(0,d.default)(()=>a.e(2105).then(a.bind(a,52105)),{loadableGenerated:{webpack:()=>[52105]},ssr:!1,loading:()=>null});var m=a(4602),u=a(82116),g=a(82828),b=a(93490),y=((l={}).SV=\"SV\",l.LV=\"LV\",l);let S=e=>{let{lazyRenderRecommendationsConfig:n}=e,[a]=(0,r.gQK)(),[l]=(0,r.tIE)(),[d]=(0,r.RWR)(),y=(({componentName:e,driverSkuId:n,pagePlacement:a,deviceClass:l})=>{let o={componentName:e,driverSkuId:n,pagePlacement:a,deviceClass:l,nodeId:\"recs-components-typeinfo-mapping\"};a||delete o.pagePlacement;let{data:r,error:t}=(0,g.useSuspenseQuery)((0,g.gql)(`\n    query RecommendationsComponentExperienceQuery($componentName: String!, $driverSkuId: String!, $pagePlacement: String, $deviceClass: String!, $nodeId: String!) {\n  recommendationsComponentExperience(\n    input: {componentName: $componentName, driverSkuId: $driverSkuId, pagePlacement: $pagePlacement, deviceClass: $deviceClass, nodeId: $nodeId}\n  ) {\n    isDisplayable\n  }\n}\n`),{errorPolicy:\"all\",variables:o});return t?(console.error(\"GetComponentMatchTypeInfo error\",t),!1):r?.recommendationsComponentExperience?.isDisplayable})({componentName:\"solution-banner\",driverSkuId:l,deviceClass:a?\"SV\":\"LV\"}),S=(0,t.OX)(),x=S?.data?.managedContentByTypeAndId?.document?.abTest353ScalingStrategy?.scalePackageDealsCarouselNewLayout;return d?null:(0,o.jsxs)(o.Fragment,{children:[a&&(0,o.jsx)(b.qo,{componentName:\"PackageDealsJumper\",wrap:!0,children:(0,o.jsx)(s.y,{name:\"package-deals-jumper\",loadingFallback:(0,o.jsx)(u.yS,{}),children:(0,o.jsx)(p,{})})}),!a&&(0,o.jsx)(b.qo,{componentName:\"PackageDealsCarousel\",wrap:!0,children:(0,o.jsx)(s.y,{name:\"package-deals-carousel\",loadingFallback:(0,o.jsx)(u.yS,{}),children:(0,o.jsx)(i,{abtest353ScalingStrategy:x})})}),(0,o.jsx)(b.qo,{componentName:\"UnifiedRecommendationsExperience\",wrap:!0,children:(0,o.jsx)(s.y,{loadingFallback:(0,o.jsx)(u.yS,{}),name:\"unified-recommendations\",children:(0,o.jsx)(m.default,{config:{lazyRender:n},stylingClassName:a?\"mb-200 pt-300 v-bg-pure-white container-v3\":\"pt-400 pl-50\"})})}),y&&(0,o.jsx)(b.qo,{componentName:\"SolutionBanner\",wrap:!0,children:(0,o.jsx)(s.y,{name:\"solution-banner\",loadingFallback:(0,o.jsx)(u.yS,{}),children:(0,o.jsx)(c,{})})})]})}}}]);"
+}

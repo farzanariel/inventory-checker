@@ -1,0 +1,20 @@
+{
+  "id": "har-11",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/3520f8cc38c574d0.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777878.18f885b8",
+    "cache-control": "max-age=1731361",
+    "content-encoding": "br",
+    "content-length": "561",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:57:58 GMT",
+    "etag": "\"0a0b5f1ded9f885003451ed80298d35d:1775582220.537711\"",
+    "expires": "Wed, 03 Jun 2026 17:53:59 GMT",
+    "last-modified": "Tue, 07 Apr 2026 17:17:00 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": ".standard-tile-layout-component .standard-tile-item .standard-tile-item-content{min-height:90px;width:265px;background-color:inherit;border-color:inherit}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content{max-width:65%;margin-left:0;display:flex}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .title-and-price-section{min-height:70px}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .sku-title{text-overflow:ellipsis}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .pricing-price{float:left}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .pricing-price .pv-align-right,.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .pricing-price .pv-restricted-price{text-align:left}.standard-tile-layout-component .standard-tile-item .standard-tile-item-content .content .pricing-price .pv-restricted-price-bold{margin-top:4px}.standard-tile-layout-component .standard-tile-item.border-selected{border-color:#0046be;box-shadow:none;border-width:2.5px}.standard-tile-layout-component .standard-tile-item-link{min-height:90px}.standard-tile-layout-component .standard-tile-item-link .c-button{width:125px;border-style:none;border-radius:8px}.standard-tile-layout-component .standard-tile-item-link .ure-jumper{width:75px}.standard-tile-layout-component .standard-tile-item-link .ure-jumper svg{margin-top:10px;transform:rotate(90deg);align-self:center}.standard-tile-layout-component .standard-tile-item-link button:hover{background-color:#fff;border-color:#0046be;color:#0046be}.standard-tile-layout-component .c-carousel-arrow-button{border-left:none!important;border-right:none!important}.standard-tile-layout-component .standard-tile-carousel .pl-flex-carousel{padding:0}.standard-tile-layout-component .standard-tile-carousel .c-carousel-arrow-button:disabled{display:none}.standard-tile-layout-component .standard-tile-carousel .c-carousel-list.scrollable{overflow-y:hidden}.aiv-save-for-later .save-for-later-overlay-wrapper{bottom:25px!important;padding:1.5rem!important}.add-to-cart-button-open-box>button{min-width:64px;height:32px;width:103px;margin-left:12px;margin-right:8px;padding:8px;gap:4px}.flex1{flex:1 1}.mh-50{max-height:50px;-o-object-fit:contain;object-fit:contain}"
+}

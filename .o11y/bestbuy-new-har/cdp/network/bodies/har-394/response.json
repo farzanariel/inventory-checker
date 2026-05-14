@@ -1,0 +1,28 @@
+{
+  "id": "har-394",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777883.18f8ce34",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "1212",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "33",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6619147\",\"buyingOptions\":[{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3x-copilot-pc-15-3-2k-touchscreen-laptop-snapdragon-x-x1-26-100-2025-16gb-memory-256gb-ssd-luna-grey/JJGSH82JL5/sku/6619147\",\"type\":\"New\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3x-copilot-pc-15-3-2k-touchscreen-laptop-snapdragon-x-x1-26-100-2025-16gb-memory-256gb-ssd-luna-grey/JJGSH82JL5/sku/6619147/openbox?condition=excellent\",\"type\":\"Excellent\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3x-copilot-pc-15-3-2k-touchscreen-laptop-snapdragon-x-x1-26-100-2025-16gb-memory-256gb-ssd-luna-grey/JJGSH82JL5/sku/6619147/openbox?condition=good\",\"type\":\"Good\"},{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3x-copilot-pc-15-3-2k-touchscreen-laptop-snapdragon-x-x1-26-100-2025-16gb-memory-256gb-ssd-luna-grey/JJGSH82JL5/sku/6619147/openbox?condition=fair\",\"type\":\"Fair\"}],\"termLength\":null,\"name\":{\"short\":\"Lenovo - IdeaPad Slim 3x - Copilot+ PC - 15.3\\\" 2k Touchscreen Laptop - Snapdragon X X1-26-100 2025 - 16GB Memory - 256GB SSD - Luna Grey\",\"__typename\":\"ProductName\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/adce103f-2378-4a3e-98af-c9e06d3fbdbc.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"__typename\":\"ItemPrice\",\"showTotalSavings\":true,\"totalSavings\":300,\"totalSavingsPercent\":35,\"totalPaidMemberSavings\":0,\"totalNonPaidMemberSavings\":300,\"preferredBadging\":null,\"puckDisplayMessage\":null,\"puckMessageURL\":null,\"dealExpirationTimeStamp\":null,\"restrictedPriceDisplayMessage\":null,\"displayableCustomerPrice\":549.99,\"displayableRegularPrice\":849.99,\"icrCode\":null,\"isEcoRebateEligible\":false,\"heroRenderPriceOptions\":\"FINANCE_OPTIONS\",\"openBoxPrice\":null,\"openBoxSavings\":null,\"openBoxCondition\":null,\"lowestOpenboxPrice\":null,\"showLeasingOption\":true,\"connectionType\":\"3\",\"skuId\":\"6619147\",\"regularPriceMessageType\":\"WAS\",\"subscriptionSummary\":null,\"paymentOptions\":[{\"__typename\":\"ItemPricePaymentOption\",\"numberOfInstallments\":8,\"installmentAmount\":68.75,\"installmentServiceFee\":0.5,\"vendor\":\"zip\",\"isDisplayable\":true,\"type\":\"BNPL\"}],\"isBbyCardMember\":null,\"financeOption\":{\"__typename\":\"ItemPriceFinanceOption\",\"financeTerm\":12,\"monthlyPayment\":45.84,\"offerId\":\"384913\",\"planType\":\"Deferred\",\"rate\":0,\"totalCost\":549.99,\"totalCostIncludingTax\":549.99},\"mobileContracts\":null,\"giftSkus\":[{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"735933\",\"parentSkus\":null,\"quantity\":1,\"savings\":0.01,\"skuId\":\"6549173\"},{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"636289\",\"parentSkus\":null,\"quantity\":1,\"savings\":0,\"skuId\":\"6548823\"}],\"priceWithCart\":null,\"customerSelectedDiscountsAvailable\":null,\"spendAndGetCabosAvailable\":null,\"tieredOffersTracking\":null,\"whatIfPrice\":null},\"offers\":{\"__typename\":\"SkuOffersConnection\",\"offers\":[{\"__typename\":\"SkuOffer\",\"hotOffer\":true,\"offerId\":\"752472\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"759129\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"873929\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"883629\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"815548\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"799781\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"808318\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"871854\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"875740\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"861136\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false}]},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}

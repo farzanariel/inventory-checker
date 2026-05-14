@@ -1,0 +1,30 @@
+{
+  "id": "har-188",
+  "url": "https://streams.bestbuy.com/customer/web-streams/v1/events/cj-page-visits",
+  "method": "POST",
+  "headers": {
+    ":authority": "streams.bestbuy.com",
+    ":method": "POST",
+    ":path": "/customer/web-streams/v1/events/cj-page-visits",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "1768",
+    "content-type": "application/json",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "{\"eventUuid\":\"4f501139-e911-415d-9cde-14d7c1dd3817\",\"contextId\":\"deo-client-script\",\"contract\":[{\"id\":\"\"}],\"interaction\":{\"name\":\"pageVisit\"},\"event\":{\"hitIncrement\":20,\"type\":\"pageLoad\"},\"application\":{\"schemaName\":\"cj-page-visits\",\"schemaVersion\":\"v1\",\"schemaUri\":\"dar://dar.edp.bestbuy.com/entries/engagement/cj-page-visits/v1\",\"version\":\"1.0.0\"},\"source\":{\"name\":\"BBY-US-Web\",\"viewType\":\"l\",\"userAgent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36\"},\"device\":{\"connectionDownlink\":10,\"connectionEffectiveType\":\"4g\",\"orientation\":\"landscape-primary\",\"screenHeight\":982,\"screenWidth\":1512,\"timeZone\":\"UTC-04:00\",\"time\":\"2026-05-14T16:58:01\"},\"browser\":{\"height\":812,\"width\":632,\"isWrapped\":false,\"isCookiesDisabled\":false,\"language\":\"en-US\",\"title\":\"Lenovo IdeaPad Slim 3 15.3\\\" 2k Touchscreen Laptop AMD Ryzen 7 170 2025 16GB Memory 512GB SSD Luna Grey 83K700TUUS - Best Buy\",\"url\":\"https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"pathName\":\"/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708\",\"queryParams\":\"\"},\"location\":{\"defaultStoreId\":\"1436\"},\"appState\":{\"uuid\":\"af1b94fa-afd5-493a-b656-ef9f9fa14cb4\",\"name\":\"\",\"referrerUrl\":\"https://www.bestbuy.com/\",\"previousName\":\"Product Detail Page\",\"previousUuid\":\"7e3b6204-6c8a-40b4-ac3d-574d9eaf7888\"},\"basket\":{\"displayCount\":4},\"skus\":[{\"id\":\"\"}],\"identities\":{\"visitorId\":\"3161e7d0-5497-11f0-bd66-12204ace29a7\",\"userId\":\"8217524d-4fb4-11f1-a701-0e79396342ad\",\"partyId\":\"5117767577\",\"adobeId\":\"67812132220295860793416528519573407015\"},\"search\":{}}"
+}

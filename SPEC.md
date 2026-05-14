@@ -9,6 +9,7 @@
 
 ## 0. Changelog
 
+- **v9 (2026-05-14):** Added §6.8 J-code stock fallback (Layer 1.5). For SKUs that priceBlocks returns `ProductNotFoundException` against (items migrated to BB's `bsin`/J-code product-family catalog, e.g. SKU `6674708`), the worker now hits `GET /gateway/graphql/fulfillment?variables=...` via the same warmed `curl_chrome116` client used for priceBlocks. The endpoint returns `data.fulfillmentOptions.buttonStates[0].buttonState` — exactly the stock signal we need — without requiring the residential-proxy PDP scrape or the headless browser. **Stock-only**: name/price/image are stitched from the item's existing DB values; the fulfillment response is not trusted for those fields, which continue to wait for BB to re-index the SKU into priceBlocks. Verified live on the VPS 2026-05-14 for SKU `6674708`. Pre-existing behavior preserved: SKUs that fail fulfillment lookup stay in `PENDING_REINDEX`. New env var: `BESTBUY_FULFILLMENT_ZIP` (default `10001`).
 - **v8 (2026-05-13, NEC-XX):** Added §21 MicroCenter adapter — first non-Best-Buy retailer. Endpoint spike proved that one fetch of `/product/{productId}/...?storeid=029` returns all 32 stores' stock in a single `var inventory = [{qoh, storeNumber, storeName, productId}, ...]` block embedded in the PDP HTML, plus the national price in `#pricing[content]` / JSON-LD offers. Price does not vary by store (confirmed by user). MicroCenter sits behind Cloudflare's managed JS challenge; the existing patchright + residential-proxy stack from §20 clears it. §3 amended: "Multi-retailer support" non-goal scoped down to "no general retailer plugin system" — Best Buy + MicroCenter are now in v1 scope. §9 gains an `item_stores` table for per-(item, store) state with a per-row `alert_enabled` flag. `items` gains `retailer` and `mc_product_id` columns. §11 add/edit modal grows a MicroCenter branch with a multi-select store dropdown (all 32 stores discovered on first fetch, all checked by default, with "All / In-store only / Online only / None" quick-actions; the Web Store `029` "Shippable Items" appears as a distinguished entry at the top labelled "Online (Shippable)"). §7 state machine generalizes: for MC items, transitions/reminders key on `(item_id, store_number)` instead of `item_id`, and notification fire is gated by `item_stores.alert_enabled`. §16 tests gain MC PDP parser + per-(item, store) state machine.
 - **v6 (2026-05-11):** Per-feature opt-in + once/repeat notify modes. Migration `0004_notify_modes.sql` adds `stock_alert_enabled` (default 1), `stock_notify_mode` ('once'|'repeat', default 'repeat'), and `price_notify_mode` ('once'|'repeat', default 'repeat'). Add/Edit modal now exposes Stock alerts and Price alerts as parallel collapsible sections — at least one must be on. `decideStock` skips alert+reminder paths when stock alerts are off; in 'once' mode the OOS→IN_STOCK transition fires but reminders are suppressed. `decidePriceAlert` in 'once' mode treats a non-null `last_price_notified_at` as permanent silence; PATCH clears that gate (and the pending-hit guard) when the mode is toggled.
 - **v5 (2026-05-11):** §19 rewritten as a target-price model after user feedback on the v4 threshold UI ("why is it in cents and not dollars? also, just let me input a target price instead"). Migration `0003_target_price.sql` drops the six unused threshold/baseline/pending-lower columns and adds `target_price_cents`, `pending_hit_price_cents`, `pending_hit_seen_count`. UI surfaces a single dollar input that's current-price-aware ("currently $X.XX" inline; soft-error when target ≥ current). Decision rule: fire when `currentPrice <= targetPrice` after two consecutive same-price observations and cooldown clear. The `'any'` direction toggle is dropped from §18 backlog (no longer meaningful under target model). §9.1 audit table: `PRICE_DROP` message format becomes `"<target> -> <current>"`. §16 tests rewritten accordingly.
@@ -197,6 +198,29 @@ Implemented as two functions in `src/lib/parse-input.ts`:
 `looksResolvableBestBuyInput(input): boolean` is the cheap UI predicate (sync) that returns `true` when either `parseUrlOrSku` would succeed or the input is a Best Buy `/product/...` URL — used to debounce the AddItemDialog preview lookup without firing on every keystroke.
 
 Unit-tested (§16) including the NEC-13 ad-URL fixture.
+
+### 6.8 J-code stock fallback (Layer 1.5)
+
+Some Best Buy SKUs (e.g. `6674708`) live only in BB's newer `bsin`/J-code product-family catalog and return `ProductNotFoundException` from priceBlocks. Before this section, those items were stuck in `PENDING_REINDEX` indefinitely — `decide()` produced no stock signal for them. This section spec's the fallback.
+
+**Endpoint:** `GET https://www.bestbuy.com/gateway/graphql/fulfillment?variables=<url-encoded-JSON>`
+
+Request body (URL-encoded into `variables`):
+```json
+{ "fulfillmentOptionsInput": { "sku": "<SKU>", "shipping": { "destinationZipCode": "<ZIP>" } } }
+```
+
+**Transport:** identical to priceBlocks (§6.2): warmed `curl_chrome116` session jar. Verified working on the VPS 2026-05-14. The POST variant of `/gateway/graphql` (e.g. `getPDPProductBySkuId`) requires a JS-solved `_abck` cookie and is NOT used here.
+
+**Response parsing:** `data.fulfillmentOptions.buttonStates[].buttonState`. Pick the entry whose `skuId` matches the requested SKU, else the first entry. Mapping to `StockStatus` is unchanged — same table as §6.4.
+
+**Field stitching rule:** the fulfillment response only provides stock signal. `name`, `brand`, `currentPriceCents`, `regularPriceCents`, `canonicalUrl` in the resulting `ProductResult` are taken **from the item's existing DB row**, not from the response. This path must not mutate those fields. Items in `PENDING_REINDEX` keep whatever name/price was last successfully fetched (typically the values captured during initial Add-Item lookup). They will be refreshed automatically once BB re-indexes the SKU into priceBlocks.
+
+**Pipeline placement:** new Layer 1.5 in `src/worker/index.ts`, between Layer 1 (TLS priceBlocks retry) and Layer 2 (PDP proxy scrape). Filter: `fetchMap.get(sku)` is `!ok` AND `isMissingFromPriceBlocks(error)`.
+
+**Failure handling:** identical to §6.6. On any fulfillment-path failure (non-200, parse error, missing `buttonStates`), the original `ProductNotFoundException` error is left in `fetchMap` — `decide()` then routes the item back into `pendingReindexDecision` exactly as before. No regression for items that fail.
+
+**Config:** `BESTBUY_FULFILLMENT_ZIP` (default `10001`). ZIP is required by the endpoint but does not change the buttonState for shipping-eligible items.
 
 ## 7. Notification Logic
 

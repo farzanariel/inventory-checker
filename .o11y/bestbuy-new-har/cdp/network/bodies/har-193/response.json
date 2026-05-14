@@ -1,0 +1,20 @@
+{
+  "id": "har-193",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/chunks/8706.bda9b659416f69f6.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ac36",
+    "cache-control": "max-age=2513573",
+    "content-encoding": "br",
+    "content-length": "1249",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"4be0ef69226b33fbc3cb4662104c8365:1778696820.473728\"",
+    "expires": "Fri, 12 Jun 2026 19:10:54 GMT",
+    "last-modified": "Wed, 13 May 2026 18:27:00 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": "\"use strict\";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[8706],{20425:(e,n,r)=>{function t(){return\"undefined\"!=typeof window}r.d(n,{J:()=>i});var a=r(1521);function i(e){!function(e,n={}){let{persisted:r=!1}=n;(0,a.useEffect)(()=>{let n=n=>{r&&n.persisted?e():r||e()};return t()&&window.addEventListener(\"pageshow\",n),()=>{t()&&window.removeEventListener(\"pageshow\",n)}},[e,r])}(e,{persisted:!0})}},25563:(e,n,r)=>{r.r(n),r.d(n,{default:()=>c});var t=r(73365);r(1521);var a=r(7270),i=r(82828),l=r(13727),s=r(39235),o=r(45463);let c=()=>{let e=(0,i.useApolloClient)(),[n]=(0,l.gQK)(),[r]=(0,l.tIE)(),[c]=(0,s.cN)({provideFallbacks:!0}),d=c?.contact?.primaryShippingAddress?.zip??\"\",u=c?.preferences?.store?.locationId,f=(0,o.useIsReviewStandAlonePage)();return(0,t.jsx)(\"div\",{className:\"atwa-ninja\",children:(0,t.jsx)(a.ry,{apolloClient:e,destinationZipCode:d,deviceClass:n?\"s\":\"l\",pageType:f?\"rnr\":\"pdp\",query:r,storeId:u})})}},57974:(e,n,r)=>{r.d(n,{k:()=>c,u:()=>o});var t=r(1521),a=r(47495),i=r(53659),l=[\"ariaLabel\",\"aria-expanded\",\"buttonRef\",\"className\"];function s(){return(s=Object.assign?Object.assign.bind():function(e){for(var n=1;n<arguments.length;n++){var r=arguments[n];for(var t in r)({}).hasOwnProperty.call(r,t)&&(e[t]=r[t])}return e}).apply(null,arguments)}var o=t.forwardRef(function(e,n){var r=e.ariaLabel,o=e[\"aria-expanded\"],c=e.buttonRef,d=e.className,u=function(e,n){if(null==e)return{};var r,t,a=function(e,n){if(null==e)return{};var r={};for(var t in e)if(({}).hasOwnProperty.call(e,t)){if(-1!==n.indexOf(t))continue;r[t]=e[t]}return r}(e,n);if(Object.getOwnPropertySymbols){var i=Object.getOwnPropertySymbols(e);for(t=0;t<i.length;t++)r=i[t],-1===n.indexOf(r)&&({}).propertyIsEnumerable.call(e,r)&&(a[r]=e[r])}return a}(e,l),f=(0,i.N)(n,c);return t.createElement(\"button\",s({\"aria-expanded\":o,\"aria-label\":\"\".concat(r,\" info\"),className:(0,a.x)(\"c-info-i\",o&&\"v-active\",d),ref:f,type:\"button\"},u),t.createElement(\"svg\",{\"aria-hidden\":\"true\",viewBox:\"0 0 32 32\"},t.createElement(\"path\",{className:\"c-info-i-circle\",d:\"M26.26,5.74 L26.26,5.74 C20.60,0.086 11.4,0.086 5.74,5.74 C0.086,11.4 0.086,20.60 5.74,26.26 C11.4,31.91 20.60,31.91 26.26,26.26 C31.91,20.6 31.91,11.4 26.26,5.74 Z\"}),t.createElement(\"g\",{className:\"c-info-i-text\",transform:\"translate(13, 5)\"},t.createElement(\"path\",{d:\"M3,0.23 C1.47,0.23 0.29,1.44 0.29,2.82 C0.29,4.24 1.47,5.42 3,5.42 C4.5,5.42 5.71,4.29 5.71,2.82 C5.71,1.38 4.5,0.23 3,0.23 Z\"}),t.createElement(\"rect\",{height:\"14.36\",width:\"4.73\",x:\"0.63\",y:\"7.41\"}))))});o.displayName=\"BrixInformationIcon\";var c=o}}]);"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "har-414",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777884.18f8d704",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "860",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:04 GMT",
+    "expires": "Thu, 14 May 2026 16:58:04 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "24",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"errors\":[{\"message\":\"Error - Not Found\",\"locations\":[],\"path\":[\"offer735933\",\"rows\"],\"extensions\":{\"code\":\"NOT_FOUND\"}},{\"message\":\"Error - Not Found\",\"locations\":[],\"path\":[\"offer735933\",\"timelineID\"],\"extensions\":{\"code\":\"NOT_FOUND\"}}],\"data\":{\"offer735933\":{\"rows\":null,\"__typename\":\"SiteControlTimeline\",\"timelineID\":null},\"offer636289\":{\"rows\":[{\"__typename\":\"SiteControlRow\",\"columns\":[{\"__typename\":\"SiteControlColumn\",\"widgets\":[{\"content\":{\"_meta\":{\"guid\":\"6c22da91-1a39-4924-8dae-bd81a5f9cc5f\",\"ignoreOnSmall\":[]},\"backgroundImage\":null,\"bodyCopy\":null,\"callToActionButton\":null,\"callToActionText\":null,\"disclaimer\":null,\"disclaimerCallToActionLinkTo\":null,\"disclaimerCallToActionText\":null,\"foregroundImage\":null,\"guid\":\"5aa1e318-d66c-4528-8db1-b7b61634d9bf\",\"headline\":null,\"linkTo\":\"/site/conditional-offers/security-software-offer/pcmcat1513790944742.c?id=pcmcat1513790944742\",\"longDisclaimer\":null,\"mainMessageImage\":null,\"metadata\":{\"created\":null,\"id\":\"e01982e4-88eb-48e1-982c-7604b35d8186\",\"lastModified\":\"2023-11-03T09:24:30.959-05:00\",\"lastPublishedVersion\":null,\"version\":null},\"name\":\"computing_NortonS2Offers-Free6months_OfferText_11032023\",\"object-key\":\"e01982e4-88eb-48e1-982c-7604b35d8186\",\"ref-type\":\"experience-fragment\",\"secondaryCallToActionText\":null,\"secondaryLinkTo\":null,\"skuPromotionalMessage\":\"Free 6 months of security software\",\"subhead\":null,\"thumbnailImage\":null,\"thumbnailText\":null,\"topperText\":null},\"guid\":\"ddec186e-2b81-400e-aec3-01eeab282913\",\"krakenNodeConfigVersion\":\"2.0\",\"offer\":{\"guid\":\"fc5355e9-b209-455e-9444-3bb5d570baba\",\"offerId\":\"636289\",\"offerName\":\"Norton S2 Offers - Free 6 months\",\"qualifiers\":[{\"guid\":\"0fddc1c3-2556-4872-bf7f-4c8192b9f9ae\",\"qualifierId\":636289000}],\"ref-type\":\"offer-object\",\"targets\":[{\"guid\":\"675f22f1-6324-453f-8b74-33f5493427c1\",\"targetId\":636289001}]},\"tags\":[],\"widgetHash\":\"9a8a3abd\",\"widgetType\":\"omtOfferV2\"}]}]}],\"__typename\":\"SiteControlTimeline\",\"timelineID\":144549074}}}\n"
+}

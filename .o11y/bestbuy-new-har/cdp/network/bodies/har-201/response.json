@@ -1,0 +1,20 @@
+{
+  "id": "har-201",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/shop/pdp/_next/static/css/413e6d729667c8b1.css",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ad47",
+    "cache-control": "max-age=2422266",
+    "content-encoding": "br",
+    "content-length": "695",
+    "content-type": "text/css",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"cb9ebb8c2d3f18097cf88fdfa216ebaa:1778545619.022098\"",
+    "expires": "Thu, 11 Jun 2026 17:49:07 GMT",
+    "last-modified": "Tue, 12 May 2026 00:26:59 GMT",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding"
+  },
+  "body": ".learnMoreContent{margin-top:var(--sizeSpacing100)}.checkBoxContainer{float:left}.checkBoxContainer .c-checkbox-wrapper{align-items:flex-start}.checkBoxContainer .c-checkbox-label{padding-left:var(--sizeSpacing150);padding-top:var(--sizeSpacing0);width:100%;display:flex}.content{margin-left:30px}.content .caretDownIcon,.content .caretUpIcon{transform:scale(1.6);fill:var(--color-unstable-link-blue);margin-left:6px}.haulaway-price-block{float:right}.haulaway-selector-wrapper[aria-checked=true]{border-color:var(--colorBgPrimaryEmphasis)!important;border-width:2px!important}.my-test{width:360px}.service-selector.ss-border{border-top:var(--sizeBorderLg) solid var(--colorRoleDefault200)}.service-selector.ss-border,.service-selector.ss-sv-gutter{border-bottom:var(--sizeBorderLg) solid var(--colorRoleDefault200)}.service-selector .c-radio-brand{align-self:flex-start;flex-wrap:wrap}.service-selector label{padding-top:var(--sizeSpacing0);padding-bottom:var(--sizeSpacing0);padding-left:var(--sizeSpacing150);width:100%;display:flex}.service-selector .zip-label{color:var(--colorFgInfo)}.service-selector .zipCodeInputContainer.invalid{border-color:var(--colorFgDanger)}.service-selector .zipcode-popover{z-index:1000}.service-selector .updateButton{min-width:68px!important}.service-selector .zipcode-popover button:first-child{border:none}.service-selector .service-selector-raido-container,.service-selector .service-selector-singleradio{float:left}.service-selector .price-block{float:right}.service-selector .what-is-included{flex:1 1}.service-selector .service-selector-divider{margin:8px 0!important}.service-selector .service-selector-errorContainer .c-alert-icon{color:var(--colorFgDanger);margin-bottom:auto;margin-top:var(--sizeSpacing200)}.service-selector .service-selector-errorContainer .c-alert-content{background-color:var(--colorBgDanger)}@media (min-width:369px) and (max-width:390px){.service-selector .padright{padding-right:16px!important}}@media (min-width:355px) and (max-width:368px){.service-selector .padright{padding-right:32px!important}}@media (max-width:354px){.service-selector .padright{padding-right:48px!important}}.service-item-wrapper>div:nth-of-type(2){flex:1 1;min-width:0}.service-item-wrapper[aria-checked=true]{border-color:var(--colorBgPrimaryEmphasis)!important;border-width:2px!important}.gray-button{background-color:var(--colorBgDefaultSubdued)!important;border:1px solid var(--colorBorderDefaultSubdued)!important;color:var(--colorFgDefaultSubdued)!important}"
+}

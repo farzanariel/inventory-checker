@@ -1,0 +1,19 @@
+{
+  "id": "har-177",
+  "url": "https://www.bestbuy.com/~assets/bby/_com/analytics-dotcom/chunks/dynamicCreativeATC-fb17269cd1e0f8ccef6a.js",
+  "status": 200,
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.e73dd717.1778777881.18f8ab12",
+    "cache-control": "max-age=1300088",
+    "content-encoding": "br",
+    "content-length": "542",
+    "content-type": "application/x-javascript",
+    "date": "Thu, 14 May 2026 16:58:01 GMT",
+    "etag": "\"7af3b69a279aeeafee4bdc75a39ff3a9:1777485022.691254\"",
+    "expires": "Fri, 29 May 2026 18:06:09 GMT",
+    "last-modified": "Wed, 29 Apr 2026 17:50:22 GMT",
+    "strict-transport-security": "max-age=15768000"
+  },
+  "body": "/*! For license information please see dynamicCreativeATC-fb17269cd1e0f8ccef6a.js.LICENSE.txt */\n\"use strict\";(self.webpackJsonpAnalytics=self.webpackJsonpAnalytics||[]).push([[9073],{10129(e,n,t){t.r(n),t.d(n,{default:()=>i}),Object.defineProperty(i,\"name\",{value:\"default\",configurable:!0});var a=t(73421),s=t.n(a);function i(){window,new function e(){var n=this;(function(e,n){if(!(e instanceof n))throw new TypeError(\"Cannot call a class as a function\")})(this,e),this.receiveMessage=function(e){\"https://s0.2mdn.net\"!==e.origin||n.decodeMessage(e.data)},this.decodeMessage=function(e){\"ADD_TO_CART\"===e.type&&n.handleCartAdd(e)},this.handleCartAdd=function(e){var n=[{sku:\"\"+e.sku,clickLocation:\"Dynamic Creative Add To Cart\",condition:\"new\",driverSku:\"\"+e.sku}];\"Available\"===e.state&&s()&&s().dispatch({type:\"ADD_TO_CART\",skus:n,context:\"dynamicCreative-ADD_TO_CART\"})},window.addEventListener(\"message\",this.receiveMessage)}}}}]);\n//# sourceMappingURL=dynamicCreativeATC-fb17269cd1e0f8ccef6a.js.map"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "har-236",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8b33a",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "411",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "64",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"customer\":{\"prioritizedCallToAction\":{\"copy\":\"<strong>Add recovery phone number.</strong><br>In case you ever need to recover your account, we'll send you a text. Please {experienceUrl}.\",\"experienceUrl\":\"https://www.bestbuy.com/identity/recovery/phone/entrypoint?origin=toast&ctaName=add-account-recovery-phone&redirectUrl=https%3A%2F%2Fwww.bestbuy.com%2Fproduct%2Flenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey%2FJJGH3KQYP8%2Fsku%2F6674708\",\"experienceUrlCopy\":\"add your phone number\",\"notification\":\"add-account-recovery-phone\",\"notificationType\":\"moderate\"}}}}\n"
+}

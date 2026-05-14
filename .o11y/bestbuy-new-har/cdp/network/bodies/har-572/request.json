@@ -1,0 +1,30 @@
+{
+  "id": "har-572",
+  "url": "https://www.bestbuy.com/92LyeeSnEtLeRLwoCQ/XpwuzV5J/a0gtZgE/QGQAKi/ETXhIu",
+  "method": "POST",
+  "headers": {
+    ":authority": "www.bestbuy.com",
+    ":method": "POST",
+    ":path": "/92LyeeSnEtLeRLwoCQ/XpwuzV5J/a0gtZgE/QGQAKi/ETXhIu",
+    ":scheme": "https",
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-length": "2040",
+    "content-type": "application/json",
+    "dnt": "1",
+    "origin": "https://www.bestbuy.com",
+    "pragma": "no-cache",
+    "priority": "u=1, i",
+    "referer": "https://www.bestbuy.com/product/lenovo-ideapad-slim-3-15-3-2k-touchscreen-laptop-amd-ryzen-7-170-2025-16gb-memory-512gb-ssd-luna-grey/JJGH3KQYP8/sku/6674708",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"macOS\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+  },
+  "body": "{\"body\":\":BAyG8:Si:U*At :88pHBJo.qJ0sg)m2fS[?v{j0R}4{<l|GHF*]lwDrW* XT~c,[n#P3>D_y[+a0[uMRJ3|):q0*YXB/hV*ei!cFXW,Q%Y<hGh8BQ7{9NwR;04lkTGyLk,pKfiOqM.z@-L~3\\\"x^\\\"X\\\"hhHQCA/-O7Yu[\\\"fwP/mM3kd&Qu*wx1M+lsRZU`T]2k&_IARxU$xRL3xC%?fRU|>,dt]uk}z Q@a-|#PbY+}YS71rK^5>.` nPe]w}.w)zi$cbf+U+skZ]=Hsa#OPS0fR5GGfl$x-wzB*$3_0q]RGU97so7ew%N*xt-&Zas}4)$Z=@H(LE|1y4.7!z7zv6pDI8Ua03dg4u+`9VW6gkZ_`ycq[X5v$5x^]f-4[|:VcomN5QcDx}x0(5=LAI+du*%fkv0L!Ct*LKXM*V[Q06~AGha&|}cFnxoax~KY>L1Ju!>+k-Y<4(0J`*+BBN9.Of_HjpHjBsJi5KjK?m8+v%&X^0.]bxXVwFH3Mf1fMk[xV^,uvA{jcgyCb+6le#zvIkmg6J+Z,mY.N\\\"|f\\\"s\\\"\\\"+P^+B}BfjA%8k\\\"9=jz`3#`Et]#@ER)`id}6i&`$Tm5&1a@S[%N,cUC)pPnECW9xrv=W0ZFfEZ31/n\\\"M@l\\\"[\\\"cLf-;m0*#rT+=Xi52L\\\"d7dn+cYnoa!tKL;;xvA#7E,y-=r/u>:dGtGNaO?LsQ+*koKfLAgMj(&`u9x3{TJ/j=m.C<.IcGzxqnargX7*GrVYb ]0&cW3%[1OlkX3L2~ykws%riRJs-.yRoN|rXT66kQx8)-^%eZaTlh! (vO$VK]uK%`gEW/,aPvPRQ+N?}DCR_uk{sd:rtoMhbAB%-t~Y_+RTV>_kdke8>X`of]5z /l- g{_thmOE(S[`B|\\\"Ni\\\"d\\\";@jXN.q#<{F0/50JB:<7dDKnJ(,4M`w6d{B88&`s0kJB3RAXb}`a>0Cf?$1,`o:W,:ZcpZA^#]?G4ZYw!E/=jX|?,w$5ezIi9`&/E2,DZ[3HL[e*:EOZ=&IuiYr(LbBrYl?KlNU{90s(5Wk.5Rbq[Pv@?7XZGVBfRxDS%nwIgUQdq?Hx2K]!nj.eaf#C}21XDyHX*$(`3.{#\\\"Rf=\\\"Y\\\"<PKla=#e5OKgg*RDpcdo6qLH\\\"jK_>S:Lpap;|(/_ `E4qnGxCs)(k;NLx-c+j7fzNO`C!1?q?-eY;5qP.ioolBYQzH*R&bGZ4:Lzp-7pF4u~_P8\\\"?&x\\\"T2BW2Q7Z@{b&Vf(pam#l>2t\\\"H@\\\"T\\\"\\\"y=&%3CoG4qa4tDv-O@4HoA*0y!r$cjB4LceJm$k6%_N=&a8Fem[*B%gqhwroppWH^:zz@lDzlVU# UH`/z~>u`CLCVQlcePNs9N8k~rUJ(@wxOJb215d5.y~z.@LReYBuIZW!F2v(plNU;+R.26pJB4LRgv)?LDJgJTW3ZSEM3B31~|Ex+/nK[JO_0<fixu}e<EKA]dI_R]lhMS*ei7lLU\\\"e{Fd%/TPQ?sAH8UbV[d|u1(,];QgZ7@Rb$Qf3R!q1fZo+vNQHje!6;:M}^\\\"+l\\\">\\\"YxLcEh)DS0*Gg[;>FVh/1O@X:&UmlQjxF]GwIZ79ZIHt5!mp$FY,)KEYPCpA~x6K+L.Y2e8OvWN+TLCQZx9cvAMbUL~;OIksUzqBz[3Lf^c>]k`v(V]@c)?S@M|RYU);wS@m^1w5cab;qx|8<y1s.iw99BxTK\\\"p\\\"<\\\"F\\\"#cGqFM]4thyDa4O6O9I~}._DD_:WK|i]M8$F++;qcxm3_2`JrI{DI]C*9B|M>,0ehG>dP`nYDRf8[7iS*g7bu1php/lHB#-qnXQ(s.@*):Jz@#q^,l\\\"Zfy\\\";QX\\\"aYH\\\"m\\\"@D|g{kR@T]H*N)6nA(lC08)tmcB9/66e5:{f:OnFc!W@*f.Y?ri7ke[*O=*-c1x(&$rs&hMS)f2ZkNH;JYYkjEO%7<K`Jot/-6|!O}&.3Rf*yuvg{lg-[;93YJ.kIw /RGM>&c5Cj6y )*}_Z$mM=PdBuli%\\\"Gd&(>D7z[gp\"}"
+}

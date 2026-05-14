@@ -1,0 +1,28 @@
+{
+  "id": "har-292",
+  "url": "https://www.bestbuy.com/gateway/graphql",
+  "status": 200,
+  "headers": {
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://www.bestbuy.com",
+    "akamai-grn": "0.e73dd717.1778777882.18f8bc34",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "content-encoding": "br",
+    "content-length": "1122",
+    "content-type": "application/graphql-response+json; charset=utf-8",
+    "date": "Thu, 14 May 2026 16:58:02 GMT",
+    "expires": "Thu, 14 May 2026 16:58:02 GMT",
+    "gatewaystatus": "200",
+    "pragma": "no-cache",
+    "proxied": "True",
+    "referrer-policy": "no-referrer",
+    "service-response-time": "35",
+    "spstatus": "200",
+    "strict-transport-security": "max-age=15768000",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "0"
+  },
+  "body": "{\"data\":{\"productBySkuId\":{\"skuId\":\"6576719\",\"buyingOptions\":[{\"__typename\":\"InboundBuyingOption\",\"pdpUrl\":\"https://www.bestbuy.com/product/dell-inspiron-14-14-2k-2-in-1-touchscreen-laptop-amd-ryzen-5-8640hs-2023-8gb-memory-512-gb-storage-midnight-blue/J3K4L6JSFL/sku/6576719\",\"type\":\"New\"}],\"termLength\":null,\"name\":{\"short\":\"Dell - Inspiron 14 - 14\\\" 2K 2-in-1 Touchscreen Laptop - AMD Ryzen 5 8640HS 2023 - 8GB Memory - 512 GB Storage - Midnight Blue\",\"__typename\":\"ProductName\"},\"primaryImage\":{\"piscesHref\":\"https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6576/6576719_sd.jpg\",\"__typename\":\"ProductImage\"},\"price\":{\"__typename\":\"ItemPrice\",\"showTotalSavings\":true,\"totalSavings\":182,\"totalSavingsPercent\":24,\"totalPaidMemberSavings\":0,\"totalNonPaidMemberSavings\":182,\"preferredBadging\":\"Clearance\",\"puckDisplayMessage\":\"Clearance\",\"puckMessageURL\":null,\"dealExpirationTimeStamp\":null,\"restrictedPriceDisplayMessage\":null,\"displayableCustomerPrice\":547.99,\"displayableRegularPrice\":729.99,\"icrCode\":null,\"isEcoRebateEligible\":false,\"heroRenderPriceOptions\":\"FINANCE_OPTIONS\",\"openBoxPrice\":null,\"openBoxSavings\":null,\"openBoxCondition\":null,\"lowestOpenboxPrice\":null,\"showLeasingOption\":true,\"connectionType\":\"3\",\"skuId\":\"6576719\",\"regularPriceMessageType\":\"REG\",\"subscriptionSummary\":null,\"paymentOptions\":[{\"__typename\":\"ItemPricePaymentOption\",\"numberOfInstallments\":8,\"installmentAmount\":68.5,\"installmentServiceFee\":0.5,\"vendor\":\"zip\",\"isDisplayable\":true,\"type\":\"BNPL\"}],\"isBbyCardMember\":null,\"financeOption\":{\"__typename\":\"ItemPriceFinanceOption\",\"financeTerm\":12,\"monthlyPayment\":45.67,\"offerId\":\"384913\",\"planType\":\"Deferred\",\"rate\":0,\"totalCost\":547.99,\"totalCostIncludingTax\":547.99},\"mobileContracts\":null,\"giftSkus\":[{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"735933\",\"parentSkus\":null,\"quantity\":1,\"savings\":0.01,\"skuId\":\"6549173\"},{\"__typename\":\"ItemPriceGiftSku\",\"brand\":null,\"isGiftCard\":null,\"isRequiredWithOffer\":false,\"offerId\":\"479882\",\"parentSkus\":null,\"quantity\":1,\"savings\":0,\"skuId\":\"6410932\"}],\"priceWithCart\":null,\"customerSelectedDiscountsAvailable\":null,\"spendAndGetCabosAvailable\":null,\"tieredOffersTracking\":null,\"whatIfPrice\":null},\"offers\":{\"__typename\":\"SkuOffersConnection\",\"offers\":[{\"__typename\":\"SkuOffer\",\"hotOffer\":true,\"offerId\":\"759129\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"802125\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"802121\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"815548\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"821378\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"867508\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"885476\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"885478\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"885481\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false},{\"__typename\":\"SkuOffer\",\"hotOffer\":false,\"offerId\":\"885482\",\"offerType\":\"PWP Global\",\"complexMemberOffer\":false}]},\"__typename\":\"Product\",\"openBoxCondition\":null}}}\n"
+}
