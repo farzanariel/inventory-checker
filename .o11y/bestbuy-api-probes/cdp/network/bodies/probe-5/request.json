@@ -1,0 +1,9 @@
+{
+  "id": "probe-5",
+  "url": "https://api.bestbuy.com/beta/products/6674708/openBox?apiKey=DEMO_KEY",
+  "method": "GET",
+  "headers": {
+    "accept": "application/json"
+  },
+  "body": null
+}

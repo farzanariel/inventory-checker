@@ -1,0 +1,9 @@
+{
+  "id": "probe-4",
+  "url": "https://api.bestbuy.com/v1/products/6674708/alsoViewed?apiKey=DEMO_KEY",
+  "method": "GET",
+  "headers": {
+    "accept": "application/json"
+  },
+  "body": null
+}

@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: Best Buy Product API probes
+  version: 0.1.0-discovered
+  description: 'Spec discovered from a browser-trace capture by the browser-to-api skill. Inductive, not contractual — see `report.md` and `x-confidence` extensions for caveats.'
+servers:
+  - url: 'https://api.bestbuy.com'
+paths:
+  /v1/products/6674708.json:
+    get:
+      summary: GET /v1/products/6674708.json
+      operationId: get_v1_products_6674708_json
+      parameters:
+        - name: show
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/6674708json'
+      x-confidence:
+        samples: 1
+        statusCodes:
+          - 403
+        normalizationFlags:
+          - single-sample
+          - single-status
+        confidence: low
+      x-sample-count: 1
+      x-origin: 'https://api.bestbuy.com'
+  '/v1/products(sku=6674708)':
+    get:
+      summary: 'GET /v1/products(sku=6674708)'
+      operationId: get_v1_products_sku_6674708_
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: show
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/6674708json'
+      x-confidence:
+        samples: 1
+        statusCodes:
+          - 403
+        normalizationFlags:
+          - single-sample
+          - single-status
+        confidence: low
+      x-sample-count: 1
+      x-origin: 'https://api.bestbuy.com'
+  '/v1/products/{id}/stores.json':
+    get:
+      summary: 'GET /v1/products/{id}/stores.json'
+      operationId: get_v1_products_id_stores_json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: postalCode
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/6674708json'
+      x-confidence:
+        samples: 1
+        statusCodes:
+          - 403
+        normalizationFlags:
+          - single-sample
+          - single-status
+        confidence: low
+      x-sample-count: 1
+      x-origin: 'https://api.bestbuy.com'
+  '/v1/products/{id}/alsoViewed':
+    get:
+      summary: 'GET /v1/products/{id}/alsoViewed'
+      operationId: get_v1_products_id_alsoViewed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/6674708json'
+      x-confidence:
+        samples: 1
+        statusCodes:
+          - 403
+        normalizationFlags:
+          - single-sample
+          - single-status
+        confidence: low
+      x-sample-count: 1
+      x-origin: 'https://api.bestbuy.com'
+  '/beta/products/{id}/openBox':
+    get:
+      summary: 'GET /beta/products/{id}/openBox'
+      operationId: get_beta_products_id_openBox
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/6674708json'
+      x-confidence:
+        samples: 1
+        statusCodes:
+          - 403
+        normalizationFlags:
+          - single-sample
+          - single-status
+        confidence: low
+      x-sample-count: 1
+      x-origin: 'https://api.bestbuy.com'
+components:
+  schemas:
+    6674708json:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+      required:
+        - errorCode
+        - errorMessage

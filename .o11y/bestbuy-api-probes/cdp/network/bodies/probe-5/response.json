@@ -1,0 +1,12 @@
+{
+  "id": "probe-5",
+  "url": "https://api.bestbuy.com/beta/products/6674708/openBox?apiKey=DEMO_KEY",
+  "status": 403,
+  "headers": {
+    "content-type": "application/json",
+    "date": "Thu, 14 May 2026 16:41:56 GMT",
+    "content-length": "100",
+    "connection": "keep-alive"
+  },
+  "body": "\n            {\"errorCode\":\"403\", \"errorMessage\":\"We were unable to validate your API Key.\"}\n        "
+}

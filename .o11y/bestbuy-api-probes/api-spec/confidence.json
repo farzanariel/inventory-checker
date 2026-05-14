@@ -1,0 +1,79 @@
+{
+  "endpoints": [
+    {
+      "key": "GET https://api.bestbuy.com/v1/products/6674708.json",
+      "samples": 1,
+      "statusCodes": [
+        403
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://api.bestbuy.com/v1/products(sku=6674708)",
+      "samples": 1,
+      "statusCodes": [
+        403
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://api.bestbuy.com/v1/products/{id}/stores.json",
+      "samples": 1,
+      "statusCodes": [
+        403
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://api.bestbuy.com/v1/products/{id}/alsoViewed",
+      "samples": 1,
+      "statusCodes": [
+        403
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://api.bestbuy.com/beta/products/{id}/openBox",
+      "samples": 1,
+      "statusCodes": [
+        403
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    }
+  ]
+}
