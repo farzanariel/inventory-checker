@@ -153,6 +153,11 @@ export interface ResolveOptions {
   fetchImpl?: typeof fetch;
   /** Per-request timeout in ms (default 10s). */
   timeoutMs?: number;
+  /** Server-side fallback for Best Buy ad/landing pages blocked by fetch. */
+  landingPageResolver?: (
+    url: string,
+    timeoutMs: number,
+  ) => Promise<{ html: string; finalUrl: string } | null>;
 }
 
 /**
@@ -211,6 +216,16 @@ export async function resolveSkuFromInput(
   // 4s keeps the dialog snappy while still leaving margin for a slow but real
   // response if BB ever stops blocking us.
   const timeoutMs = options.timeoutMs ?? 4_000;
+  const resolveViaLandingPage = async () => {
+    const proxyResult = options.landingPageResolver
+      ? await options.landingPageResolver(trimmed, timeoutMs)
+      : null;
+    if (!proxyResult) return null;
+    const finalUrlParse = parseUrlOrSku(proxyResult.finalUrl);
+    if (finalUrlParse.ok) return finalUrlParse;
+    const proxySku = extractSkuFromHtml(proxyResult.html);
+    return proxySku ? { ok: true as const, sku: proxySku } : null;
+  };
 
   let response: Response;
   try {
@@ -220,10 +235,14 @@ export async function resolveSkuFromInput(
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
+    const proxyResolved = await resolveViaLandingPage();
+    if (proxyResolved) return proxyResolved;
     return { ok: false, error: AD_URL_RECOVERY_HINT };
   }
 
   if (!response.ok) {
+    const proxyResolved = await resolveViaLandingPage();
+    if (proxyResolved) return proxyResolved;
     return { ok: false, error: AD_URL_RECOVERY_HINT };
   }
 
@@ -242,6 +261,9 @@ export async function resolveSkuFromInput(
 
   const sku = extractSkuFromHtml(html);
   if (sku) return { ok: true, sku };
+
+  const proxyResolved = await resolveViaLandingPage();
+  if (proxyResolved) return proxyResolved;
 
   return { ok: false, error: AD_URL_RECOVERY_HINT };
 }

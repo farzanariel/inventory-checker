@@ -98,7 +98,12 @@ export type ProductLookup =
       regular_price_cents: number | null;
       button_state: string | null;
       purchasable: boolean | null;
-      stock_source: "priceblocks" | "metadata-only";
+      stock_source:
+        | "priceblocks"
+        | "fulfillment+graphql"
+        | "graphql-metadata"
+        | "fulfillment+metadata"
+        | "metadata-only";
     }
   | {
       retailer: "microcenter";

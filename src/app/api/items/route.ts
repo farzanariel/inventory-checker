@@ -25,6 +25,7 @@ import {
   fetchProductDetailsViaGraphql,
   type BestBuyProductDetails,
 } from "@/lib/bestbuy-graphql";
+import { fetchBestBuyLandingHtmlViaProxy } from "@/lib/bestbuy-landing";
 import { resolveProductInput } from "@/lib/parse-input";
 import { fetchMicroCenterProduct } from "@/lib/microcenter";
 import { itemStores } from "@/lib/db/schema";
@@ -92,7 +93,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const productInput = await resolveProductInput(parsed.data.input);
+  const productInput = await resolveProductInput(parsed.data.input, {
+    landingPageResolver: fetchBestBuyLandingHtmlViaProxy,
+  });
   if (!productInput.ok) {
     return NextResponse.json({ error: productInput.error }, { status: 400 });
   }

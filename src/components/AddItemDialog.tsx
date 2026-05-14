@@ -79,6 +79,15 @@ function isLookupOutOfStock(lookup: ProductLookup): boolean {
   return lookup.purchasable === false;
 }
 
+function stockLabel(lookup: ProductLookup): string {
+  if (lookup.retailer === "microcenter") {
+    return `${lookup.stores.filter((s) => s.in_stock).length}/${lookup.stores.length} stores in stock`;
+  }
+  if (lookup.purchasable === true) return "in stock";
+  if (lookup.purchasable === false) return "out of stock";
+  return "stock pending";
+}
+
 export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
   const isDesktop = useIsDesktop();
   const [input, setInput] = useState("");
@@ -283,11 +292,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                   </span>
                   <span aria-hidden="true">·</span>
                   <span className="truncate">
-                    {lookup.retailer === "microcenter"
-                      ? `${lookup.stores.filter((s) => s.in_stock).length}/${lookup.stores.length} stores in stock`
-                      : lookup.button_state
-                        ? lookup.button_state.replaceAll("_", " ")
-                        : "stock pending"}
+                    {stockLabel(lookup)}
                   </span>
                 </div>
                 {lookup.retailer === "bestbuy" && lookup.stock_source === "metadata-only" ? (

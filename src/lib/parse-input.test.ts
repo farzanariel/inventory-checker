@@ -280,6 +280,23 @@ describe("resolveSkuFromInput", () => {
     expect((r as { ok: false; error: string }).error).toMatch(/browser/i);
   });
 
+  test("ad URL where fetch fails can resolve through landingPageResolver", async () => {
+    const mockFetch = vi.fn().mockRejectedValue(new Error("network error"));
+    const landingPageResolver = vi.fn().mockResolvedValue({
+      finalUrl: "https://www.bestbuy.com/product/dell-plus/J3K4L6XF79",
+      html: '<script>{"skuId":"10936973"}</script>',
+    });
+    const r = await resolveSkuFromInput(
+      "https://www.bestbuy.com/product/dell-plus/J3K4L6XF79",
+      {
+        fetchImpl: mockFetch as unknown as typeof fetch,
+        landingPageResolver,
+      },
+    );
+    expect(r).toEqual({ ok: true, sku: "10936973" });
+    expect(landingPageResolver).toHaveBeenCalledOnce();
+  });
+
   test("non-bestbuy URL returns error without network call", async () => {
     const mockFetch = vi.fn();
     const r = await resolveSkuFromInput("https://amazon.com/dp/B09X7", {

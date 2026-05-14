@@ -10,8 +10,11 @@ import {
   fetchProducts,
   imageUrlForSku,
   isMissingFromPriceBlocks,
+  productUrlForSku,
 } from "@/lib/bestbuy";
 import { fetchProductDetailsViaGraphql } from "@/lib/bestbuy-graphql";
+import { fetchStockViaFulfillment, type FulfillmentItemContext } from "@/lib/bestbuy-tls";
+import { fetchBestBuyLandingHtmlViaProxy } from "@/lib/bestbuy-landing";
 import { resolveProductInput } from "@/lib/parse-input";
 import { fetchMicroCenterProduct } from "@/lib/microcenter";
 
@@ -45,7 +48,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const productInput = await resolveProductInput(parsed.data.input);
+  const productInput = await resolveProductInput(parsed.data.input, {
+    landingPageResolver: fetchBestBuyLandingHtmlViaProxy,
+  });
   if (!productInput.ok) {
     return NextResponse.json({ error: productInput.error }, { status: 400 });
   }
@@ -105,6 +110,21 @@ export async function POST(req: NextRequest) {
     const detailsMap = await fetchProductDetailsViaGraphql([skuParse.sku]);
     const details = detailsMap.get(skuParse.sku);
     if (details?.ok) {
+      const itemBySku = new Map<string, FulfillmentItemContext>([
+        [
+          skuParse.sku,
+          {
+            name: details.name,
+            brand: details.brand ?? null,
+            currentPriceCents: details.currentPriceCents,
+            regularPriceCents: details.regularPriceCents ?? null,
+            productUrl: details.canonicalUrl,
+          },
+        ],
+      ]);
+      const stock = (await fetchStockViaFulfillment([skuParse.sku], itemBySku)).get(
+        skuParse.sku,
+      );
       return NextResponse.json({
         retailer: "bestbuy" as const,
         sku: details.sku,
@@ -114,14 +134,29 @@ export async function POST(req: NextRequest) {
         product_url: details.canonicalUrl,
         current_price_cents: details.currentPriceCents,
         regular_price_cents: details.regularPriceCents ?? null,
-        button_state: null,
-        purchasable: null,
-        stock_source: "graphql-metadata" as const,
+        button_state: stock?.ok ? stock.buttonState : null,
+        purchasable: stock?.ok ? stock.purchasable : null,
+        stock_source: stock?.ok ? ("fulfillment+graphql" as const) : ("graphql-metadata" as const),
       });
     }
 
     const meta = await fetchProductMetaV2(skuParse.sku);
     if (meta.ok) {
+      const itemBySku = new Map<string, FulfillmentItemContext>([
+        [
+          skuParse.sku,
+          {
+            name: meta.name,
+            brand: meta.brand ?? null,
+            currentPriceCents: null,
+            regularPriceCents: null,
+            productUrl: meta.canonicalUrl ?? productUrlForSku(skuParse.sku),
+          },
+        ],
+      ]);
+      const stock = (await fetchStockViaFulfillment([skuParse.sku], itemBySku)).get(
+        skuParse.sku,
+      );
       return NextResponse.json({
         retailer: "bestbuy" as const,
         sku: meta.sku,
@@ -131,9 +166,9 @@ export async function POST(req: NextRequest) {
         product_url: meta.canonicalUrl,
         current_price_cents: null,
         regular_price_cents: null,
-        button_state: null,
-        purchasable: null,
-        stock_source: "metadata-only" as const,
+        button_state: stock?.ok ? stock.buttonState : null,
+        purchasable: stock?.ok ? stock.purchasable : null,
+        stock_source: stock?.ok ? ("fulfillment+metadata" as const) : ("metadata-only" as const),
       });
     }
   }
