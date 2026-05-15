@@ -282,7 +282,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                 <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
                   {lookup.brand ? <span className="truncate">{lookup.brand}</span> : null}
                   {lookup.brand ? <span aria-hidden="true">·</span> : null}
-                  <span className="tabular-nums">
+                  <span className="font-semibold tabular-nums text-foreground">
                     {lookup.current_price_cents !== null
                       ? formatPrice(lookup.current_price_cents)
                       : "—"}

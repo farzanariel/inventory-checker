@@ -234,7 +234,7 @@ export function ItemRow({ item, onChanged }: Props) {
               {dropChip}
             </span>
             {/* Price column — right-aligned fixed width. */}
-            <span className="hidden md:block w-24 text-right font-mono text-sm tabular-nums text-foreground whitespace-nowrap">
+            <span className="hidden md:block w-24 text-right text-sm font-semibold tabular-nums text-foreground whitespace-nowrap">
               {priceLabel}
             </span>
             {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
@@ -249,7 +249,7 @@ export function ItemRow({ item, onChanged }: Props) {
           {/* line 2 — mobile lifts price + status here; desktop keeps SKU + interval + last */}
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
             {/* Mobile-only: price + status appear first on line 2. */}
-            <span className="md:hidden font-mono text-xs tabular-nums text-foreground">
+            <span className="md:hidden text-xs font-semibold tabular-nums text-foreground">
               {priceLabel}
             </span>
             {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
