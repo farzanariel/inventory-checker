@@ -26,7 +26,7 @@
  */
 
 import { execFile as _execFile } from "node:child_process";
-import { promises as fs } from "node:fs";
+import { promises as fs, existsSync } from "node:fs";
 import path from "node:path";
 import type { ProductResult } from "./bestbuy";
 import { interpretStock } from "./bestbuy";
@@ -54,6 +54,11 @@ function execFileAsync(
 // ---------------------------------------------------------------------------
 
 const CURL_BIN = "/usr/local/bin/curl_chrome116";
+
+// True when curl-impersonate isn't installed AND we're not under a unit-test
+// runner (vitest mocks execFile directly, so we must NOT short-circuit there).
+const USE_PLAIN_FETCH_FALLBACK =
+  !process.env.VITEST && !existsSync(CURL_BIN);
 const COOKIE_DIR = path.resolve(process.cwd(), "data", "cookies");
 const COOKIE_FILE = path.join(COOKIE_DIR, "bestbuy-cookies.txt");
 
@@ -139,6 +144,10 @@ async function ensureCookieDir(): Promise<void> {
  * Multiple concurrent callers coalesce into a single warming attempt.
  */
 export async function warmSession(): Promise<string> {
+  // Dev fallback: skip warming when curl-impersonate isn't installed —
+  // plain fetch in curlFetch() doesn't use the cookie jar.
+  if (USE_PLAIN_FETCH_FALLBACK) return COOKIE_FILE;
+
   // Return cached warm cookies if still fresh
   if (warmedCookies && Date.now() - lastWarmedAt < JAR_REFRESH_INTERVAL_MS) {
     return warmedCookies;
@@ -202,6 +211,25 @@ async function curlFetch(
   timeoutMs = 15_000,
   extraArgs: string[] = [],
 ): Promise<CurlResult> {
+  // Dev fallback: plain Node fetch when curl-impersonate isn't installed.
+  // BB endpoints accept it from a residential IP; on the VPS the binary
+  // exists and this branch is skipped.
+  if (USE_PLAIN_FETCH_FALLBACK) {
+    const headers: Record<string, string> = {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    };
+    for (const h of CHROME_HEADERS) {
+      const idx = h.indexOf(":");
+      if (idx > 0) headers[h.slice(0, idx).trim()] = h.slice(idx + 1).trim();
+    }
+    const res = await fetch(url, {
+      headers,
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    return { stdout: await res.text(), stderr: "", statusCode: res.status };
+  }
+
   // Each header must be a separate -H flag; flatMap produces ["-H", "Accept: …", "-H", "Accept-Language: …", …]
   const headerArgs = CHROME_HEADERS.flatMap((h) => ["-H", h]);
 

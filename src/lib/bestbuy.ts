@@ -97,6 +97,12 @@ function summarizeBestBuyError(raw: string): string {
   if (/ProductNotFoundException|product not found/i.test(raw)) {
     return "Best Buy's price API doesn't recognize this SKU. The product page may use Best Buy's newer /product/{code} catalog, which isn't exposed via priceBlocks. Try the SKU shown on the product page itself (labeled \"SKU:\" near the title) — that may differ from the digits in the URL.";
   }
+  // Inactive SKUs (J-code/new catalog items) need to fall through to the v2 +
+  // fulfillment fallback. Keep PRODUCT_SKU_INACTIVE in the summary so that
+  // isMissingFromPriceBlocks() still matches downstream.
+  if (/ProductInactiveException|PRODUCT_SKU_INACTIVE|is not active/i.test(raw)) {
+    return "Best Buy's priceBlocks API marked this SKU inactive (PRODUCT_SKU_INACTIVE) — typical for J-code/new-catalog items. Falling back to v2 metadata + fulfillment lookup.";
+  }
   const statusMatch = raw.match(/status:\s*(\d{3})/i);
   if (statusMatch) {
     return `Best Buy returned HTTP ${statusMatch[1]} for this SKU`;
