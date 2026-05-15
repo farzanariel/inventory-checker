@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * EditItemDialog — change alert config + note for an existing item. Submits
+ * EditItemDialog — change alert config for an existing item. Submits
  * via PATCH /api/items/:id.
  *
  * For MicroCenter items, also fetches per-store alert state via GET
@@ -76,7 +76,6 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
     restockIntervalMin: String(item.restockNotifyIntervalMin),
     notifyMode: (item.stockNotifyMode as "once" | "repeat") ?? "repeat",
   });
-  const [note, setNote] = useState(item.note ?? "");
   const [priceAlert, setPriceAlert] = useState<PriceAlertValues>({
     enabled: item.priceAlertEnabled === 1,
     targetDollars:
@@ -145,7 +144,6 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
         check_interval_min: Number.parseInt(stockAlert.checkIntervalMin, 10) || 1,
         restock_notify_interval_min:
           Number.parseInt(stockAlert.restockIntervalMin, 10) || 10,
-        note: note.trim() || null,
         stock_alert_enabled: stockAlert.enabled,
         stock_notify_mode: stockAlert.notifyMode,
         price_alert_enabled: priceAlert.enabled,
@@ -275,19 +273,6 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           disabled={submitting}
         />
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="edit-note">Note (optional)</Label>
-          <textarea
-            id="edit-note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Optional — shown in alerts"
-            rows={2}
-            className="w-full min-h-[2.5rem] resize-y rounded-lg border border-input bg-input/30 px-2.5 py-1.5 text-base sm:text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            disabled={submitting}
-          />
-        </div>
-
         {error ? (
           <p
             className="text-xs font-mono"
@@ -333,7 +318,7 @@ export function EditItemDialog({ item, open, onOpenChange, onSaved }: Props) {
           <DialogHeader>
             <DialogTitle>Edit item</DialogTitle>
             <DialogDescription>
-              Adjust alerts, intervals, or the note.
+              Adjust alerts or intervals.
             </DialogDescription>
           </DialogHeader>
           {item ? (
@@ -356,7 +341,7 @@ export function EditItemDialog({ item, open, onOpenChange, onSaved }: Props) {
         <DrawerHeader>
           <DrawerTitle>Edit item</DrawerTitle>
           <DrawerDescription>
-            Adjust alerts, intervals, or the note.
+            Adjust alerts or intervals.
           </DrawerDescription>
         </DrawerHeader>
         {item ? (
