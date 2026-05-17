@@ -411,7 +411,8 @@ export async function fetchProductsViaTls(
       }
 
       const buttonState = skuObj.buttonState?.buttonState;
-      const purchasable = skuObj.buttonState?.purchasable;
+      // Best Buy omits `purchasable` for sold-out SKUs — treat absence as false.
+      const purchasable = skuObj.buttonState?.purchasable ?? false;
       const name = skuObj.names?.short;
       const currentPrice = skuObj.price?.currentPrice;
 
