@@ -16,10 +16,10 @@ import { PlusIcon } from "lucide-react";
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { ItemRow } from "@/components/ItemRow";
 import { Button } from "@/components/ui/button";
-import type { Item } from "@/lib/db/schema";
+import type { ItemWithDeals } from "@/lib/api";
 
 type Props = {
-  items: Item[];
+  items: ItemWithDeals[];
   loading: boolean;
   error: string | null;
   onChanged: () => void;

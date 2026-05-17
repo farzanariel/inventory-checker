@@ -29,6 +29,7 @@ import { fetchBestBuyLandingHtmlViaProxy } from "@/lib/bestbuy-landing";
 import { resolveProductInput } from "@/lib/parse-input";
 import { fetchMicroCenterProduct } from "@/lib/microcenter";
 import { itemStores } from "@/lib/db/schema";
+import { attachDealsToItems } from "@/lib/deals-query";
 
 const CreateItemSchema = z
   .object({
@@ -64,7 +65,8 @@ export async function GET() {
   try {
     const db = getDb();
     const rows = db.select().from(items).orderBy(desc(items.createdAt)).all();
-    return NextResponse.json(rows);
+    const enriched = attachDealsToItems(db, rows);
+    return NextResponse.json(enriched);
   } catch (err) {
     console.error("[GET /api/items]", err);
     return NextResponse.json(
@@ -209,23 +211,32 @@ export async function POST(req: NextRequest) {
 
   // ─── Best Buy branch (existing code, sku narrowed from parse) ─────────────
   const skuParse = { sku: productInput.sku };
-  const productResults = await fetchProducts([skuParse.sku]);
+  // SPEC §22 — fire GraphQL alongside priceBlocks to capture UPC. priceBlocks
+  // doesn't expose UPC; we always want it for deal matching. Failure is OK —
+  // the backfill script picks up anything we miss.
+  const [productResults, upcDetailsMap] = await Promise.all([
+    fetchProducts([skuParse.sku]),
+    fetchProductDetailsViaGraphql([skuParse.sku]).catch(
+      () => new Map<string, BestBuyProductDetails>(),
+    ),
+  ]);
   const productResult = productResults.get(skuParse.sku);
   let product: Extract<ProductResult, { ok: true }> | null = productResult?.ok
     ? productResult
     : null;
-  let graphqlDetails: Extract<BestBuyProductDetails, { ok: true }> | null = null;
+  const upcDetails = upcDetailsMap.get(skuParse.sku);
+  let graphqlDetails: Extract<BestBuyProductDetails, { ok: true }> | null =
+    upcDetails?.ok ? upcDetails : null;
 
   // priceBlocks miss → ask GraphQL-over-GET for live metadata, then fall back
   // to the older PDP scrape and v2 metadata.
   // Stock is still refreshed by the worker's fulfillment path.
   let metaFallback: Awaited<ReturnType<typeof fetchProductMetaV2>> | null = null;
   if (!product && productResult && !productResult.ok && isMissingFromPriceBlocks(productResult.error)) {
-    const detailsMap = await fetchProductDetailsViaGraphql([skuParse.sku]);
-    const details = detailsMap.get(skuParse.sku);
-    if (details?.ok) {
-      graphqlDetails = details;
-    } else {
+    // GraphQL was already attempted above (parallel UPC pre-fetch). If it
+    // succeeded `graphqlDetails` is already set; otherwise fall through to
+    // PDP scrape / v2 metadata.
+    if (!graphqlDetails) {
       const pdpMap = await fetchProductsViaPdp([skuParse.sku]);
       const pdpResult = pdpMap.get(skuParse.sku);
       if (pdpResult?.ok) {
@@ -251,6 +262,7 @@ export async function POST(req: NextRequest) {
         imageUrl: product?.imageUrl ?? graphqlDetails?.imageUrl ?? imageUrlForSku(skuParse.sku),
         currentPriceCents: product?.currentPriceCents ?? graphqlDetails?.currentPriceCents ?? null,
         regularPriceCents: product?.regularPriceCents ?? graphqlDetails?.regularPriceCents ?? null,
+        upc: graphqlDetails?.upc ?? null,
         checkIntervalMin,
         restockNotifyIntervalMin,
         enabled: 1,

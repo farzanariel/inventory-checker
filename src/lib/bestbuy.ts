@@ -18,6 +18,9 @@ export type ProductResult =
       buttonState: string;
       purchasable: boolean;
       canonicalUrl: string;
+      // SPEC §22 — only populated by the GraphQL metadata path (Layer 1.6).
+      // priceBlocks doesn't return UPC, so this is undefined for the fast path.
+      upc?: string;
     }
   | { ok: false; sku: string; error: string };
 

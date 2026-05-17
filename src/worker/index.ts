@@ -24,6 +24,7 @@ import {
 } from '@/lib/bestbuy-graphql';
 import { applyCheckResult, applyMicroCenterCheckResult } from '@/lib/checker';
 import { fetchMicroCenterProduct } from '@/lib/microcenter';
+import { pruneDealHistory, syncDeals } from '@/lib/deals-sync';
 import {
   fetchProductsViaTls,
   fetchStockViaFulfillment,
@@ -36,12 +37,15 @@ const MC_CONCURRENCY = 3;
 const TICK_MS = 1000;
 const PRUNE_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 const PRUNE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const DEAL_HISTORY_RETENTION_MS = 90 * 24 * 60 * 60 * 1000; // SPEC §22
+const DEALS_SYNC_INTERVAL_MS = 10 * 60 * 1000; // SPEC §22 — every 10 min
 const MAX_BATCH_SIZE = 25;
 const WORKER_VERSION = process.env.WORKER_VERSION ?? 'dev';
 
 
 let shouldStop = false;
 let lastPruneAt = 0;
+let lastDealsSyncAt = 0;
 let quietTickCount = 0;
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -121,16 +125,40 @@ function updateHeartbeat(
 
 function pruneIfDue(db: ReturnType<typeof getDb>, now: number) {
   if (now - lastPruneAt < PRUNE_INTERVAL_MS) return;
-  const cutoff = now - PRUNE_RETENTION_MS;
-  const res = db.delete(stockEvents).where(lt(stockEvents.ts, cutoff)).run();
+  const stockCutoff = now - PRUNE_RETENTION_MS;
+  const stockRes = db
+    .delete(stockEvents)
+    .where(lt(stockEvents.ts, stockCutoff))
+    .run();
+  const dealHistoryDeleted = pruneDealHistory(db, now - DEAL_HISTORY_RETENTION_MS);
   lastPruneAt = now;
-  // better-sqlite3 RunResult exposes `changes`; drizzle returns the same shape.
-  // We type-narrow via a guarded access.
-  const changes =
-    typeof (res as { changes?: number }).changes === 'number'
-      ? (res as { changes?: number }).changes
+  const stockChanges =
+    typeof (stockRes as { changes?: number }).changes === 'number'
+      ? (stockRes as { changes?: number }).changes
       : 0;
-  console.log(`[worker] prune: deleted=${changes} stock_events older than 7d`);
+  console.log(
+    `[worker] prune: deleted=${stockChanges} stock_events older than 7d, ${dealHistoryDeleted} deal_price_history older than 90d`,
+  );
+}
+
+async function syncDealsIfDue(db: ReturnType<typeof getDb>, now: number) {
+  if (now - lastDealsSyncAt < DEALS_SYNC_INTERVAL_MS) return;
+  lastDealsSyncAt = now;
+  try {
+    const outcome = await syncDeals(db);
+    if (outcome.skipped === 'unchanged') {
+      console.log(`[worker] deals-sync: unchanged (upstream updated=${outcome.upstreamUpdated})`);
+    } else if (outcome.ok) {
+      console.log(
+        `[worker] deals-sync: ok deals=${outcome.dealCount} matched_items=${outcome.matchedItemCount} rows=${outcome.matchedDealRows} history+=${outcome.historyInserts} ms=${outcome.durationMs}`,
+      );
+    } else {
+      console.warn(`[worker] deals-sync: failed error=${outcome.error}`);
+    }
+  } catch (err) {
+    // Don't let a buggy sync take down the polling loop.
+    console.error('[worker] deals-sync threw:', err);
+  }
 }
 
 async function tick(db: ReturnType<typeof getDb>): Promise<void> {
@@ -317,7 +345,9 @@ async function main(): Promise<void> {
   while (!shouldStop) {
     try {
       await tick(db);
-      pruneIfDue(db, Date.now());
+      const nowMs = Date.now();
+      pruneIfDue(db, nowMs);
+      await syncDealsIfDue(db, nowMs);
     } catch (err) {
       console.error('[worker] error:', err);
     }

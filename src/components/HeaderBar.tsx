@@ -13,11 +13,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { BellIcon, MoonIcon, PlusIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { BellIcon, MoonIcon, PlusIcon, RefreshCwIcon, SettingsIcon, SunIcon } from "lucide-react";
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useIsDesktop } from "@/hooks/use-media-query";
-import { testNotification, type HealthResponse } from "@/lib/api";
+import { testNotification, triggerDealsSync, type HealthResponse } from "@/lib/api";
 
 type Props = {
   watchingCount: number;
@@ -42,6 +42,7 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [health, setHealth] = useState<HealthState | null>(null);
   const [testing, setTesting] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [scrolled, setScrolled] = useState(false);
   const isDesktop = useIsDesktop();
@@ -114,6 +115,29 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  async function handleSyncDeals() {
+    if (syncing) return;
+    setSyncing(true);
+    try {
+      const r = await triggerDealsSync();
+      if (r.skipped === "unchanged") {
+        toast.success("Deals: feed unchanged");
+      } else if (r.ok) {
+        toast.success(
+          `Deals synced: ${r.matchedItemCount ?? 0} items matched, ${r.matchedDealRows ?? 0} rows`,
+        );
+        onAdded();
+      } else {
+        toast.error(`Deals sync failed: ${r.error ?? "unknown"}`);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Sync failed";
+      toast.error(message);
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   async function handleTest() {
     if (testing) return;
@@ -212,6 +236,25 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
                 {syncedLabel}
               </span>
             ) : null}
+
+            {/* Deals sync: icon-only on mobile, label on desktop. */}
+            <Button
+              variant="outline"
+              size={isDesktop ? "sm" : "icon-sm"}
+              onClick={handleSyncDeals}
+              disabled={syncing}
+              aria-label="Sync deals now"
+              className="active:scale-[0.97]"
+            >
+              {isDesktop ? (
+                syncing ? "Syncing…" : "Sync deals"
+              ) : (
+                <RefreshCwIcon
+                  className={`size-4 ${syncing ? "animate-spin" : ""}`}
+                  aria-hidden="true"
+                />
+              )}
+            </Button>
 
             {/* Mobile: icon-only test button. Desktop: full label. */}
             <Button

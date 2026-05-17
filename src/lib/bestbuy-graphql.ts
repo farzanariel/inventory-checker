@@ -27,11 +27,15 @@ export type BestBuyProductDetails =
       regularPriceCents?: number;
       imageUrl?: string;
       canonicalUrl: string;
+      // SPEC §22 — present when BB returns a UPC for this SKU (most numeric
+      // SKUs; null for some digital goods / marketplace items).
+      upc?: string;
     }
   | { ok: false; sku: string; error: string };
 
 type GraphqlProduct = {
   skuId?: string;
+  upc?: string | null;
   brand?: string | null;
   name?: { short?: string | null } | null;
   primaryImage?: { piscesHref?: string | null } | null;
@@ -64,6 +68,7 @@ type GraphqlResponse =
 const PRODUCT_QUERY = `query getProduct($skuId: String!, $openBoxCondition: Int) {
   productBySkuId(skuId: $skuId, openBoxCondition: $openBoxCondition) {
     skuId
+    upc
     brand
     buyingOptions {
       pdpUrl
@@ -182,6 +187,10 @@ function parseProductDetails(
     result.imageUrl = imageUrl;
   }
 
+  if (typeof product.upc === "string" && product.upc.length > 0) {
+    result.upc = product.upc;
+  }
+
   return result;
 }
 
@@ -296,6 +305,7 @@ export function mergeProductDetailsIntoResult(
     regularPriceCents: details.regularPriceCents,
     imageUrl: details.imageUrl,
     canonicalUrl: details.canonicalUrl,
+    upc: details.upc ?? stockResult.upc,
   };
 }
 

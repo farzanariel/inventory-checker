@@ -18,13 +18,12 @@ import { PlusIcon } from "lucide-react";
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { HeaderBar } from "@/components/HeaderBar";
 import { ItemList } from "@/components/ItemList";
-import { fetchItems } from "@/lib/api";
-import type { Item } from "@/lib/db/schema";
+import { fetchItems, type ItemWithDeals } from "@/lib/api";
 
 const POLL_INTERVAL_MS = 5_000;
 
 export function Dashboard() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<ItemWithDeals[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);

@@ -42,6 +42,10 @@ export const items = sqliteTable(
     stockNotifyMode: text('stock_notify_mode').notNull().default('repeat'),
     enabled: integer('enabled').notNull().default(1),
     note: text('note'),
+    // SPEC §22 — Best Buy UPC captured at add-time (and via backfill script
+    // for items that predate the column). Used as the primary join key
+    // against the buying-group deals feed.
+    upc: text('upc'),
     // separated status fields (per Codex round-1)
     lastStockStatus: text('last_stock_status').notNull().default('UNKNOWN'),
     lastButtonState: text('last_button_state'),
@@ -80,6 +84,7 @@ export const items = sqliteTable(
     uniqueIndex('idx_items_mc_pid')
       .on(table.mcProductId)
       .where(sql`${table.retailer} = 'microcenter'`),
+    index('idx_items_upc').on(table.upc).where(sql`${table.upc} IS NOT NULL`),
   ],
 );
 
@@ -170,6 +175,99 @@ export const settings = sqliteTable(
   (table) => [check('settings_singleton', sql`${table.id} = 1`)],
 );
 
+/**
+ * deal_groups — directory of buying-group sources from deals.json (SPEC §22).
+ * `source` is the raw upstream key (e.g. "buyformeretail:bfmr.com"); `displayName`
+ * is a humanized label for UI.
+ */
+export const dealGroups = sqliteTable(
+  'deal_groups',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    source: text('source').notNull(),
+    displayName: text('display_name').notNull(),
+    homepageUrl: text('homepage_url'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [uniqueIndex('idx_deal_groups_source').on(table.source)],
+);
+
+/**
+ * item_deals — current snapshot of which groups are buying which items
+ * and at what price (SPEC §22). Replaced wholesale on each successful sync.
+ */
+export const itemDeals = sqliteTable(
+  'item_deals',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    itemId: integer('item_id')
+      .notNull()
+      .references(() => items.id, { onDelete: 'cascade' }),
+    groupId: integer('group_id')
+      .notNull()
+      .references(() => dealGroups.id, { onDelete: 'cascade' }),
+    groupPriceCents: integer('group_price_cents').notNull(),
+    retailPriceCents: integer('retail_price_cents'),
+    isAvailable: integer('is_available').notNull(),
+    dealUrl: text('deal_url').notNull(),
+    dealTitle: text('deal_title'),
+    // 'upc' | 'url' — which join key produced this row
+    matchKind: text('match_kind').notNull(),
+    fetchedAt: integer('fetched_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_item_deals_item_group').on(table.itemId, table.groupId),
+    index('idx_item_deals_item').on(table.itemId),
+  ],
+);
+
+/**
+ * deal_price_history — append-on-change log (SPEC §22.3). A row is inserted
+ * only when (group_price_cents, is_available) differs from the prior row
+ * for the same (item_id, group_id). 90-day retention pruned in worker.
+ */
+export const dealPriceHistory = sqliteTable(
+  'deal_price_history',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    itemId: integer('item_id')
+      .notNull()
+      .references(() => items.id, { onDelete: 'cascade' }),
+    groupId: integer('group_id')
+      .notNull()
+      .references(() => dealGroups.id, { onDelete: 'cascade' }),
+    groupPriceCents: integer('group_price_cents').notNull(),
+    isAvailable: integer('is_available').notNull(),
+    ts: integer('ts').notNull(),
+  },
+  (table) => [
+    index('idx_deal_history_item_group_ts').on(
+      table.itemId,
+      table.groupId,
+      table.ts,
+    ),
+  ],
+);
+
+/**
+ * deals_sync — singleton (id=1) meta row tracking the last successful
+ * fetch from deals.json. `lastUpstreamUpdated` mirrors the feed's top-level
+ * `updated` epoch so we can short-circuit identical pulls.
+ */
+export const dealsSync = sqliteTable(
+  'deals_sync',
+  {
+    id: integer('id').primaryKey(),
+    lastUpstreamUpdated: integer('last_upstream_updated'),
+    lastSyncAt: integer('last_sync_at'),
+    lastSyncOk: integer('last_sync_ok'),
+    lastError: text('last_error'),
+    dealCount: integer('deal_count'),
+    matchedItemCount: integer('matched_item_count'),
+  },
+  (table) => [check('deals_sync_singleton', sql`${table.id} = 1`)],
+);
+
 export type Item = typeof items.$inferSelect;
 export type NewItem = typeof items.$inferInsert;
 export type ItemStore = typeof itemStores.$inferSelect;
@@ -180,3 +278,11 @@ export type WorkerHeartbeat = typeof workerHeartbeat.$inferSelect;
 export type NewWorkerHeartbeat = typeof workerHeartbeat.$inferInsert;
 export type Settings = typeof settings.$inferSelect;
 export type NewSettings = typeof settings.$inferInsert;
+export type DealGroup = typeof dealGroups.$inferSelect;
+export type NewDealGroup = typeof dealGroups.$inferInsert;
+export type ItemDeal = typeof itemDeals.$inferSelect;
+export type NewItemDeal = typeof itemDeals.$inferInsert;
+export type DealPriceHistory = typeof dealPriceHistory.$inferSelect;
+export type NewDealPriceHistory = typeof dealPriceHistory.$inferInsert;
+export type DealsSync = typeof dealsSync.$inferSelect;
+export type NewDealsSync = typeof dealsSync.$inferInsert;

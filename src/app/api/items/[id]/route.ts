@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { getDb } from "@/lib/db/client";
 import { itemStores, items, type Item, type ItemStore } from "@/lib/db/schema";
+import { attachDealsToItems } from "@/lib/deals-query";
 
 const UpdateItemSchema = z
   .object({
@@ -64,15 +65,16 @@ export async function GET(
     if (!item) {
       return NextResponse.json({ error: "Item not found" }, { status: 404 });
     }
+    const [enriched] = attachDealsToItems(db, [item]);
     if (item.retailer === "microcenter") {
       const stores = db
         .select()
         .from(itemStores)
         .where(eq(itemStores.itemId, id))
         .all() as ItemStore[];
-      return NextResponse.json({ ...item, stores });
+      return NextResponse.json({ ...enriched, stores });
     }
-    return NextResponse.json(item);
+    return NextResponse.json(enriched);
   } catch (err) {
     console.error("[GET /api/items/:id]", err);
     return NextResponse.json(

@@ -9,6 +9,7 @@
 
 ## 0. Changelog
 
+- **v11 (2026-05-17):** Added §22 Buying-Group Deals Integration. New worker tick polls `https://tbs.dapper.codes/deals.json` every 10 minutes and joins each upstream offer to local items by UPC (primary) and Best Buy URL (fallback). Probed BB GraphQL on 2026-05-17 and confirmed `productBySkuId.upc` returns real UPCs for numeric SKUs (verified on SKUs `6571369`, `6577383`, `6418601`); J-codes never reach `items.sku` (parse-input always resolves to numeric SKU), so UPC coverage is universal for BB. New migration `0006_deals.sql`: adds `items.upc`; creates `deal_groups`, `item_deals` (current snapshot), `deal_price_history` (90d retention, append-on-change), `deals_sync` (singleton meta). BB GraphQL `PRODUCT_QUERY` extended with `upc`; new items capture UPC on add and existing items get backfilled via `scripts/backfill-upc.ts`. API: `GET /api/items` rows gain `deals[]` + `dealsSummary{groupCount,bestGroupPriceCents,bestSource,lastSyncAt}`; new `GET /api/items/:id/deals/history` and `POST /api/admin/deals/sync`. UI list rows get a compact "N grps · best $X (+/-$Y)" badge and an expandable per-group table with sparklines; items with a UPC but zero matches show a muted "not currently bought" auto-hint. v1 is view-only — no Discord margin alerts (deferred).
 - **v10 (2026-05-14):** Added §6.9 J-code metadata fallback. Best Buy's GraphQL product endpoint accepts `GET /gateway/graphql?operationName=getProduct&variables=...&query=...` through the same warmed `curl_chrome116` path as priceBlocks, avoiding the POST-tier Akamai block. For priceBlocks-missing SKUs, the worker now combines Layer 1.5 fulfillment stock with live GraphQL name/brand/current price/regular price/canonical URL/image. Verified live on the VPS 2026-05-14 for SKU `6674708`: fulfillment+GraphQL returned stock plus full metadata in ~1.7s; metadata-only GraphQL returned in ~452ms.
 - **v9 (2026-05-14):** Added §6.8 J-code stock fallback (Layer 1.5). For SKUs that priceBlocks returns `ProductNotFoundException` against (items migrated to BB's `bsin`/J-code product-family catalog, e.g. SKU `6674708`), the worker now hits `GET /gateway/graphql/fulfillment?variables=...` via the same warmed `curl_chrome116` client used for priceBlocks. The endpoint returns `data.fulfillmentOptions.buttonStates[0].buttonState` — exactly the stock signal we need — without requiring the residential-proxy PDP scrape or the headless browser. Pre-existing behavior preserved: SKUs that fail fulfillment lookup stay in `PENDING_REINDEX`. New env var: `BESTBUY_FULFILLMENT_ZIP` (default `10001`).
 - **v8 (2026-05-13, NEC-XX):** Added §21 MicroCenter adapter — first non-Best-Buy retailer. Endpoint spike proved that one fetch of `/product/{productId}/...?storeid=029` returns all 32 stores' stock in a single `var inventory = [{qoh, storeNumber, storeName, productId}, ...]` block embedded in the PDP HTML, plus the national price in `#pricing[content]` / JSON-LD offers. Price does not vary by store (confirmed by user). MicroCenter sits behind Cloudflare's managed JS challenge; the existing patchright + residential-proxy stack from §20 clears it. §3 amended: "Multi-retailer support" non-goal scoped down to "no general retailer plugin system" — Best Buy + MicroCenter are now in v1 scope. §9 gains an `item_stores` table for per-(item, store) state with a per-row `alert_enabled` flag. `items` gains `retailer` and `mc_product_id` columns. §11 add/edit modal grows a MicroCenter branch with a multi-select store dropdown (all 32 stores discovered on first fetch, all checked by default, with "All / In-store only / Online only / None" quick-actions; the Web Store `029` "Shippable Items" appears as a distinguished entry at the top labelled "Online (Shippable)"). §7 state machine generalizes: for MC items, transitions/reminders key on `(item_id, store_number)` instead of `item_id`, and notification fire is gated by `item_stores.alert_enabled`. §16 tests gain MC PDP parser + per-(item, store) state machine.
@@ -1009,3 +1010,151 @@ New test files:
 - Quantity-threshold alerts ("only alert if qoh ≥ 3").
 - MC's "Open Box" / "Refurbished" inventory — `var inventory` shows new-only.
 - Cart deep-links — MicroCenter has no public add-to-cart URL pattern, unlike BB. Alert links to PDP.
+
+---
+
+## 22. Buying-Group Deals Integration
+
+### 22.1 Goal
+
+Surface per-item buying-group activity directly on the watchlist so a buy/no-buy decision can be made without leaving the app. For each watched item show: which buying groups are currently buying it, the group price each is paying, and the trend of those group prices over time.
+
+Upstream source: `https://tbs.dapper.codes/deals.json` — a single static JSON snapshot (~575 KB, ~400 deals) refreshed by the operator of that site every few minutes. Top-level `updated` epoch lets us short-circuit identical pulls.
+
+### 22.2 Matching strategy
+
+**Probed and confirmed 2026-05-17:** Best Buy's GraphQL gateway exposes `productBySkuId(skuId).upc` and returns real UPC strings for numeric SKUs. Every Best Buy item in our `items` table is keyed on a numeric SKU (J-codes never reach the DB; `parse-input.resolveBestBuyInput` always resolves to a numeric `skuId` before insert), so UPC coverage is universal for BB. MicroCenter UPC capture is deferred — MC items will simply not match in v1.
+
+- **Primary key**: `items.upc` ↔ deal-key UPC. Parse each deals.json composite key (`model:X,upc:Y`) into `{ model, upc }`. Join on UPC where both sides have one.
+- **Secondary fallback**: walk each upstream offer's `productList[].links[]`, extract `bestbuy.com/...sku/{N}` or `?skuId={N}`, join to `items.sku`. Catches the (~10%) of deals whose key omits a UPC but link to a BB product page.
+- Tie-break when both match: UPC wins. URL match is only consulted for items the UPC pass left empty.
+
+### 22.3 Schema deltas (migration `0006_deals.sql`)
+
+```sql
+ALTER TABLE items ADD COLUMN upc TEXT;
+CREATE INDEX idx_items_upc ON items(upc) WHERE upc IS NOT NULL;
+
+CREATE TABLE deal_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source TEXT NOT NULL UNIQUE,        -- e.g. "buyformeretail:bfmr.com"
+  display_name TEXT NOT NULL,         -- e.g. "BuyForMeRetail"
+  homepage_url TEXT,
+  created_at INTEGER NOT NULL
+);
+
+CREATE TABLE item_deals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES deal_groups(id) ON DELETE CASCADE,
+  group_price_cents INTEGER NOT NULL,
+  retail_price_cents INTEGER,
+  is_available INTEGER NOT NULL,      -- 0/1
+  deal_url TEXT NOT NULL,
+  deal_title TEXT,
+  match_kind TEXT NOT NULL,           -- 'upc' | 'url'
+  fetched_at INTEGER NOT NULL,
+  UNIQUE(item_id, group_id)
+);
+CREATE INDEX idx_item_deals_item ON item_deals(item_id);
+
+CREATE TABLE deal_price_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES deal_groups(id) ON DELETE CASCADE,
+  group_price_cents INTEGER NOT NULL,
+  is_available INTEGER NOT NULL,
+  ts INTEGER NOT NULL
+);
+CREATE INDEX idx_deal_history_item_group_ts
+  ON deal_price_history(item_id, group_id, ts DESC);
+
+CREATE TABLE deals_sync (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  last_upstream_updated INTEGER,      -- value of feed's top-level `updated`
+  last_sync_at INTEGER,
+  last_sync_ok INTEGER,               -- 0/1
+  last_error TEXT,
+  deal_count INTEGER,
+  matched_item_count INTEGER
+);
+```
+
+History writes are append-on-change only: insert a row only if `(group_price_cents, is_available)` differs from the most recent history row for that `(item_id, group_id)`. Keeps the table small even with a 10-minute cadence.
+
+### 22.4 Sync pipeline (`src/lib/deals-sync.ts`)
+
+```
+1. GET https://tbs.dapper.codes/deals.json (undici, 15s timeout)
+2. If body.updated === deals_sync.last_upstream_updated -> noop, update last_sync_at
+3. Upsert deal_groups for any new `source` strings (display_name = humanized source).
+4. Build maps:
+     upcToOffers: Map<upc, OfferEntry[]>
+     urlSkuToOffers: Map<sku, OfferEntry[]>   (extracted from productList[].links[])
+5. SELECT id, sku, upc FROM items WHERE retailer='bestbuy';
+6. For each item:
+     offers = upcToOffers.get(upc) ?? urlSkuToOffers.get(sku) ?? []
+     (mark match_kind accordingly)
+7. Single BEGIN IMMEDIATE transaction:
+     - DELETE FROM item_deals WHERE item_id IN (matched_items)
+       AND item_id NOT IN (still-matched items in this pass)
+     - For each (item, source) in current offers:
+         INSERT OR REPLACE INTO item_deals (...)
+         SELECT latest history row for (item, group_id); if price or availability differs, INSERT into deal_price_history
+     - UPDATE deals_sync SET last_upstream_updated=?, last_sync_at=?, last_sync_ok=1, deal_count=?, matched_item_count=?
+8. On any error: UPDATE deals_sync SET last_sync_at=?, last_sync_ok=0, last_error=?
+```
+
+### 22.5 Worker integration
+
+New constants in `worker/index.ts`:
+
+- `DEALS_SYNC_INTERVAL_MS = 10 * 60 * 1000`
+- `DEAL_HISTORY_RETENTION_MS = 90 * 24 * 60 * 60 * 1000`
+
+The main loop calls `syncDealsIfDue()` once per outer iteration (cheap no-op when not due). The hourly prune sweep gains a second DELETE for `deal_price_history` older than 90 days.
+
+The deals sync runs independently of per-item stock polls — it does not advance `next_check_due_at` and does not write `stock_events`. Failures are logged and recorded in `deals_sync.last_error` but do not affect item polling.
+
+### 22.6 UPC capture on add + backfill
+
+- `bestbuy-graphql.ts` `PRODUCT_QUERY` gains `upc` on `productBySkuId`. `BestBuyProductDetails` gains `upc?: string`.
+- `mergeProductDetailsIntoResult` and the new-item insert path in `POST /api/items` persist `upc` when present.
+- One-shot `scripts/backfill-upc.ts`: SELECTs items with `upc IS NULL AND retailer='bestbuy'`, calls `fetchProductDetailsViaGraphql` (already concurrency-capped), UPDATEs in place. Idempotent; safe to re-run.
+
+### 22.7 API surface
+
+- `GET /api/items` — each row gains:
+  ```
+  deals: [{ source, displayName, groupPriceCents, retailPriceCents,
+            isAvailable, dealUrl, dealTitle, matchKind, fetchedAt }]
+  dealsSummary: { groupCount, bestGroupPriceCents, bestSource,
+                  marginCents, lastSyncAt, hasUpc }
+  ```
+  Sorted by `groupPriceCents DESC`. `marginCents = bestGroupPriceCents - currentPriceCents` (null if either side missing).
+- `GET /api/items/:id/deals/history?groupId=N` — array of `{ ts, groupPriceCents, isAvailable }` sorted by ts ASC. If `groupId` omitted: full history across all groups.
+- `POST /api/admin/deals/sync` — force a sync now; returns the same shape as `deals_sync` after the run. Useful for debugging.
+
+### 22.8 UI
+
+- **List row**: small chip after price.
+  - `5 grps · best $250 (+$1)` — green when `marginCents > 0`, red when underwater.
+  - `not currently bought` — muted, when `hasUpc && groupCount === 0`.
+  - `UPC pending` — muted yellow, when `!hasUpc` (item predates backfill or BB returned null).
+- **Expanded row**: table sorted by price desc — group name, group price, retail price, availability dot, "view deal" link, "synced Xm ago". 14-day sparkline per group from `deal_price_history`.
+- **Add-item flow**: after URL lookup, show matched deal preview if any (best-price group + count).
+
+### 22.9 Tests (extend §16)
+
+- `deals-parse-key.test.ts` — parses `model:X,upc:Y`, `upc:Y`, `model:X` (no UPC); handles empty/garbage.
+- `deals-sync.test.ts` — unit tests for the diff/merge logic: no-op when upstream `updated` unchanged; first-sync inserts both snapshot and history; price-only change appends one history row; availability flip appends one history row; identical re-sync appends zero history rows; offer that disappears upstream deletes the snapshot row.
+- `deals-match.test.ts` — UPC match preferred; URL fallback works when UPC absent on either side; tie-break is correct.
+- `api-items-deals.test.ts` — `dealsSummary` math (best price, margin sign, hint flags).
+
+### 22.10 Out of scope (Phase 2 backlog)
+
+- Discord alerts when margin crosses a threshold (deferred per user 2026-05-17 — v1 is view-only).
+- Capturing UPC for MicroCenter items.
+- Cross-retailer matching (HD/Walmart/etc. links from `productList[]`).
+- Group-source health monitoring (which sources go stale).
+- "Profitability score" composite metric across availability + margin + retail vs. group spread.

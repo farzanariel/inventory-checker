@@ -288,6 +288,9 @@ function decideStock(
     productUrl: result.canonicalUrl ?? productUrlForSku(item.sku ?? ""),
     currentPriceCents: result.currentPriceCents,
     regularPriceCents: result.regularPriceCents ?? null,
+    // SPEC §22 — opportunistically capture UPC when the result carries one
+    // (GraphQL metadata path). Never clobber an existing UPC with null.
+    ...(result.upc && !item.upc ? { upc: result.upc } : {}),
     lastButtonState: result.buttonState,
     lastCheckedAt: now,
     consecutiveErrors: 0,

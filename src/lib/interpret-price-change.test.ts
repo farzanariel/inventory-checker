@@ -32,6 +32,7 @@ function makeItem(overrides: Partial<Item> = {}): Item {
     stockNotifyMode: "repeat",
     enabled: 1,
     note: null,
+    upc: null,
     lastStockStatus: "IN_STOCK",
     lastButtonState: "ADD_TO_CART",
     healthStatus: "OK",

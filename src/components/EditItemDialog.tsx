@@ -51,19 +51,20 @@ import {
   type McStoreOption,
 } from "@/components/McStorePicker";
 import { useIsDesktop } from "@/hooks/use-media-query";
-import { fetchItem, patchItem } from "@/lib/api";
-import type { Item, ItemStore } from "@/lib/db/schema";
+import { fetchItem, patchItem, type ItemWithDeals } from "@/lib/api";
+import type { ItemStore } from "@/lib/db/schema";
+import { DealsPanel } from "@/components/DealsPanel";
 import { formatPrice } from "@/lib/format";
 
 type Props = {
-  item: Item | null;
+  item: ItemWithDeals | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved?: () => void;
 };
 
 type FormProps = {
-  item: Item;
+  item: ItemWithDeals;
   onClose: () => void;
   onSaved?: () => void;
   submitSize: "sm" | "lg";
@@ -201,12 +202,15 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           ) : null}
           <div className="min-w-0 flex flex-1 flex-col gap-1">
             <div className="flex min-w-0 items-start gap-2">
-              <span
-                className="block min-w-0 flex-1 truncate text-sm font-medium"
+              <a
+                href={item.productUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block min-w-0 flex-1 truncate text-sm font-medium underline-offset-2 hover:underline"
                 title={item.name ?? ""}
               >
                 {item.name ?? "—"}
-              </span>
+              </a>
               <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
                 {idLabel}
               </span>
@@ -224,14 +228,6 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
                 </>
               ) : null}
             </div>
-            <a
-              href={item.productUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block max-w-full overflow-hidden break-all font-mono text-xs leading-relaxed text-muted-foreground underline underline-offset-2 [overflow-wrap:anywhere] hover:text-foreground"
-            >
-              {item.productUrl}
-            </a>
           </div>
         </div>
 
@@ -257,6 +253,8 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
             />
           ) : null
         ) : null}
+
+        {item.retailer === "bestbuy" ? <DealsPanel item={item} /> : null}
 
         <StockAlertSection
           idPrefix="edit"
@@ -314,7 +312,7 @@ export function EditItemDialog({ item, open, onOpenChange, onSaved }: Props) {
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit item</DialogTitle>
             <DialogDescription>

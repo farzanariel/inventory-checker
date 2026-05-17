@@ -35,8 +35,9 @@ import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
 import { EditItemDialog } from "@/components/EditItemDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { useIsDesktop } from "@/hooks/use-media-query";
-import { checkNow, patchItem } from "@/lib/api";
+import { checkNow, patchItem, type ItemWithDeals } from "@/lib/api";
 import type { Item } from "@/lib/db/schema";
+import { DealsBadge } from "@/components/DealsBadge";
 import {
   formatInterval,
   formatPrice,
@@ -48,7 +49,7 @@ import type {
 } from "@/components/StatusDot";
 
 type Props = {
-  item: Item;
+  item: ItemWithDeals;
   onChanged: () => void;
 };
 
@@ -223,15 +224,20 @@ export function ItemRow({ item, onChanged }: Props) {
           {/* line 1 — spreadsheet-style columns on desktop. Fixed widths so price
               right edges and status labels align vertically across every row. */}
           <div className="flex items-baseline gap-3">
-            <span
-              className="min-w-0 flex-1 truncate text-sm font-medium text-foreground"
+            <a
+              href={item.productUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="min-w-0 flex-1 truncate text-sm font-medium text-foreground underline-offset-2 hover:underline"
               title={item.name ?? `SKU ${item.sku}`}
             >
               {item.name ?? `SKU ${item.sku}`}
-            </span>
-            {/* Chip column — empty slot reserved so price column stays fixed. */}
-            <span className="hidden md:block w-20 text-right whitespace-nowrap overflow-hidden">
+            </a>
+            {/* Best-group-price column — narrow, right-aligned. */}
+            <span className="hidden md:flex items-center justify-end gap-2 w-28 text-right whitespace-nowrap overflow-hidden">
               {dropChip}
+              <DealsBadge summary={item.dealsSummary} />
             </span>
             {/* Price column — right-aligned fixed width. */}
             <span className="hidden md:block w-24 text-right text-sm font-semibold tabular-nums text-foreground whitespace-nowrap">
@@ -239,48 +245,70 @@ export function ItemRow({ item, onChanged }: Props) {
             </span>
             {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
             <span
-              className="hidden md:block w-24 text-right font-mono text-[11px] uppercase tracking-wider whitespace-nowrap"
+              className="hidden md:block w-24 text-right font-mono text-sm uppercase tracking-wider whitespace-nowrap"
               style={{ color: badgeColorVar(item) }}
             >
               {badgeLabel(item)}
             </span>
           </div>
 
-          {/* line 2 — mobile lifts price + status here; desktop keeps SKU + interval + last */}
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
-            {/* Mobile-only: price + status appear first on line 2. */}
-            <span className="md:hidden text-xs font-semibold tabular-nums text-foreground">
-              {priceLabel}
-            </span>
-            {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
-            <span
-              className="md:hidden font-mono text-[10px] uppercase tracking-wider"
-              style={{ color: badgeColorVar(item) }}
-            >
-              {badgeLabel(item)}
-            </span>
-            <span aria-hidden="true" className="md:hidden">·</span>
-
-            <span className="tabular-nums">SKU {item.sku}</span>
-            <span aria-hidden="true">·</span>
-            <span className="tabular-nums">{intervalLabel}</span>
-            <span aria-hidden="true">·</span>
-            {consecutiveErrorsLine ? (
-              <span
-                className="tabular-nums"
-                style={{ color: "var(--color-status-error)" }}
-              >
-                {consecutiveErrorsLine}
+          {/* line 2 — desktop mirrors line-1 column widths so the group count
+              column-aligns under the best-group-price chip. Mobile keeps a
+              flat flex-wrap row with price + status pulled forward. */}
+          <div className="mt-0.5 flex items-baseline gap-3 font-mono text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              {/* Mobile-only: price + status appear first on line 2. */}
+              <span className="md:hidden text-xs font-semibold tabular-nums text-foreground">
+                {priceLabel}
               </span>
-            ) : (
-              <span className="tabular-nums">last {relativeLabel}</span>
-            )}
-            {isPaused ? (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>paused</span>
-              </>
-            ) : null}
+              <span className="md:hidden">
+                <DealsBadge summary={item.dealsSummary} />
+              </span>
+              {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
+              <span
+                className="md:hidden font-mono text-[10px] uppercase tracking-wider"
+                style={{ color: badgeColorVar(item) }}
+              >
+                {badgeLabel(item)}
+              </span>
+              <span aria-hidden="true" className="md:hidden">·</span>
+
+              <span className="tabular-nums">SKU {item.sku}</span>
+              {item.upc ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span className="tabular-nums">UPC {item.upc}</span>
+                </>
+              ) : null}
+              <span aria-hidden="true">·</span>
+              <span className="tabular-nums">{intervalLabel}</span>
+              <span aria-hidden="true">·</span>
+              {consecutiveErrorsLine ? (
+                <span
+                  className="tabular-nums"
+                  style={{ color: "var(--color-status-error)" }}
+                >
+                  {consecutiveErrorsLine}
+                </span>
+              ) : (
+                <span className="tabular-nums">checked {relativeLabel}</span>
+              )}
+              {isPaused ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>paused</span>
+                </>
+              ) : null}
+            </div>
+            {/* Desktop only: column-aligned group-count under the chip column.
+                Empty cells under the BB-price and status columns keep alignment. */}
+            <span className="hidden md:block w-28 text-right tabular-nums whitespace-nowrap">
+              {item.dealsSummary.groupCount > 0
+                ? `${item.dealsSummary.groupCount} group${item.dealsSummary.groupCount === 1 ? "" : "s"}`
+                : ""}
+            </span>
+            <span className="hidden md:block w-24" aria-hidden="true" />
+            <span className="hidden md:block w-24" aria-hidden="true" />
           </div>
         </div>
 

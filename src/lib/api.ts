@@ -5,7 +5,34 @@
 
 import type { Item, ItemStore, StockEvent } from "@/lib/db/schema";
 
-export type ItemWithStores = Item & { stores?: ItemStore[] };
+// SPEC §22 — deals attached server-side by GET /api/items.
+export type ItemDealDto = {
+  source: string;
+  displayName: string;
+  groupPriceCents: number;
+  retailPriceCents: number | null;
+  isAvailable: boolean;
+  dealUrl: string;
+  dealTitle: string | null;
+  matchKind: "upc" | "url";
+  fetchedAt: number;
+};
+
+export type ItemDealsSummary = {
+  groupCount: number;
+  bestGroupPriceCents: number | null;
+  bestSource: string | null;
+  marginCents: number | null;
+  lastSyncAt: number | null;
+  hasUpc: boolean;
+};
+
+export type ItemWithDeals = Item & {
+  deals: ItemDealDto[];
+  dealsSummary: ItemDealsSummary;
+};
+
+export type ItemWithStores = ItemWithDeals & { stores?: ItemStore[] };
 
 async function jsonOrThrow<T>(res: Response): Promise<T> {
   const text = await res.text();
@@ -34,9 +61,54 @@ export type HealthResponse = {
   last_tick_at: number | null;
 };
 
-export async function fetchItems(signal?: AbortSignal): Promise<Item[]> {
+export async function fetchItems(
+  signal?: AbortSignal,
+): Promise<ItemWithDeals[]> {
   const res = await fetch("/api/items", { signal, cache: "no-store" });
-  return jsonOrThrow<Item[]>(res);
+  return jsonOrThrow<ItemWithDeals[]>(res);
+}
+
+export type DealHistoryPoint = {
+  groupId: number;
+  source: string;
+  displayName: string;
+  ts: number;
+  groupPriceCents: number;
+  isAvailable: boolean;
+};
+
+export type DealsSyncOutcome = {
+  ok: boolean;
+  skipped?: "unchanged";
+  upstreamUpdated?: number;
+  dealCount?: number;
+  matchedItemCount?: number;
+  matchedDealRows?: number;
+  historyInserts?: number;
+  error?: string;
+  durationMs: number;
+};
+
+export async function triggerDealsSync(): Promise<DealsSyncOutcome> {
+  const res = await fetch("/api/admin/deals/sync", {
+    method: "POST",
+    cache: "no-store",
+  });
+  return jsonOrThrow<DealsSyncOutcome>(res);
+}
+
+export async function fetchDealHistory(
+  itemId: number,
+  groupId?: number,
+  signal?: AbortSignal,
+): Promise<DealHistoryPoint[]> {
+  const qs = groupId != null ? `?groupId=${groupId}` : "";
+  const res = await fetch(`/api/items/${itemId}/deals/history${qs}`, {
+    signal,
+    cache: "no-store",
+  });
+  const body = await jsonOrThrow<{ points: DealHistoryPoint[] }>(res);
+  return body.points;
 }
 
 export async function fetchHealth(
