@@ -227,6 +227,31 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
                   <span>{item.lastButtonState.replaceAll("_", " ")}</span>
                 </>
               ) : null}
+              {item.condition ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span title="priceBlocks: condition">{item.condition}</span>
+                </>
+              ) : null}
+              {item.seller ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span title={`priceBlocks: sellerInfo (${item.sellerId ?? "—"})`}>
+                    {item.seller}
+                  </span>
+                </>
+              ) : null}
+              {item.saleEndsAt ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="tabular-nums"
+                    title={new Date(item.saleEndsAt).toISOString()}
+                  >
+                    sale ends {new Date(item.saleEndsAt).toLocaleString()}
+                  </span>
+                </>
+              ) : null}
             </div>
           </div>
         </div>
