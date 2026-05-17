@@ -46,6 +46,13 @@ export const items = sqliteTable(
     // for items that predate the column). Used as the primary join key
     // against the buying-group deals feed.
     upc: text('upc'),
+    // SPEC §23 — extras pulled from priceBlocks on every check. All optional;
+    // null when the fetch path didn't surface them (GraphQL metadata or
+    // fulfillment-only paths).
+    condition: text('condition'),
+    seller: text('seller'),
+    sellerId: text('seller_id'),
+    saleEndsAt: integer('sale_ends_at'),
     // separated status fields (per Codex round-1)
     lastStockStatus: text('last_stock_status').notNull().default('UNKNOWN'),
     lastButtonState: text('last_button_state'),

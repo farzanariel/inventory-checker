@@ -29,6 +29,7 @@ import { execFile as _execFile } from "node:child_process";
 import { promises as fs, existsSync } from "node:fs";
 import path from "node:path";
 import type { ProductResult } from "./bestbuy";
+import { extractPriceBlocksExtras } from "./bestbuy";
 import { interpretStock } from "./bestbuy";
 
 /**
@@ -378,8 +379,14 @@ export async function fetchProductsViaTls(
         brand?: { brand?: string };
         buttonState?: { buttonState?: string; purchasable?: boolean; skuId?: string };
         names?: { short?: string };
-        price?: { currentPrice?: number; regularPrice?: number };
+        price?: {
+          currentPrice?: number;
+          regularPrice?: number;
+          priceDomain?: { saleEndDate?: string };
+        };
         url?: string;
+        condition?: string;
+        sellerInfo?: { seller?: string; sellerId?: string };
       };
     }
 
@@ -446,6 +453,8 @@ export async function fetchProductsViaTls(
       if (typeof regularPrice === "number") {
         result.regularPriceCents = Math.round(regularPrice * 100);
       }
+
+      Object.assign(result, extractPriceBlocksExtras(skuObj));
 
       results.set(skuId, result);
     }

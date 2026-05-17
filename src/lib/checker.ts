@@ -291,6 +291,13 @@ function decideStock(
     // SPEC §22 — opportunistically capture UPC when the result carries one
     // (GraphQL metadata path). Never clobber an existing UPC with null.
     ...(result.upc && !item.upc ? { upc: result.upc } : {}),
+    // SPEC §23 — extras from priceBlocks. Always write the column (null
+    // when the path didn't surface it) so transitions like sale-ended
+    // clear stale data instead of going silent.
+    condition: result.condition ?? null,
+    seller: result.seller ?? null,
+    sellerId: result.sellerId ?? null,
+    saleEndsAt: result.saleEndsAt ?? null,
     lastButtonState: result.buttonState,
     lastCheckedAt: now,
     consecutiveErrors: 0,

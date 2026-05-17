@@ -21,6 +21,12 @@ export type ProductResult =
       // SPEC §22 — only populated by the GraphQL metadata path (Layer 1.6).
       // priceBlocks doesn't return UPC, so this is undefined for the fast path.
       upc?: string;
+      // SPEC §23 extras from priceBlocks. Undefined when fetched via paths
+      // that don't surface them (GraphQL metadata, fulfillment-only).
+      condition?: string;          // 'new' | 'openBox' | 'refurbished'
+      seller?: string;             // 'BestBuy' / third-party seller name
+      sellerId?: string;           // 'BBY_OB' for BestBuy.com, else marketplace id
+      saleEndsAt?: number;         // epoch ms; undefined when no sale or no date
     }
   | { ok: false; sku: string; error: string };
 
@@ -85,9 +91,49 @@ interface RawSkuEntry {
     brand?: { brand?: string };
     buttonState?: { buttonState?: string; purchasable?: boolean; skuId?: string };
     names?: { short?: string };
-    price?: { currentPrice?: number; regularPrice?: number };
+    price?: {
+      currentPrice?: number;
+      regularPrice?: number;
+      priceDomain?: { saleEndDate?: string };
+    };
     url?: string;
+    condition?: string;
+    sellerInfo?: { seller?: string; sellerId?: string };
   };
+}
+
+/**
+ * Extract the SPEC §23 extras (condition / seller / saleEndsAt) from a raw
+ * priceBlocks SKU object. Returns only the fields actually present so spread
+ * results don't clobber existing values with undefined.
+ */
+export function extractPriceBlocksExtras(
+  skuObj: NonNullable<RawSkuEntry["sku"]>,
+): {
+  condition?: string;
+  seller?: string;
+  sellerId?: string;
+  saleEndsAt?: number;
+} {
+  const extras: {
+    condition?: string;
+    seller?: string;
+    sellerId?: string;
+    saleEndsAt?: number;
+  } = {};
+  if (typeof skuObj.condition === "string" && skuObj.condition.length > 0) {
+    extras.condition = skuObj.condition;
+  }
+  const seller = skuObj.sellerInfo?.seller;
+  if (typeof seller === "string" && seller.length > 0) extras.seller = seller;
+  const sellerId = skuObj.sellerInfo?.sellerId;
+  if (typeof sellerId === "string" && sellerId.length > 0) extras.sellerId = sellerId;
+  const rawDate = skuObj.price?.priceDomain?.saleEndDate;
+  if (typeof rawDate === "string" && rawDate.length > 0) {
+    const ts = Date.parse(rawDate);
+    if (Number.isFinite(ts)) extras.saleEndsAt = ts;
+  }
+  return extras;
 }
 
 /**
@@ -237,6 +283,8 @@ export async function fetchProducts(
     if (typeof regularPrice === "number") {
       result.regularPriceCents = Math.round(regularPrice * 100);
     }
+
+    Object.assign(result, extractPriceBlocksExtras(skuObj));
 
     results.set(skuId, result);
   }

@@ -173,6 +173,25 @@ export function ItemRow({ item, onChanged }: Props) {
   const intervalLabel = formatInterval(item.checkIntervalMin);
   const relativeLabel = formatRelativeTime(item.lastCheckedAt);
 
+  // SPEC §23 — surface non-default priceBlocks extras as inline chips on
+  // line 2. Skip the common case (condition=new, seller=BBY direct, no sale).
+  const conditionChip =
+    item.condition && item.condition !== "new" ? item.condition : null;
+  const marketplaceChip =
+    item.sellerId && item.sellerId !== "BBY_OB" && item.sellerId !== "BBY"
+      ? item.seller ?? "marketplace"
+      : null;
+  const saleEndsChip = (() => {
+    if (item.saleEndsAt == null) return null;
+    const diffMs = item.saleEndsAt - Date.now();
+    if (diffMs <= 0) return null;
+    const mins = Math.round(diffMs / 60_000);
+    if (mins < 60) return `sale ends ${mins}m`;
+    const hrs = Math.round(mins / 60);
+    if (hrs < 48) return `sale ends ${hrs}h`;
+    return `sale ends ${Math.round(hrs / 24)}d`;
+  })();
+
   return (
     <>
       <div
@@ -293,6 +312,39 @@ export function ItemRow({ item, onChanged }: Props) {
               ) : (
                 <span className="tabular-nums">checked {relativeLabel}</span>
               )}
+              {conditionChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-wider"
+                    style={{ color: "var(--color-status-degraded)" }}
+                  >
+                    {conditionChip}
+                  </span>
+                </>
+              ) : null}
+              {marketplaceChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-wider"
+                    title={`Sold by ${marketplaceChip}, not Best Buy directly`}
+                  >
+                    {marketplaceChip}
+                  </span>
+                </>
+              ) : null}
+              {saleEndsChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="tabular-nums"
+                    style={{ color: "var(--color-status-pricedrop)" }}
+                  >
+                    {saleEndsChip}
+                  </span>
+                </>
+              ) : null}
               {isPaused ? (
                 <>
                   <span aria-hidden="true">·</span>
