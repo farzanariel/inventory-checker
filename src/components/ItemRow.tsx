@@ -87,9 +87,6 @@ export function ItemRow({ item, onChanged }: Props) {
   const isPaused = item.enabled === 0;
   const stockStatus = item.lastStockStatus as StockStatus;
   const healthStatus = item.healthStatus as HealthStatus;
-  const showInStockAccent =
-    item.healthStatus === "OK" && item.lastStockStatus === "IN_STOCK";
-
   // Trigger row-flash whenever lastCheckedAt advances. Avoids first-mount flash.
   // Toggle flashing on for the keyframe duration, then back off — the className
   // restart triggers a fresh animation. We use a state flag (no `key` on the
@@ -210,15 +207,6 @@ export function ItemRow({ item, onChanged }: Props) {
           flashing ? "row-flash" : ""
         } ${isPaused ? "opacity-60" : ""}`}
       >
-        {/* IN STOCK accent — 1px wide × 12px tall, sits flush at left edge. */}
-        {showInStockAccent ? (
-          <span
-            aria-hidden="true"
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-3 w-px"
-            style={{ backgroundColor: "var(--color-status-in)" }}
-          />
-        ) : null}
-
         {/* dot — baseline-aligned with line-1 text via flex items-center on parent */}
         <div className="pl-2 pr-1 self-center">
           <StatusDot
@@ -264,7 +252,7 @@ export function ItemRow({ item, onChanged }: Props) {
             </span>
             {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
             <span
-              className="hidden md:block w-24 text-right font-mono text-sm uppercase tracking-wider whitespace-nowrap"
+              className="hidden md:block w-24 text-right font-mono text-xs uppercase tracking-wider whitespace-nowrap"
               style={{ color: badgeColorVar(item) }}
             >
               {badgeLabel(item)}
@@ -372,7 +360,7 @@ export function ItemRow({ item, onChanged }: Props) {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="size-10 md:size-7 font-mono text-base text-muted-foreground hover:text-foreground md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100 md:aria-expanded:opacity-100 transition-opacity"
+                className="size-10 md:size-9 font-mono text-lg text-muted-foreground hover:text-foreground md:opacity-0 md:scale-75 md:group-hover:opacity-100 md:group-hover:scale-100 md:focus-visible:opacity-100 md:focus-visible:scale-100 md:aria-expanded:opacity-100 md:aria-expanded:scale-100 transition-all duration-200 ease-out"
                 disabled={busy}
                 aria-label="Item actions"
               />

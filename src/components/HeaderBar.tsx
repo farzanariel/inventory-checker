@@ -13,11 +13,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { BellIcon, MoonIcon, PlusIcon, RefreshCwIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { MoonIcon, PlusIcon, RefreshCwIcon, SettingsIcon, SunIcon } from "lucide-react";
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useIsDesktop } from "@/hooks/use-media-query";
-import { testNotification, triggerDealsSync, type HealthResponse } from "@/lib/api";
+import { triggerDealsSync, type HealthResponse } from "@/lib/api";
 
 type Props = {
   watchingCount: number;
@@ -41,11 +40,9 @@ function classifyHealth(res: HealthResponse, httpStatus: number): HealthState {
 export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [health, setHealth] = useState<HealthState | null>(null);
-  const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [scrolled, setScrolled] = useState(false);
-  const isDesktop = useIsDesktop();
   // Read the dark-class on <html> that next-themes manages, so we don't
   // import next-themes statically (which puts it in the SSR bundle and causes
   // a useContext(null) crash during the static-generation build phase).
@@ -139,27 +136,7 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
     }
   }
 
-  async function handleTest() {
-    if (testing) return;
-    setTesting(true);
-    try {
-      const result = await testNotification();
-      if (result.ok) {
-        toast.success("Test notification sent");
-      } else {
-        toast.error(
-          `Test failed${result.error ? `: ${result.error}` : result.status ? ` (${result.status})` : ""}`,
-        );
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Test failed";
-      toast.error(message);
-    } finally {
-      setTesting(false);
-    }
-  }
-
-  // Health colour + label. Compact on mobile (dot only), inline label on desktop.
+// Health colour + label. Compact on mobile (dot only), inline label on desktop.
   const healthMeta = (() => {
     if (!health || health.kind === "ok") return null;
     if (health.kind === "stale") {
@@ -192,7 +169,7 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
           scrolled ? "header-scrolled" : ""
         }`}
       >
-        <div className="mx-auto flex max-w-[960px] min-h-14 items-center gap-3 px-4 py-3 md:gap-4 md:px-6 md:py-4">
+        <div className="mx-auto flex max-w-[1200px] min-h-14 items-center gap-3 px-4 py-3 md:gap-4 md:px-6 md:py-4">
           <div className="flex items-center gap-3 min-w-0">
             <h1 className="text-base font-medium tracking-tight text-foreground">
               <span className="md:hidden">Inventory</span>
@@ -237,43 +214,20 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
               </span>
             ) : null}
 
-            {/* Deals sync: icon-only on mobile, label on desktop. */}
+            {/* Deals sync — icon-only, refresh icon spins while syncing. */}
             <Button
               variant="outline"
-              size={isDesktop ? "sm" : "icon-sm"}
+              size="icon-sm"
               onClick={handleSyncDeals}
               disabled={syncing}
-              aria-label="Sync deals now"
+              aria-label={syncing ? "Syncing deals" : "Sync deals now"}
+              title="Sync deals"
               className="active:scale-[0.97]"
             >
-              {isDesktop ? (
-                syncing ? "Syncing…" : "Sync deals"
-              ) : (
-                <RefreshCwIcon
-                  className={`size-4 ${syncing ? "animate-spin" : ""}`}
-                  aria-hidden="true"
-                />
-              )}
-            </Button>
-
-            {/* Mobile: icon-only test button. Desktop: full label. */}
-            <Button
-              variant="outline"
-              size={isDesktop ? "sm" : "icon-sm"}
-              onClick={handleTest}
-              disabled={testing}
-              aria-label="Test notification"
-              className="active:scale-[0.97]"
-            >
-              {isDesktop ? (
-                testing ? (
-                  "Testing…"
-                ) : (
-                  "Test notification"
-                )
-              ) : (
-                <BellIcon className="size-4" aria-hidden="true" />
-              )}
+              <RefreshCwIcon
+                className={`size-4 ${syncing ? "animate-spin" : ""}`}
+                aria-hidden="true"
+              />
             </Button>
 
             {/* Theme toggle. Renders neutral placeholder pre-mount to avoid hydration flicker. */}

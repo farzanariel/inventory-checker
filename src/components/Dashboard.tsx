@@ -79,7 +79,7 @@ export function Dashboard() {
         lastSyncAt={lastSyncAt}
         onAdded={onChanged}
       />
-      <main className="mx-auto max-w-[960px] px-4 pt-4 pb-32 md:px-6 md:pt-8 md:pb-24">
+      <main className="mx-auto max-w-[1200px] px-4 pt-4 pb-32 md:px-6 md:pt-8 md:pb-24">
         <ItemList
           items={items}
           loading={initialLoading}

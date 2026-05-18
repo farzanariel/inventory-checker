@@ -38,10 +38,14 @@ export function StatusDot({ stockStatus, healthStatus, className }: Props) {
         className="size-2 rounded-full"
         style={
           filled
-            ? { backgroundColor: color }
+            ? {
+                backgroundColor: color,
+                boxShadow: `0 0 6px ${color}, 0 0 10px color-mix(in srgb, ${color} 55%, transparent)`,
+              }
             : {
                 border: `1.5px solid ${color}`,
                 backgroundColor: "transparent",
+                boxShadow: `0 0 5px color-mix(in srgb, ${color} 60%, transparent)`,
               }
         }
       />
