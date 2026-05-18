@@ -89,6 +89,17 @@ export type DealsSyncOutcome = {
   durationMs: number;
 };
 
+export async function reorderItems(
+  order: number[],
+): Promise<{ ok: boolean; updated: number }> {
+  const res = await fetch("/api/items/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  });
+  return jsonOrThrow<{ ok: boolean; updated: number }>(res);
+}
+
 export async function triggerDealsSync(): Promise<DealsSyncOutcome> {
   const res = await fetch("/api/admin/deals/sync", {
     method: "POST",

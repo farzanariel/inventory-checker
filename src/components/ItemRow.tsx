@@ -20,6 +20,9 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { GripVerticalIcon } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -51,6 +54,8 @@ import type {
 type Props = {
   item: ItemWithDeals;
   onChanged: () => void;
+  /** When false, drag handle is rendered as an inert spacer. */
+  draggable?: boolean;
 };
 
 function badgeLabel(item: Item): string {
@@ -75,7 +80,13 @@ function badgeColorVar(item: Item): string {
   return "var(--color-status-out)";
 }
 
-export function ItemRow({ item, onChanged }: Props) {
+export function ItemRow({ item, onChanged, draggable = true }: Props) {
+  const sortable = useSortable({ id: item.id, disabled: !draggable });
+  const dragStyle = {
+    transform: CSS.Transform.toString(sortable.transform),
+    transition: sortable.transition,
+    opacity: sortable.isDragging ? 0.5 : undefined,
+  } as const;
   const [editOpen, setEditOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -192,6 +203,8 @@ export function ItemRow({ item, onChanged }: Props) {
   return (
     <>
       <div
+        ref={sortable.setNodeRef}
+        style={dragStyle}
         tabIndex={0}
         role="button"
         aria-label={`Open details for ${item.name ?? `SKU ${item.sku}`}`}
@@ -207,6 +220,21 @@ export function ItemRow({ item, onChanged }: Props) {
           flashing ? "row-flash" : ""
         } ${isPaused ? "opacity-60" : ""}`}
       >
+        {/* Drag handle — hover-reveal on desktop, hidden when sort is disabled. */}
+        {draggable ? (
+          <button
+            type="button"
+            aria-label="Drag to reorder"
+            onClick={(e) => e.stopPropagation()}
+            {...sortable.attributes}
+            {...sortable.listeners}
+            className="hidden md:flex size-3 items-center justify-center text-muted-foreground/40 hover:text-foreground cursor-grab active:cursor-grabbing md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+          >
+            <GripVerticalIcon className="size-3" aria-hidden="true" />
+          </button>
+        ) : (
+          <div className="hidden md:block w-3" aria-hidden="true" />
+        )}
         {/* dot — baseline-aligned with line-1 text via flex items-center on parent */}
         <div className="pl-2 pr-1 self-center">
           <StatusDot

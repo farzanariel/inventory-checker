@@ -37,6 +37,7 @@ function makeItem(overrides: Partial<Item> = {}): Item {
     seller: null,
     sellerId: null,
     saleEndsAt: null,
+    sortOrder: null,
     lastStockStatus: "IN_STOCK",
     lastButtonState: "ADD_TO_CART",
     healthStatus: "OK",

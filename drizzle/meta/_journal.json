@@ -57,6 +57,13 @@
       "when": 1779584400000,
       "tag": "0007_priceblocks_extras",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1779670800000,
+      "tag": "0008_sort_order",
+      "breakpoints": true
     }
   ]
 }

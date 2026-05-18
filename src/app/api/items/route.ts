@@ -5,7 +5,7 @@
  * schedules the item for immediate pickup by the worker.
  */
 
-import { desc } from "drizzle-orm";
+import { asc, desc, sql } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -64,7 +64,17 @@ function firstZodIssue(err: z.ZodError): string {
 export async function GET() {
   try {
     const db = getDb();
-    const rows = db.select().from(items).orderBy(desc(items.createdAt)).all();
+    // SPEC §24 — pinned (manually-reordered) items first by sort_order ASC,
+    // then everything else by createdAt DESC. NULL sort_order sorts last in ASC.
+    const rows = db
+      .select()
+      .from(items)
+      .orderBy(
+        sql`${items.sortOrder} IS NULL`,
+        asc(items.sortOrder),
+        desc(items.createdAt),
+      )
+      .all();
     const enriched = attachDealsToItems(db, rows);
     return NextResponse.json(enriched);
   } catch (err) {

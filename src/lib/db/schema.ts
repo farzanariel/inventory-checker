@@ -53,6 +53,9 @@ export const items = sqliteTable(
     seller: text('seller'),
     sellerId: text('seller_id'),
     saleEndsAt: integer('sale_ends_at'),
+    // SPEC §24 — manual list ordering. NULL means "not pinned"; the list
+    // falls back to createdAt DESC. Populated only by drag-reorder.
+    sortOrder: integer('sort_order'),
     // separated status fields (per Codex round-1)
     lastStockStatus: text('last_stock_status').notNull().default('UNKNOWN'),
     lastButtonState: text('last_button_state'),
@@ -92,6 +95,9 @@ export const items = sqliteTable(
       .on(table.mcProductId)
       .where(sql`${table.retailer} = 'microcenter'`),
     index('idx_items_upc').on(table.upc).where(sql`${table.upc} IS NOT NULL`),
+    index('idx_items_sort_order')
+      .on(table.sortOrder)
+      .where(sql`${table.sortOrder} IS NOT NULL`),
   ],
 );
 
