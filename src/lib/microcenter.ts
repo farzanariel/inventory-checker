@@ -22,6 +22,7 @@ export type McProductResult =
       name: string;
       brand?: string;
       imageUrl?: string;
+      upc?: string;
       currentPriceCents: number;
       canonicalUrl: string;
       stores: McStoreInventory[];
@@ -59,6 +60,10 @@ interface JsonLdProduct {
   image?: string | string[];
   brand?: { name?: string } | string;
   offers?: { price?: string | number } | Array<{ price?: string | number }>;
+  gtin?: string | number;
+  gtin12?: string | number;
+  gtin13?: string | number;
+  gtin14?: string | number;
 }
 
 function isProductLd(obj: unknown): obj is JsonLdProduct {
@@ -120,6 +125,38 @@ function imageFromLd(ld: JsonLdProduct | null): string | undefined {
   return typeof ld.image === "string" && ld.image.length > 0
     ? ld.image
     : undefined;
+}
+
+function upcFromLd(ld: JsonLdProduct | null): string | undefined {
+  if (!ld) return undefined;
+  // Prefer gtin12 (UPC-A is 12 digits) but accept any gtin*. MC sometimes
+  // ships the value as a number despite schema.org calling for a string.
+  for (const key of ["gtin12", "gtin", "gtin13", "gtin14"] as const) {
+    const v = ld[key];
+    if (typeof v === "string" && /^\d{8,14}$/.test(v.trim())) return v.trim();
+    if (typeof v === "number" && Number.isFinite(v)) {
+      const s = String(v);
+      if (/^\d{8,14}$/.test(s)) return s;
+    }
+  }
+  return undefined;
+}
+
+function upcFromSpecTable(html: string): string | undefined {
+  // Microcenter PDPs render the spec sheet a couple of ways. Cover both:
+  //   <td>UPC</td><td>012345678905</td>            (table layout)
+  //   <dt>UPC</dt><dd>012345678905</dd>            (definition-list layout)
+  // Tolerate whitespace, attributes, and stray markup between the label
+  // cell and its value.
+  const patterns = [
+    /<t[dh][^>]*>\s*UPC\s*<\/t[dh]>\s*<td[^>]*>\s*(\d{8,14})\s*<\/td>/i,
+    /<dt[^>]*>\s*UPC\s*<\/dt>\s*<dd[^>]*>\s*(\d{8,14})\s*<\/dd>/i,
+  ];
+  for (const re of patterns) {
+    const m = html.match(re);
+    if (m) return m[1];
+  }
+  return undefined;
 }
 
 function brandFromLd(ld: JsonLdProduct | null): string | undefined {
@@ -258,6 +295,8 @@ export function parseMicroCenterHtml(
   if (brand) result.brand = brand;
   const imageUrl = imageFromLd(ld);
   if (imageUrl) result.imageUrl = imageUrl;
+  const upc = upcFromLd(ld) ?? upcFromSpecTable(html);
+  if (upc) result.upc = upc;
   return result;
 }
 

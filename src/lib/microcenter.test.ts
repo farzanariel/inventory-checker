@@ -151,6 +151,78 @@ describe("parseMicroCenterHtml — error cases", () => {
   });
 });
 
+describe("parseMicroCenterHtml — UPC extraction", () => {
+  function withInventoryAndPrice(extraHead: string, extraBody = ""): string {
+    return (
+      `<html><head>${extraHead}</head><body>` +
+      `<span id="pricing" content="1.00"></span>` +
+      `<script>var inventory = [{"qoh":0,"storeNumber":"029","storeName":"Shippable Items","productId":1}];</script>` +
+      `${extraBody}</body></html>`
+    );
+  }
+
+  it("extracts UPC from JSON-LD gtin12", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@type": "Product",
+        name: "n",
+        gtin12: "012345678905",
+        offers: { price: "1.00" },
+      })}</script>`,
+    );
+    const r = parseMicroCenterHtml(html, "555555");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBe("012345678905");
+  });
+
+  it("accepts numeric gtin (JSON-LD shipped as number)", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">{"@type":"Product","name":"n","gtin":12345678,"offers":{"price":"1.00"}}</script>`,
+    );
+    const r = parseMicroCenterHtml(html, "555556");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBe("12345678");
+  });
+
+  it("falls back to the spec table when JSON-LD lacks gtin", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@type": "Product",
+        name: "n",
+        offers: { price: "1.00" },
+      })}</script>`,
+      `<table class="specs"><tr><td>UPC</td><td>850049670302</td></tr></table>`,
+    );
+    const r = parseMicroCenterHtml(html, "555557");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBe("850049670302");
+  });
+
+  it("supports definition-list spec layout", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">{"@type":"Product","name":"n","offers":{"price":"1.00"}}</script>`,
+      `<dl><dt>UPC</dt><dd>012345678905</dd></dl>`,
+    );
+    const r = parseMicroCenterHtml(html, "555558");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBe("012345678905");
+  });
+
+  it("omits upc when no source carries one", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">{"@type":"Product","name":"n","offers":{"price":"1.00"}}</script>`,
+    );
+    const r = parseMicroCenterHtml(html, "555559");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBeUndefined();
+  });
+});
+
 describe("microcenterPdpUrl", () => {
   it("returns base URL without storeNumber", () => {
     expect(microcenterPdpUrl("688173")).toBe(

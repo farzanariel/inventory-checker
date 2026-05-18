@@ -1122,6 +1122,8 @@ export async function applyMicroCenterCheckResult(
         brand: result.brand ?? null,
         imageUrl: result.imageUrl ?? null,
         productUrl: result.canonicalUrl,
+        // SPEC §22 — opportunistic UPC capture; never clobber an existing value.
+        ...(result.upc && !fresh.upc ? { upc: result.upc } : {}),
         currentPriceCents: result.currentPriceCents,
         lastStockStatus: rolledStock,
         lastCheckedAt: now,
