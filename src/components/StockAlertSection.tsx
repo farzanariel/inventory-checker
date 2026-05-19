@@ -47,12 +47,17 @@ export function StockAlertSection({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3">
-        <Label
-          htmlFor={headerId}
-          className="cursor-pointer text-sm font-medium"
-        >
-          Stock alerts
-        </Label>
+        <div className="flex flex-col gap-0.5">
+          <Label
+            htmlFor={headerId}
+            className="cursor-pointer text-sm font-medium"
+          >
+            Stock change alerts
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Discord fires when stock flips in either direction.
+          </p>
+        </div>
         <Switch
           id={headerId}
           checked={values.enabled}
@@ -154,7 +159,7 @@ export function StockAlertSection({
                       disabled={disabled || !values.enabled}
                       className="size-4 cursor-pointer accent-foreground"
                     />
-                    Once
+                    Changes only
                   </label>
                   <label className="flex items-center gap-1.5 text-sm select-none">
                     <input
@@ -166,7 +171,7 @@ export function StockAlertSection({
                       disabled={disabled || !values.enabled}
                       className="size-4 cursor-pointer accent-foreground"
                     />
-                    Keep notifying
+                    Changes + reminders
                   </label>
                 </div>
               </fieldset>

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   formatPrice,
   sendCombinedAlert,
+  sendOutOfStockAlert,
   sendPriceDropAlert,
   sendReminder,
   sendRestockAlert,
@@ -256,6 +257,40 @@ describe("sendReminder", () => {
     const body = getCallBody(fetchMock) as PayloadShape;
     expect(body.content).toContain(`🟢 STILL IN STOCK — ${baseCtx.name}`);
     expect(body.content).toContain("Price: $159.99 (was $199.99)");
+    expect(body.content).toContain(baseCtx.cartUrl);
+  });
+});
+
+describe("sendOutOfStockAlert", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    fetchMock = vi.fn().mockResolvedValue(mockOkResponse());
+    vi.stubGlobal("fetch", fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('uses "🔴 OUT OF STOCK —" as the embed title prefix', async () => {
+    await sendOutOfStockAlert(WEBHOOK_URL, {
+      ...baseCtx,
+      buttonState: "SOLD_OUT",
+    });
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.embeds[0].title).toContain("🔴 OUT OF STOCK —");
+    expect(body.embeds[0].title).toContain(baseCtx.name);
+  });
+
+  it("sets content to a readable stock-change preview", async () => {
+    await sendOutOfStockAlert(WEBHOOK_URL, {
+      ...baseCtx,
+      buttonState: "SOLD_OUT",
+    });
+    const body = getCallBody(fetchMock) as PayloadShape;
+    expect(body.content).toContain(`🔴 OUT OF STOCK — ${baseCtx.name}`);
+    expect(body.content).toContain(`SKU: ${baseCtx.sku}`);
     expect(body.content).toContain(baseCtx.cartUrl);
   });
 });

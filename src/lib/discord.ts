@@ -53,6 +53,7 @@ const WEBHOOK_TIMEOUT_MS = 5000;
 const COLOR_GREEN = 5763719;
 const COLOR_AMBER = 16766720;
 const COLOR_BLUE = 3900150;
+const COLOR_RED = 15548997;
 
 export function formatPrice(currentCents: number, regularCents?: number): string {
   const current = formatDollars(currentCents);
@@ -238,6 +239,21 @@ export async function sendReminder(
     "🟢 STILL IN STOCK —",
     "reminder • Tap title to open",
     COLOR_GREEN,
+    username,
+  );
+  return postWebhook(webhookUrl, payload);
+}
+
+export async function sendOutOfStockAlert(
+  webhookUrl: string,
+  ctx: AlertContext,
+  username?: string,
+): Promise<SendResult> {
+  const payload = buildPayload(
+    ctx,
+    "🔴 OUT OF STOCK —",
+    "stock changed • Tap title to open",
+    COLOR_RED,
     username,
   );
   return postWebhook(webhookUrl, payload);

@@ -215,7 +215,7 @@ describe("applyCheckResult — transitions and notifications", () => {
     expect(events[0]?.message).toBe("reminder");
   });
 
-  it("IN_STOCK -> OUT_OF_STOCK: state changes, last_notified_at reset to null, no notification", async () => {
+  it("IN_STOCK -> OUT_OF_STOCK fires stock-change alert", async () => {
     const now = Date.now();
     const item = insertItem(env.db, {
       lastStockStatus: "IN_STOCK",
@@ -230,17 +230,17 @@ describe("applyCheckResult — transitions and notifications", () => {
       { db: env.db, now, webhookUrl: WEBHOOK },
     );
 
-    expect(outcome.notification).toBeNull();
+    expect(outcome.notification).toBe("out_of_stock");
     expect(outcome.transitioned).toBe(true);
 
     const after = reread(env.db, item.id);
     expect(after.lastStockStatus).toBe("OUT_OF_STOCK");
-    expect(after.lastNotifiedAt).toBeNull();
+    expect(after.lastNotifiedAt).toBe(now);
 
     const events = getEvents(env.db, item.id);
-    expect(events).toHaveLength(1);
+    expect(events).toHaveLength(2);
     expect(events[0]?.status).toBe("OUT_OF_STOCK");
-    expect(events.filter((e) => e.status === "NOTIFIED")).toHaveLength(0);
+    expect(events.find((e) => e.status === "NOTIFIED")?.message).toBe("out_of_stock");
   });
 
   it("OUT_OF_STOCK -> OUT_OF_STOCK: no transition, no events", async () => {

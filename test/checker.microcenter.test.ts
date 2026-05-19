@@ -303,7 +303,7 @@ describe("applyMicroCenterCheckResult — per-store transitions", () => {
     expect(second.notification).toBeNull();
   });
 
-  it("IN_STOCK -> OUT_OF_STOCK clears lastNotifiedAt and fires nothing", async () => {
+  it("IN_STOCK -> OUT_OF_STOCK fires stock-change alert", async () => {
     const now = Date.now();
     const item = insertMcItem(env.db, {}, [
       {
@@ -322,12 +322,12 @@ describe("applyMicroCenterCheckResult — per-store transitions", () => {
       { db: env.db, now, webhookUrl: WEBHOOK, suppressWebhook: true },
     );
 
-    expect(outcome.notification).toBeNull();
+    expect(outcome.notification).toBe("out_of_stock");
     expect(outcome.transitioned).toBe(true);
 
     const tustin = rereadStores(env.db, item.id).find((s) => s.storeNumber === "131")!;
     expect(tustin.lastStockStatus).toBe("OUT_OF_STOCK");
-    expect(tustin.lastNotifiedAt).toBeNull();
+    expect(tustin.lastNotifiedAt).toBe(now);
   });
 
   it("Missing store entry in result does not crash; iterated store still transitions", async () => {
@@ -358,7 +358,7 @@ describe("applyMicroCenterCheckResult — per-store transitions", () => {
       { db: env.db, now, webhookUrl: WEBHOOK, suppressWebhook: true },
     );
 
-    expect(outcome.notification).toBeNull();
+    expect(outcome.notification).toBe("out_of_stock");
 
     const stores = rereadStores(env.db, item.id);
     const tustin = stores.find((s) => s.storeNumber === "131")!;

@@ -240,17 +240,18 @@ describe("IN_STOCK → IN_STOCK (reminder logic)", () => {
 });
 
 describe("IN_STOCK → OUT_OF_STOCK", () => {
-  test("resets lastNotifiedAt to null", async () => {
+  test("fires stock-change alert and records lastNotifiedAt", async () => {
     const id = await insertItem(db, {
       lastStockStatus: "IN_STOCK",
       lastNotifiedAt: NOW - 60_000,
     });
-    await applyCheckResult(
+    const outcome = await applyCheckResult(
       id,
       okResult({ buttonState: "SOLD_OUT", purchasable: false }),
       { db, now: NOW, suppressWebhook: true },
     );
-    expect(getItem(db, id).lastNotifiedAt).toBeNull();
+    expect(outcome.notification).toBe("out_of_stock");
+    expect(getItem(db, id).lastNotifiedAt).toBe(NOW);
     expect(getItem(db, id).lastStockStatus).toBe("OUT_OF_STOCK");
   });
 });

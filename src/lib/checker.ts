@@ -25,6 +25,7 @@ import {
 import {
   type PriceDropContext,
   sendCombinedAlert,
+  sendOutOfStockAlert,
   sendPriceDropAlert,
   sendReminder,
   sendRestockAlert,
@@ -35,6 +36,7 @@ import { getSettings } from "./settings";
 export type NotificationKind =
   | "alert"
   | "reminder"
+  | "out_of_stock"
   | "price_drop"
   | "combined"
   | null;
@@ -72,7 +74,7 @@ type DecisionOutput = {
   patch: Partial<Item>;
   newStockStatus: StockStatus;
   transitioned: boolean;
-  stockNotification: "alert" | "reminder" | null;
+  stockNotification: StockNotificationKind;
   priceNotification: "price_drop" | null;
   notification: NotificationKind;
   insideTxnEvent: TxnEvent;
@@ -103,12 +105,14 @@ type PriceAlertDecision = {
 };
 
 function combineNotifications(
-  stockNotification: "alert" | "reminder" | null,
+  stockNotification: StockNotificationKind,
   priceNotification: "price_drop" | null,
 ): NotificationKind {
-  if (stockNotification && priceNotification) return "combined";
+  if (stockNotification === "alert" && priceNotification) return "combined";
   return stockNotification ?? priceNotification;
 }
+
+type StockNotificationKind = "alert" | "reminder" | "out_of_stock" | null;
 
 /**
  * Price-alert decision (SPEC §19 v6 — dual mode).
@@ -401,19 +405,21 @@ function decideStock(
 
   if (prev === "IN_STOCK" && newStockStatus === "OUT_OF_STOCK") {
     patch.lastStockStatus = "OUT_OF_STOCK";
-    patch.lastNotifiedAt = null;
+    patch.lastNotifiedAt = stockAlertsOn ? now : null;
     return {
       patch,
       newStockStatus,
       transitioned: true,
-      stockNotification: null,
+      stockNotification: stockAlertsOn ? "out_of_stock" : null,
       insideTxnEvent: {
         kind: "transition",
         status: "OUT_OF_STOCK",
         buttonState: result.buttonState,
         priceCents: result.currentPriceCents,
       },
-      reason: "IN_STOCK -> OUT_OF_STOCK (reset last_notified_at)",
+      reason: stockAlertsOn
+        ? "IN_STOCK -> OUT_OF_STOCK (stock-change alert)"
+        : "IN_STOCK -> OUT_OF_STOCK (stock alerts off)",
     };
   }
 
@@ -743,6 +749,8 @@ export async function applyCheckResult(
       send = await sendRestockAlert(webhookUrl, ctx, webhookUsername);
     } else if (dec.notification === "reminder") {
       send = await sendReminder(webhookUrl, ctx, webhookUsername);
+    } else if (dec.notification === "out_of_stock") {
+      send = await sendOutOfStockAlert(webhookUrl, ctx, webhookUsername);
     } else if (dec.priceEvent) {
       const priceCtx: PriceDropContext = {
         ...ctx,
@@ -850,14 +858,14 @@ type StorePatch = Partial<ItemStore> & { id: number };
 type StoreDecision = {
   storePatch: StorePatch;
   transitioned: boolean;
-  notification: "alert" | "reminder" | null;
+  notification: StockNotificationKind;
   /** Audit row to insert (transition only — steady states write nothing). */
   event:
     | { storeNumber: string; status: "IN_STOCK" | "OUT_OF_STOCK"; qoh: number }
     | null;
   /** Snapshot needed to fire a webhook AFTER the txn commits. */
   notifyCtx:
-    | { storeNumber: string; storeName: string; qoh: number; kind: "alert" | "reminder" }
+    | { storeNumber: string; storeName: string; qoh: number; kind: Exclude<StockNotificationKind, null> }
     | null;
   reason: string;
 };
@@ -962,14 +970,18 @@ function decideStoreStock(
 
   if (prev === "IN_STOCK" && newStatus === "OUT_OF_STOCK") {
     base.lastStockStatus = "OUT_OF_STOCK";
-    base.lastNotifiedAt = null;
+    base.lastNotifiedAt = stockAlertsOn ? now : null;
     return {
       storePatch: base,
       transitioned: true,
-      notification: null,
+      notification: stockAlertsOn ? "out_of_stock" : null,
       event: evt("OUT_OF_STOCK"),
-      notifyCtx: null,
-      reason: `${store.storeNumber}: IN_STOCK -> OUT_OF_STOCK`,
+      notifyCtx: stockAlertsOn
+        ? { storeNumber: store.storeNumber, storeName: store.storeName, qoh, kind: "out_of_stock" }
+        : null,
+      reason: stockAlertsOn
+        ? `${store.storeNumber}: IN_STOCK -> OUT_OF_STOCK (stock-change alert)`
+        : `${store.storeNumber}: IN_STOCK -> OUT_OF_STOCK (alerts off)`,
     };
   }
 
@@ -1017,7 +1029,7 @@ export async function applyMicroCenterCheckResult(
     storeNumber: string;
     storeName: string;
     qoh: number;
-    kind: "alert" | "reminder";
+    kind: Exclude<StockNotificationKind, null>;
   };
   let updatedItem: Item | null = null;
   let storeDecs: StoreDecision[] = [];
@@ -1184,10 +1196,11 @@ export async function applyMicroCenterCheckResult(
     };
   }
 
-  const aggregateKind: NotificationKind = anyStoreNotif && priceEvent
+  const hasRestockNotif = storeDecs.some((d) => d.notification === "alert");
+  const aggregateKind: NotificationKind = hasRestockNotif && priceEvent
     ? "combined"
     : anyStoreNotif
-      ? (storeDecs.some((d) => d.notification === "alert") ? "alert" : "reminder")
+      ? (storeDecs.find((d) => d.notification != null)?.notification ?? null)
       : "price_drop";
 
   if (suppressWebhook) {
@@ -1211,7 +1224,9 @@ export async function applyMicroCenterCheckResult(
       const ctx = buildMicroCenterAlertContext(item, n.storeNumber, n.storeName, n.qoh);
       const send = n.kind === "alert"
         ? await sendRestockAlert(webhookUrl, ctx, webhookUsername)
-        : await sendReminder(webhookUrl, ctx, webhookUsername);
+        : n.kind === "reminder"
+          ? await sendReminder(webhookUrl, ctx, webhookUsername)
+          : await sendOutOfStockAlert(webhookUrl, ctx, webhookUsername);
       sends.push({
         kind: `${n.kind}:${n.storeNumber}`,
         ok: send.ok,

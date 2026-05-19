@@ -9,6 +9,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   sendRestockAlert,
   sendReminder,
+  sendOutOfStockAlert,
   sendTestAlert,
   sendPriceDropAlert,
   sendCombinedAlert,
@@ -136,6 +137,30 @@ describe("sendReminder", () => {
     await sendReminder(WEBHOOK_URL, baseCtx);
     expect(String((embed().footer as { text: string }).text)).toContain(
       "reminder",
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Out-of-stock alert (§8)
+// ---------------------------------------------------------------------------
+
+describe("sendOutOfStockAlert", () => {
+  test("embed title contains OUT OF STOCK", async () => {
+    await sendOutOfStockAlert(WEBHOOK_URL, {
+      ...baseCtx,
+      buttonState: "SOLD_OUT",
+    });
+    expect(String(embed().title)).toContain("OUT OF STOCK");
+  });
+
+  test("footer labels it as a stock change", async () => {
+    await sendOutOfStockAlert(WEBHOOK_URL, {
+      ...baseCtx,
+      buttonState: "SOLD_OUT",
+    });
+    expect(String((embed().footer as { text: string }).text)).toContain(
+      "stock changed",
     );
   });
 });
