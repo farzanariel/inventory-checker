@@ -61,9 +61,12 @@ describe("sendRestockAlert", () => {
     expect(r.ok).toBe(true);
   });
 
-  test("content is the cart URL (quick-add link)", async () => {
+  test("content is a readable preview with the quick-add link", async () => {
     await sendRestockAlert(WEBHOOK_URL, baseCtx);
-    expect((capturedBody as { content: string }).content).toBe(baseCtx.cartUrl);
+    const content = (capturedBody as { content: string }).content;
+    expect(content).toContain(`🟢 IN STOCK — ${baseCtx.name}`);
+    expect(content).toContain("Price: $159.00 (was $199.00)");
+    expect(content).toContain(baseCtx.cartUrl);
   });
 
   test("embed title starts with IN STOCK", async () => {

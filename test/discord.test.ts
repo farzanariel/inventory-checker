@@ -113,10 +113,13 @@ describe("sendRestockAlert", () => {
     expect(body.embeds[0].title).toContain(baseCtx.name);
   });
 
-  it("sets content equal to ctx.cartUrl", async () => {
+  it("sets content to a readable preview with the cart URL", async () => {
     await sendRestockAlert(WEBHOOK_URL, baseCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.content).toBe(baseCtx.cartUrl);
+    expect(body.content).toContain(`🟢 IN STOCK — ${baseCtx.name}`);
+    expect(body.content).toContain("Price: $159.99 (was $199.99)");
+    expect(body.content).toContain(`SKU: ${baseCtx.sku}`);
+    expect(body.content).toContain(baseCtx.cartUrl);
   });
 
   it("sets embeds[0].thumbnail.url equal to ctx.imageUrl", async () => {
@@ -248,10 +251,12 @@ describe("sendReminder", () => {
     expect(body.embeds[0].footer.text).toBe("reminder • Tap title to open");
   });
 
-  it("preserves the same content (cart URL) as restock alert", async () => {
+  it("sets content to a readable reminder preview with the cart URL", async () => {
     await sendReminder(WEBHOOK_URL, baseCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.content).toBe(baseCtx.cartUrl);
+    expect(body.content).toContain(`🟢 STILL IN STOCK — ${baseCtx.name}`);
+    expect(body.content).toContain("Price: $159.99 (was $199.99)");
+    expect(body.content).toContain(baseCtx.cartUrl);
   });
 });
 
@@ -369,10 +374,12 @@ describe("sendPriceDropAlert", () => {
     expect(sku?.inline).toBe(true);
   });
 
-  it("sets content to ctx.cartUrl for unfurl", async () => {
+  it("sets content to a readable price preview with the cart URL", async () => {
     await sendPriceDropAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.content).toBe(priceCtx.cartUrl);
+    expect(body.content).toContain(`💰 PRICE TARGET HIT — ${priceCtx.name}`);
+    expect(body.content).toContain("Price: $129.99 (target $130.00 · $0.01 below)");
+    expect(body.content).toContain(priceCtx.cartUrl);
   });
 
   it("returns { ok: true, status } on 2xx", async () => {
@@ -427,9 +434,11 @@ describe("sendCombinedAlert", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("sets content to ctx.cartUrl", async () => {
+  it("sets content to a readable combined preview with the cart URL", async () => {
     await sendCombinedAlert(WEBHOOK_URL, priceCtx);
     const body = getCallBody(fetchMock) as PayloadShape;
-    expect(body.content).toBe(priceCtx.cartUrl);
+    expect(body.content).toContain(`🟢💰 IN STOCK + PRICE TARGET HIT — ${priceCtx.name}`);
+    expect(body.content).toContain("Price: $129.99 (target $130.00 · $0.01 below)");
+    expect(body.content).toContain(priceCtx.cartUrl);
   });
 });

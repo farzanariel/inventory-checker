@@ -88,6 +88,10 @@ function formatDropSummary(previousCents: number, currentCents: number): string 
 
 const DEFAULT_USERNAME = "Inventory Monitor";
 
+function buildContent(title: string, lines: string[], link: string): string {
+  return [title, ...lines, link].join("\n");
+}
+
 function buildPayload(
   ctx: AlertContext,
   prefix: string,
@@ -111,7 +115,16 @@ function buildPayload(
 
   return {
     username,
-    content: ctx.cartUrl,
+    content: buildContent(
+      `${prefix} ${ctx.name}`,
+      [
+        `Price: ${formatPrice(ctx.currentPriceCents, ctx.regularPriceCents)}`,
+        isMc
+          ? `Store: ${ctx.storeName ?? "MicroCenter"}${ctx.qoh != null ? ` (${ctx.qoh} available)` : ""}`
+          : `SKU: ${ctx.sku}`,
+      ],
+      ctx.cartUrl,
+    ),
     embeds: [
       {
         title: `${prefix} ${ctx.name}`,
@@ -158,7 +171,16 @@ function buildPriceDropPayload(
   const footerLabel = isTarget ? "target hit" : "price drop";
   return {
     username,
-    content: ctx.cartUrl,
+    content: buildContent(
+      `${combined ? "🟢💰 IN STOCK + " + dropLabel + " —" : "💰 " + dropLabel + " —"} ${ctx.name}`,
+      [
+        `Price: ${priceValue}`,
+        isMc
+          ? `Store: ${ctx.storeName ?? "MicroCenter"}${ctx.qoh != null ? ` (${ctx.qoh} available)` : ""}`
+          : `SKU: ${ctx.sku}`,
+      ],
+      ctx.cartUrl,
+    ),
     embeds: [
       {
         title: `${combined ? "🟢💰 IN STOCK + " + dropLabel + " —" : "💰 " + dropLabel + " —"} ${ctx.name}`,
