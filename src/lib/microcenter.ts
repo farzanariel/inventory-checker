@@ -327,15 +327,13 @@ export async function fetchMicroCenterProduct(
       const msg = err instanceof Error ? err.message : "Network error";
       return { ok: false, mcProductId, error: `fetch failed: ${msg}` };
     }
-    if (response && !response.ok()) {
-      return { ok: false, mcProductId, error: `HTTP ${response.status()}` };
-    }
-
     // Cloudflare serves an interstitial challenge page on first contact and
     // swaps in the real PDP only after its JS challenge solves itself
     // (a few seconds). The real product page is identified by `body#product`;
-    // the challenge page's body has no id. `domcontentloaded` fires on the
-    // challenge page, so wait explicitly for the post-clearance markup.
+    // the challenge page's body has no id. The initial response often comes
+    // back with status 403 carrying the challenge body — don't bail on that,
+    // give the JS challenge a chance to clear into the real PDP.
+    const initialStatus = response?.status();
     const cleared = await page
       .waitForSelector("body#product", { timeout: 30_000 })
       .then(() => true)
@@ -345,7 +343,10 @@ export async function fetchMicroCenterProduct(
       return {
         ok: false,
         mcProductId,
-        error: "Bot detection page (Cloudflare challenge did not clear)",
+        error:
+          initialStatus && initialStatus >= 400
+            ? `HTTP ${initialStatus}`
+            : "Bot detection page (Cloudflare challenge did not clear)",
       };
     }
 
