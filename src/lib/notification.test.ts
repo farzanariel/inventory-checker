@@ -85,8 +85,31 @@ describe("sendRestockAlert", () => {
     const fields = embed().fields as Array<{ name: string; value: string }>;
     const names = fields.map((f) => f.name);
     expect(names).toContain("Price");
+    expect(names).toContain("Retailer");
     expect(names).toContain("SKU");
     expect(names).toContain("State");
+  });
+
+  test("retailer field defaults to Best Buy", async () => {
+    await sendRestockAlert(WEBHOOK_URL, baseCtx);
+    const fields = embed().fields as Array<{ name: string; value: string }>;
+    expect(fields.find((f) => f.name === "Retailer")?.value).toBe("Best Buy");
+  });
+
+  test("Micro Center alerts include retailer, store, and quantity fields", async () => {
+    await sendRestockAlert(WEBHOOK_URL, {
+      ...baseCtx,
+      sku: "708467",
+      retailer: "microcenter",
+      storeName: "TX - Dallas",
+      qoh: 2,
+      productUrl: "https://www.microcenter.com/product/708467/x?storeid=131",
+      cartUrl: "https://www.microcenter.com/product/708467/x?storeid=131",
+    });
+    const fields = embed().fields as Array<{ name: string; value: string }>;
+    expect(fields.find((f) => f.name === "Retailer")?.value).toBe("Micro Center");
+    expect(fields.find((f) => f.name === "Store")?.value).toBe("TX - Dallas");
+    expect(fields.find((f) => f.name === "Qty")?.value).toBe("2");
   });
 
   test("Price field reflects sale price with was-price", async () => {

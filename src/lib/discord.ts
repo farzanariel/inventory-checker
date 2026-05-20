@@ -93,6 +93,10 @@ function buildContent(title: string, lines: string[], link: string): string {
   return [title, ...lines, link].join("\n");
 }
 
+function retailerLabel(retailer?: AlertContext["retailer"]): string {
+  return retailer === "microcenter" ? "Micro Center" : "Best Buy";
+}
+
 function buildPayload(
   ctx: AlertContext,
   prefix: string,
@@ -103,6 +107,7 @@ function buildPayload(
   const isMc = ctx.retailer === "microcenter";
   const fields: EmbedField[] = [
     { name: "Price", value: formatPrice(ctx.currentPriceCents, ctx.regularPriceCents), inline: true },
+    { name: "Retailer", value: retailerLabel(ctx.retailer), inline: true },
     isMc
       ? { name: "Store", value: ctx.storeName ?? "MicroCenter", inline: true }
       : { name: "SKU", value: ctx.sku, inline: true },
@@ -119,6 +124,7 @@ function buildPayload(
     content: buildContent(
       `${prefix} ${ctx.name}`,
       [
+        `Retailer: ${retailerLabel(ctx.retailer)}`,
         `Price: ${formatPrice(ctx.currentPriceCents, ctx.regularPriceCents)}`,
         isMc
           ? `Store: ${ctx.storeName ?? "MicroCenter"}${ctx.qoh != null ? ` (${ctx.qoh} available)` : ""}`
@@ -152,6 +158,7 @@ function buildPriceDropPayload(
   const isMc = ctx.retailer === "microcenter";
   const fields: EmbedField[] = [
     { name: "Price", value: priceValue, inline: true },
+    { name: "Retailer", value: retailerLabel(ctx.retailer), inline: true },
     isMc
       ? { name: "Store", value: ctx.storeName ?? "MicroCenter", inline: true }
       : { name: "SKU", value: ctx.sku, inline: true },
@@ -175,6 +182,7 @@ function buildPriceDropPayload(
     content: buildContent(
       `${combined ? "🟢💰 IN STOCK + " + dropLabel + " —" : "💰 " + dropLabel + " —"} ${ctx.name}`,
       [
+        `Retailer: ${retailerLabel(ctx.retailer)}`,
         `Price: ${priceValue}`,
         isMc
           ? `Store: ${ctx.storeName ?? "MicroCenter"}${ctx.qoh != null ? ` (${ctx.qoh} available)` : ""}`

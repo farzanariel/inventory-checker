@@ -64,24 +64,48 @@ type Props = {
   onAdded?: () => void;
 };
 
+const MC_ONLINE_STORE_NUMBER = "029";
+
+function mcPhysicalStores(stores: ProductLookup & { retailer: "microcenter" }) {
+  return stores.stores.filter((s) => s.store_number !== MC_ONLINE_STORE_NUMBER);
+}
+
+function mcOnlineStore(lookup: ProductLookup | null) {
+  return lookup?.retailer === "microcenter"
+    ? lookup.stores.find((s) => s.store_number === MC_ONLINE_STORE_NUMBER)
+    : undefined;
+}
+
+function mcOnlineLabel(lookup: ProductLookup | null): string | null {
+  const online = mcOnlineStore(lookup);
+  if (!online) return null;
+  if (online.in_stock) {
+    return online.qoh > 0
+      ? `Online (Shippable): ${online.qoh} available`
+      : "Online (Shippable): in stock";
+  }
+  return "Online (Shippable): out of stock";
+}
+
 /**
  * Is the looked-up product currently out of stock? Used to auto-enable the
  * stock-alert toggle (since the user is almost certainly here to be pinged
  * when it restocks).
  *
  * BBY: `purchasable === false` is the canonical OOS signal.
- * MC : no in-stock store across the chain.
+ * MC : no in-stock physical store.
  */
 function isLookupOutOfStock(lookup: ProductLookup): boolean {
   if (lookup.retailer === "microcenter") {
-    return !lookup.stores.some((s) => s.in_stock);
+    return !mcPhysicalStores(lookup).some((s) => s.in_stock);
   }
   return lookup.purchasable === false;
 }
 
 function stockLabel(lookup: ProductLookup): string {
   if (lookup.retailer === "microcenter") {
-    return `${lookup.stores.filter((s) => s.in_stock).length}/${lookup.stores.length} stores in stock`;
+    const physical = mcPhysicalStores(lookup);
+    return `${physical.filter((s) => s.in_stock).length}/${physical.length} stores in stock`;
   }
   if (lookup.purchasable === true) return "in stock";
   if (lookup.purchasable === false) return "out of stock";
@@ -132,7 +156,9 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
         const product = await lookupProduct(trimmed, controller.signal);
         setLookup(product);
         if (product.retailer === "microcenter") {
-          setMcEnabledStores(new Set(product.stores.map((s) => s.store_number)));
+          setMcEnabledStores(
+            new Set(mcPhysicalStores(product).map((s) => s.store_number)),
+          );
         }
         // Smart defaults: flip stock alerts ON if currently OOS.
         if (isLookupOutOfStock(product)) {
@@ -212,13 +238,16 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
 
   const mcOptions: McStoreOption[] | null =
     lookup?.retailer === "microcenter"
-      ? lookup.stores.map((s) => ({
+      ? mcPhysicalStores(lookup).map((s) => ({
           store_number: s.store_number,
           store_name: s.store_name,
           in_stock: s.in_stock,
           qoh: s.qoh,
         }))
       : null;
+  const mcProductUrl =
+    lookup?.retailer === "microcenter" ? lookup.product_url : undefined;
+  const mcOnlineStatus = mcOnlineLabel(lookup);
 
   // Body — same form on every viewport. Wrapper differs.
   const formBody = (
@@ -279,6 +308,11 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                       : `SKU ${lookup.sku}`}
                   </span>
                 </div>
+                {mcOnlineStatus ? (
+                  <div className="font-mono text-[11px] text-muted-foreground">
+                    {mcOnlineStatus}
+                  </div>
+                ) : null}
                 <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
                   {lookup.brand ? <span className="truncate">{lookup.brand}</span> : null}
                   {lookup.brand ? <span aria-hidden="true">·</span> : null}
@@ -323,6 +357,7 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
           stores={mcOptions}
           selected={mcEnabledStores}
           onChange={setMcEnabledStores}
+          productUrl={mcProductUrl}
           disabled={submitting}
         />
       ) : null}

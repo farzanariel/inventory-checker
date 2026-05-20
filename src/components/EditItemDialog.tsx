@@ -37,7 +37,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Label } from "@/components/ui/label";
 import {
   PriceAlertSection,
   type PriceAlertValues,
@@ -69,6 +68,42 @@ type FormProps = {
   onSaved?: () => void;
   submitSize: "sm" | "lg";
 };
+
+const MC_ONLINE_STORE_NUMBER = "029";
+
+function isMcPhysicalStore(store: ItemStore): boolean {
+  return store.storeNumber !== MC_ONLINE_STORE_NUMBER;
+}
+
+function mcOnlineLabel(stores: ItemStore[] | null): string | null {
+  const online = stores?.find((s) => s.storeNumber === MC_ONLINE_STORE_NUMBER);
+  if (!online) return null;
+  if (online.lastStockStatus === "IN_STOCK") {
+    return online.lastQoh != null && online.lastQoh > 0
+      ? `Online (Shippable): ${online.lastQoh} available`
+      : "Online (Shippable): in stock";
+  }
+  return "Online (Shippable): out of stock";
+}
+
+function parsePositiveInt(value: string, fallback: number): number {
+  return Number.parseInt(value, 10) || fallback;
+}
+
+function parseTargetCents(value: string): number | null {
+  const targetDollarsNum = Number.parseFloat(value);
+  return value.trim() !== "" && Number.isFinite(targetDollarsNum)
+    ? Math.round(targetDollarsNum * 100)
+    : null;
+}
+
+function setsEqual(a: Set<string>, b: Set<string>): boolean {
+  if (a.size !== b.size) return false;
+  for (const value of a) {
+    if (!b.has(value)) return false;
+  }
+  return true;
+}
 
 function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
   const [stockAlert, setStockAlert] = useState<StockAlertValues>({
@@ -107,7 +142,9 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
         setMcStores(stores);
         setMcEnabledStores(
           new Set(
-            stores.filter((s) => s.alertEnabled === 1).map((s) => s.storeNumber),
+            stores
+              .filter((s) => s.alertEnabled === 1 && isMcPhysicalStore(s))
+              .map((s) => s.storeNumber),
           ),
         );
       } catch (err) {
@@ -124,7 +161,7 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (submitting) return;
+    if (submitting || !hasChanges) return;
     setError(null);
     if (!stockAlert.enabled && !priceAlert.enabled) {
       setError("Enable stock alerts, price alerts, or both.");
@@ -136,21 +173,21 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
     }
     setSubmitting(true);
     try {
-      const targetDollarsNum = Number.parseFloat(priceAlert.targetDollars);
-      const targetCents =
-        priceAlert.targetDollars.trim() !== "" && Number.isFinite(targetDollarsNum)
-          ? Math.round(targetDollarsNum * 100)
-          : null;
+      const targetCents = parseTargetCents(priceAlert.targetDollars);
       await patchItem(item.id, {
-        check_interval_min: Number.parseInt(stockAlert.checkIntervalMin, 10) || 1,
-        restock_notify_interval_min:
-          Number.parseInt(stockAlert.restockIntervalMin, 10) || 10,
+        check_interval_min: parsePositiveInt(stockAlert.checkIntervalMin, 1),
+        restock_notify_interval_min: parsePositiveInt(
+          stockAlert.restockIntervalMin,
+          10,
+        ),
         stock_alert_enabled: stockAlert.enabled,
         stock_notify_mode: stockAlert.notifyMode,
         price_alert_enabled: priceAlert.enabled,
         target_price_cents: targetCents,
-        price_notify_interval_min:
-          Number.parseInt(priceAlert.notifyIntervalMin, 10) || 60,
+        price_notify_interval_min: parsePositiveInt(
+          priceAlert.notifyIntervalMin,
+          60,
+        ),
         price_notify_mode: priceAlert.notifyMode,
         price_alert_while_oos: priceAlert.whileOos,
         ...(isMc && mcStores
@@ -171,15 +208,37 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
 
   const FooterEl = submitSize === "lg" ? DrawerFooter : DialogFooter;
   const buttonHeight = submitSize === "lg" ? "h-11 active:scale-[0.98]" : "";
+  const originalMcEnabledStores = mcStores
+    ? new Set(
+        mcStores
+          .filter((s) => s.alertEnabled === 1 && isMcPhysicalStore(s))
+          .map((s) => s.storeNumber),
+      )
+    : null;
+  const hasChanges =
+    stockAlert.enabled !== (item.stockAlertEnabled === 1) ||
+    parsePositiveInt(stockAlert.checkIntervalMin, 1) !== item.checkIntervalMin ||
+    parsePositiveInt(stockAlert.restockIntervalMin, 10) !==
+      item.restockNotifyIntervalMin ||
+    stockAlert.notifyMode !== ((item.stockNotifyMode as "once" | "repeat") ?? "repeat") ||
+    priceAlert.enabled !== (item.priceAlertEnabled === 1) ||
+    parseTargetCents(priceAlert.targetDollars) !== item.targetPriceCents ||
+    parsePositiveInt(priceAlert.notifyIntervalMin, 60) !==
+      item.priceNotifyIntervalMin ||
+    priceAlert.notifyMode !== ((item.priceNotifyMode as "once" | "repeat") ?? "repeat") ||
+    priceAlert.whileOos !== (item.priceAlertWhileOos === 1) ||
+    (originalMcEnabledStores != null &&
+      !setsEqual(mcEnabledStores, originalMcEnabledStores));
 
   const mcOptions: McStoreOption[] | null = mcStores
-    ? mcStores.map((s) => ({
+    ? mcStores.filter(isMcPhysicalStore).map((s) => ({
         store_number: s.storeNumber,
         store_name: s.storeName,
         in_stock: s.lastStockStatus === "IN_STOCK",
         qoh: s.lastQoh,
       }))
     : null;
+  const mcOnlineStatus = mcOnlineLabel(mcStores);
 
   const idLabel =
     item.retailer === "microcenter"
@@ -215,6 +274,11 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
                 {idLabel}
               </span>
             </div>
+            {mcOnlineStatus ? (
+              <div className="font-mono text-[11px] text-muted-foreground">
+                {mcOnlineStatus}
+              </div>
+            ) : null}
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-muted-foreground">
               {item.brand ? <span>{item.brand}</span> : null}
               {item.brand ? <span aria-hidden="true">·</span> : null}
@@ -274,6 +338,7 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
               stores={mcOptions}
               selected={mcEnabledStores}
               onChange={setMcEnabledStores}
+              productUrl={item.productUrl}
               disabled={submitting}
             />
           ) : null
@@ -322,7 +387,7 @@ function EditFormBody({ item, onClose, onSaved, submitSize }: FormProps) {
           type="submit"
           size={submitSize}
           className={buttonHeight}
-          disabled={submitting}
+          disabled={submitting || !hasChanges}
         >
           {submitting ? "Saving…" : "Save"}
         </Button>

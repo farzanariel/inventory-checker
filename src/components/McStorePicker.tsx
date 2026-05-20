@@ -3,16 +3,16 @@
 /**
  * MicroCenter per-store alert selector — shared by Add + Edit dialogs.
  *
- * Default state shows the summary line + quick-action chips (All / In-store
- * only / Online only / None). The per-store checkbox list is hidden behind a
+ * Default state shows the summary line + quick-action chips (All / None).
+ * The per-store checkbox list is hidden behind a
  * "Customize per-store" disclosure since the chips cover the common cases.
  *
- * The Web Store ("029" / "Shippable Items") is pinned to the top and
- * relabelled "Online (Shippable)".
+ * Online shipping ("029" / "Shippable Items") is displayed in the product
+ * summary instead of this picker; this control is for physical stores only.
  */
 
 import { useMemo, useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, ExternalLinkIcon } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
 
@@ -27,39 +27,41 @@ type Props = {
   stores: McStoreOption[];
   selected: Set<string>;
   onChange: (next: Set<string>) => void;
+  productUrl?: string;
   disabled?: boolean;
 };
 
-const ONLINE_NUM = "029";
+function microCenterStoreUrl(productUrl: string, storeNumber: string): string {
+  const url = new URL(productUrl);
+  url.searchParams.set("storeid", storeNumber);
+  return url.toString();
+}
 
-export function McStorePicker({ stores, selected, onChange, disabled }: Props) {
+export function McStorePicker({
+  stores,
+  selected,
+  onChange,
+  productUrl,
+  disabled,
+}: Props) {
   const ordered = useMemo(() => {
-    const online = stores.filter((s) => s.store_number === ONLINE_NUM);
-    const physical = stores
-      .filter((s) => s.store_number !== ONLINE_NUM)
+    return stores
       .slice()
-      .sort((a, b) => a.store_name.localeCompare(b.store_name));
-    return [...online, ...physical];
+      .sort((a, b) => {
+        if (a.in_stock !== b.in_stock) return a.in_stock ? -1 : 1;
+        return a.store_name.localeCompare(b.store_name);
+      });
   }, [stores]);
 
   const total = stores.length;
   const sel = selected.size;
-  const physicalNums = stores
-    .filter((s) => s.store_number !== ONLINE_NUM)
-    .map((s) => s.store_number);
 
   const summary =
     sel === 0
       ? "No stores"
       : sel === total
         ? "All stores"
-        : sel === 1 && selected.has(ONLINE_NUM)
-          ? "Online only"
-          : sel === physicalNums.length &&
-              physicalNums.every((n) => selected.has(n)) &&
-              !selected.has(ONLINE_NUM)
-            ? "In-store only"
-            : `${sel} of ${total} stores`;
+        : `${sel} of ${total} stores`;
 
   function toggle(num: string) {
     const next = new Set(selected);
@@ -72,12 +74,6 @@ export function McStorePicker({ stores, selected, onChange, disabled }: Props) {
   }
   function setNone() {
     onChange(new Set());
-  }
-  function setOnlineOnly() {
-    onChange(new Set([ONLINE_NUM]));
-  }
-  function setInStoreOnly() {
-    onChange(new Set(physicalNums));
   }
 
   const [expanded, setExpanded] = useState(false);
@@ -94,22 +90,6 @@ export function McStorePicker({ stores, selected, onChange, disabled }: Props) {
       <div className="flex flex-wrap gap-1.5">
         <button type="button" onClick={setAll} disabled={disabled} className={quickBtn}>
           All
-        </button>
-        <button
-          type="button"
-          onClick={setInStoreOnly}
-          disabled={disabled}
-          className={quickBtn}
-        >
-          In-store only
-        </button>
-        <button
-          type="button"
-          onClick={setOnlineOnly}
-          disabled={disabled}
-          className={quickBtn}
-        >
-          Online only
         </button>
         <button type="button" onClick={setNone} disabled={disabled} className={quickBtn}>
           None
@@ -128,52 +108,80 @@ export function McStorePicker({ stores, selected, onChange, disabled }: Props) {
         />
         {expanded ? "Hide stores" : `Customize per-store (${total})`}
       </button>
-      {expanded ? (
-        <div className="max-h-56 overflow-y-auto rounded-md border border-border bg-background">
-          {ordered.map((s, idx) => {
-            const isOnline = s.store_number === ONLINE_NUM;
-            const checked = selected.has(s.store_number);
-            const label = isOnline ? "Online (Shippable)" : s.store_name;
-            const dotColor = s.in_stock
-              ? "var(--color-status-ok, #22c55e)"
-              : "var(--color-muted-foreground, #888)";
-            return (
-              <label
-                key={s.store_number}
-                className={`flex cursor-pointer items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-accent/40 ${
-                  isOnline && idx === 0 ? "border-b border-border" : ""
-                } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggle(s.store_number)}
-                  disabled={disabled}
-                  className="size-4 shrink-0"
-                />
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: dotColor }}
-                  aria-hidden="true"
-                  title={
-                    s.in_stock
-                      ? s.qoh != null
-                        ? `${s.qoh} in stock`
-                        : "in stock"
-                      : "out of stock"
-                  }
-                />
-                <span className="flex-1 truncate">{label}</span>
-                {s.in_stock && s.qoh != null ? (
-                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground">
-                    qty {s.qoh}
-                  </span>
-                ) : null}
-              </label>
-            );
-          })}
+      <div
+        inert={expanded ? undefined : true}
+        aria-hidden={!expanded}
+        className={`grid transition-[grid-template-rows,opacity,transform] duration-200 ease-out ${
+          expanded
+            ? "grid-rows-[1fr] translate-y-0 opacity-100"
+            : "grid-rows-[0fr] -translate-y-1 opacity-0"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="max-h-56 overflow-y-auto rounded-md border border-border bg-background">
+            {ordered.map((s, idx) => {
+              const checked = selected.has(s.store_number);
+              const label = s.store_name;
+              const storeUrl = productUrl
+                ? microCenterStoreUrl(productUrl, s.store_number)
+                : null;
+              const dotColor = s.in_stock
+                ? "var(--color-status-ok, #22c55e)"
+                : "var(--color-muted-foreground, #888)";
+              return (
+                <label
+                  key={s.store_number}
+                  className={`flex cursor-pointer items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-accent/40 ${
+                    idx > 0 && ordered[idx - 1]?.in_stock !== s.in_stock
+                      ? "border-t border-border"
+                      : ""
+                  } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggle(s.store_number)}
+                    disabled={disabled}
+                    className="size-4 shrink-0"
+                  />
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ background: dotColor }}
+                    aria-hidden="true"
+                    title={
+                      s.in_stock
+                        ? s.qoh != null
+                          ? `${s.qoh} in stock`
+                          : "in stock"
+                        : "out of stock"
+                    }
+                  />
+                  {storeUrl ? (
+                    <a
+                      href={storeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex min-w-0 flex-1 items-center gap-1 truncate underline-offset-2 hover:underline"
+                      title={`${label} store page`}
+                    >
+                      <span className="truncate">{label}</span>
+                      <ExternalLinkIcon className="size-3 shrink-0" aria-hidden="true" />
+                    </a>
+                  ) : (
+                    <span className="flex-1 truncate">{label}</span>
+                  )}
+                  {s.in_stock && s.qoh != null ? (
+                    <span className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground">
+                      qty {s.qoh}
+                    </span>
+                  ) : null}
+                </label>
+              );
+            })}
+          </div>
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }

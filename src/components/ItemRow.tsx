@@ -180,6 +180,10 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
   ) : null;
   const intervalLabel = formatInterval(item.checkIntervalMin);
   const relativeLabel = formatRelativeTime(item.lastCheckedAt);
+  const identifierLabel =
+    item.retailer === "microcenter"
+      ? `MC ${item.mcProductId ?? "?"}`
+      : `SKU ${item.sku}`;
 
   // SPEC §23 — surface non-default priceBlocks extras as inline chips on
   // line 2. Skip the common case (condition=new, seller=BBY direct, no sale).
@@ -259,16 +263,18 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
           {/* line 1 — spreadsheet-style columns on desktop. Fixed widths so price
               right edges and status labels align vertically across every row. */}
           <div className="flex items-baseline gap-3">
-            <a
-              href={item.productUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="min-w-0 flex-1 truncate text-sm font-medium text-foreground underline-offset-2 hover:underline"
-              title={item.name ?? `SKU ${item.sku}`}
-            >
-              {item.name ?? `SKU ${item.sku}`}
-            </a>
+            <div className="min-w-0 flex-1">
+              <a
+                href={item.productUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-block max-w-full truncate text-sm font-medium text-foreground underline-offset-2 hover:underline"
+                title={item.name ?? `SKU ${item.sku}`}
+              >
+                {item.name ?? `SKU ${item.sku}`}
+              </a>
+            </div>
             {/* Best-group-price column — narrow, right-aligned. */}
             <span className="hidden md:flex items-center justify-end gap-2 w-28 text-right whitespace-nowrap overflow-hidden">
               {dropChip}
@@ -308,7 +314,7 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
               </span>
               <span aria-hidden="true" className="md:hidden">·</span>
 
-              <span className="tabular-nums">SKU {item.sku}</span>
+              <span className="tabular-nums">{identifierLabel}</span>
               {item.upc ? (
                 <>
                   <span aria-hidden="true">·</span>
