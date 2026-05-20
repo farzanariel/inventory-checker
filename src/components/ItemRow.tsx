@@ -20,7 +20,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { GripVerticalIcon } from "lucide-react";
+import { GripVerticalIcon, RefreshCwIcon } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -80,6 +80,44 @@ function badgeColorVar(item: Item): string {
   return "var(--color-status-out)";
 }
 
+function StockStatusLabel({
+  item,
+  checking,
+  className,
+}: {
+  item: Item;
+  checking: boolean;
+  className: string;
+}) {
+  return (
+    <span
+      className={`relative inline-grid h-4 min-w-[4.75rem] items-center overflow-hidden font-mono text-xs uppercase tracking-wider whitespace-nowrap ${className}`}
+      aria-live="polite"
+      aria-label={checking ? "Checking stock status" : badgeLabel(item)}
+    >
+      <span
+        className={`justify-self-end transition-[opacity,scale,filter] duration-200 ease-out ${
+          checking ? "scale-95 opacity-0 blur-[2px]" : "scale-100 opacity-100 blur-0"
+        }`}
+        style={{ color: badgeColorVar(item) }}
+        aria-hidden={checking}
+      >
+        {badgeLabel(item)}
+      </span>
+      <span
+        className={`absolute inset-0 flex items-center justify-end gap-1 transition-[opacity,scale,filter] duration-200 ease-out ${
+          checking ? "scale-100 opacity-100 blur-0" : "scale-95 opacity-0 blur-[2px]"
+        }`}
+        style={{ color: "var(--color-status-pricedrop)" }}
+        aria-hidden={!checking}
+      >
+        <RefreshCwIcon className="size-3 animate-spin" aria-hidden="true" />
+        Checking
+      </span>
+    </span>
+  );
+}
+
 export function ItemRow({ item, onChanged, draggable = true }: Props) {
   const sortable = useSortable({ id: item.id, disabled: !draggable });
   const dragStyle = {
@@ -91,13 +129,19 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [checkedItem, setCheckedItem] = useState<Item | null>(null);
   const [flashing, setFlashing] = useState(false);
   const lastCheckedRef = useRef(item.lastCheckedAt);
   const isDesktop = useIsDesktop();
 
   const isPaused = item.enabled === 0;
-  const stockStatus = item.lastStockStatus as StockStatus;
-  const healthStatus = item.healthStatus as HealthStatus;
+  const statusItem =
+    checkedItem != null && checkedItem.lastCheckedAt !== item.lastCheckedAt
+      ? checkedItem
+      : item;
+  const stockStatus = statusItem.lastStockStatus as StockStatus;
+  const healthStatus = statusItem.healthStatus as HealthStatus;
   // Trigger row-flash whenever lastCheckedAt advances. Avoids first-mount flash.
   // Toggle flashing on for the keyframe duration, then back off — the className
   // restart triggers a fresh animation. We use a state flag (no `key` on the
@@ -120,8 +164,10 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
 
   async function handleCheckNow() {
     setBusy(true);
+    setChecking(true);
     try {
       const result = await checkNow(item.id);
+      setCheckedItem(result.item);
       const stock = result.item.lastStockStatus;
       const health = result.item.healthStatus;
       if (health === "ERROR") {
@@ -138,6 +184,7 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
       const message = err instanceof Error ? err.message : "Check failed";
       toast.error(message);
     } finally {
+      setChecking(false);
       setBusy(false);
     }
   }
@@ -285,12 +332,11 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
               {priceLabel}
             </span>
             {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
-            <span
-              className="hidden md:block w-24 text-right font-mono text-xs uppercase tracking-wider whitespace-nowrap"
-              style={{ color: badgeColorVar(item) }}
-            >
-              {badgeLabel(item)}
-            </span>
+            <StockStatusLabel
+              item={statusItem}
+              checking={checking}
+              className="hidden md:inline-grid w-24 justify-items-end text-right"
+            />
           </div>
 
           {/* line 2 — desktop mirrors line-1 column widths so the group count
@@ -306,12 +352,11 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
                 <DealsBadge summary={item.dealsSummary} />
               </span>
               {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
-              <span
-                className="md:hidden font-mono text-[10px] uppercase tracking-wider"
-                style={{ color: badgeColorVar(item) }}
-              >
-                {badgeLabel(item)}
-              </span>
+              <StockStatusLabel
+                item={statusItem}
+                checking={checking}
+                className="md:hidden text-[10px]"
+              />
               <span aria-hidden="true" className="md:hidden">·</span>
 
               <span className="tabular-nums">{identifierLabel}</span>

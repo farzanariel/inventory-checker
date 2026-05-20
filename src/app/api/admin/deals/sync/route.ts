@@ -12,7 +12,7 @@ import { syncDeals } from "@/lib/deals-sync";
 export async function POST() {
   try {
     const db = getDb();
-    const outcome = await syncDeals(db);
+    const outcome = await syncDeals(db, { force: true });
     return NextResponse.json(outcome);
   } catch (err) {
     console.error("[POST /api/admin/deals/sync]", err);

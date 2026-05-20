@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
       mc_product_id: mc.mcProductId,
       name: mc.name,
       brand: mc.brand ?? null,
+      upc: mc.upc ?? null,
       image_url: mc.imageUrl ?? null,
       product_url: mc.canonicalUrl,
       current_price_cents: mc.currentPriceCents,

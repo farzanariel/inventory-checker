@@ -212,6 +212,21 @@ describe("parseMicroCenterHtml — UPC extraction", () => {
     expect(r.upc).toBe("012345678905");
   });
 
+  it("supports Micro Center's product-summary UPC label", () => {
+    const html = withInventoryAndPrice(
+      `<script type="application/ld+json">{"@type":"Product","name":"n","offers":{"price":"1.00"}}</script>`,
+      `<div class="product-details">
+        <span>SKU: 776963</span>
+        <span>Mfr Part #: MU9D3LL/A</span>
+        <span>UPC: 195949080296</span>
+      </div>`,
+    );
+    const r = parseMicroCenterHtml(html, "776963");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.upc).toBe("195949080296");
+  });
+
   it("omits upc when no source carries one", () => {
     const html = withInventoryAndPrice(
       `<script type="application/ld+json">{"@type":"Product","name":"n","offers":{"price":"1.00"}}</script>`,

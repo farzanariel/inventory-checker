@@ -76,7 +76,11 @@ export async function fetchDealsFeed(
  */
 export async function syncDeals(
   db: DrizzleDb,
-  opts: { fetchFeed?: () => Promise<DealsFeed>; now?: () => number } = {},
+  opts: {
+    fetchFeed?: () => Promise<DealsFeed>;
+    now?: () => number;
+    force?: boolean;
+  } = {},
 ): Promise<DealsSyncOutcome> {
   const start = Date.now();
   const fetchFeed = opts.fetchFeed ?? (() => fetchDealsFeed());
@@ -84,7 +88,7 @@ export async function syncDeals(
 
   try {
     const feed = await fetchFeed();
-    return applyFeedToDb(db, feed, now(), start);
+    return applyFeedToDb(db, feed, now(), start, opts.force === true);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     upsertSyncMeta(db, {
@@ -105,6 +109,7 @@ export function applyFeedToDb(
   feed: DealsFeed,
   nowMs: number,
   startMs: number = nowMs,
+  force = false,
 ): DealsSyncOutcome {
   // Always run the display-name heal first, even when we're about to
   // short-circuit on `feed.updated`. Cheap (~20 rows) and means edits to
@@ -113,7 +118,21 @@ export function applyFeedToDb(
   healGroupDisplayNames(db);
 
   const prev = db.select().from(dealsSync).where(eq(dealsSync.id, 1)).get();
-  if (prev && prev.lastUpstreamUpdated === feed.updated) {
+  const newestItem = db
+    .select({ updatedAt: items.updatedAt })
+    .from(items)
+    .orderBy(desc(items.updatedAt))
+    .limit(1)
+    .get();
+  const localItemsChanged =
+    newestItem != null &&
+    (prev?.lastSyncAt == null || newestItem.updatedAt > prev.lastSyncAt);
+  if (
+    !force &&
+    prev &&
+    prev.lastUpstreamUpdated === feed.updated &&
+    !localItemsChanged
+  ) {
     upsertSyncMeta(db, {
       lastSyncAt: nowMs,
       lastSyncOk: 1,
@@ -151,11 +170,16 @@ export function applyFeedToDb(
     }
   }
 
-  // 2. Load all BB items (small table; full scan is fine).
-  const bbItems = db
-    .select({ id: items.id, sku: items.sku, upc: items.upc })
+  // 2. Load all items (small table; full scan is fine). UPC matching is
+  // retailer-agnostic; Best Buy SKU URL fallback remains BB-only.
+  const candidateItems = db
+    .select({
+      id: items.id,
+      retailer: items.retailer,
+      sku: items.sku,
+      upc: items.upc,
+    })
     .from(items)
-    .where(eq(items.retailer, 'bestbuy'))
     .all();
 
   // 3. Upsert deal_groups for every source seen; build source → groupId.
@@ -166,7 +190,7 @@ export function applyFeedToDb(
   let historyInserts = 0;
 
   db.transaction((tx) => {
-    for (const item of bbItems) {
+    for (const item of candidateItems) {
       // UPC primary, URL fallback. We DO NOT mix sources: UPC takes the row,
       // URL only fills in when UPC produced nothing.
       let matches: Array<{ offer: DealsFeedOffer; kind: 'upc' | 'url' }> = [];
@@ -174,7 +198,7 @@ export function applyFeedToDb(
         const fromUpc = upcMap.get(item.upc) ?? [];
         matches = fromUpc.map((m) => ({ offer: m.offer, kind: 'upc' as const }));
       }
-      if (matches.length === 0 && item.sku) {
+      if (matches.length === 0 && item.retailer === 'bestbuy' && item.sku) {
         const fromUrl = skuMap.get(item.sku) ?? [];
         matches = fromUrl.map((m) => ({ offer: m.offer, kind: 'url' as const }));
       }

@@ -146,11 +146,13 @@ function upcFromSpecTable(html: string): string | undefined {
   // Microcenter PDPs render the spec sheet a couple of ways. Cover both:
   //   <td>UPC</td><td>012345678905</td>            (table layout)
   //   <dt>UPC</dt><dd>012345678905</dd>            (definition-list layout)
+  //   UPC: 012345678905                            (product summary layout)
   // Tolerate whitespace, attributes, and stray markup between the label
   // cell and its value.
   const patterns = [
     /<t[dh][^>]*>\s*UPC\s*<\/t[dh]>\s*<td[^>]*>\s*(\d{8,14})\s*<\/td>/i,
     /<dt[^>]*>\s*UPC\s*<\/dt>\s*<dd[^>]*>\s*(\d{8,14})\s*<\/dd>/i,
+    /UPC\s*:\s*(?:<\/?[^>]+>\s*)*(\d{8,14})/i,
   ];
   for (const re of patterns) {
     const m = html.match(re);

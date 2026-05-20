@@ -161,6 +161,56 @@ describe("applyFeedToDb — first sync", () => {
     expect(snap[0].matchKind).toBe("upc");
     expect(snap[0].groupPriceCents).toBe(25000);
   });
+
+  test("Micro Center item matches by UPC", () => {
+    db.insert(items)
+      .values(
+        baseItem({
+          retailer: "microcenter",
+          sku: null,
+          mcProductId: "776963",
+          productUrl: "https://www.microcenter.com/product/776963/x",
+          upc: "195949080296",
+        }),
+      )
+      .run();
+
+    const out = applyFeedToDb(
+      db,
+      feed({ "upc:195949080296": [offer()] }),
+      NOW,
+    );
+
+    expect(out.matchedItemCount).toBe(1);
+    expect(out.matchedDealRows).toBe(1);
+    expect(db.select().from(itemDeals).get()?.matchKind).toBe("upc");
+  });
+
+  test("same UPC updates every matching item in one sync", () => {
+    db.insert(items).values(baseItem({ id: 1 })).run();
+    db.insert(items)
+      .values(
+        baseItem({
+          id: 2,
+          retailer: "microcenter",
+          sku: null,
+          mcProductId: "776963",
+          productUrl: "https://www.microcenter.com/product/776963/x",
+        }),
+      )
+      .run();
+
+    const out = applyFeedToDb(
+      db,
+      feed({ "upc:850049670302": [offer()] }),
+      NOW,
+    );
+
+    expect(out.matchedItemCount).toBe(2);
+    expect(out.matchedDealRows).toBe(2);
+    expect(db.select().from(itemDeals).all()).toHaveLength(2);
+    expect(db.select().from(dealPriceHistory).all()).toHaveLength(2);
+  });
 });
 
 describe("applyFeedToDb — re-sync diff", () => {
@@ -174,6 +224,43 @@ describe("applyFeedToDb — re-sync diff", () => {
     setupAndSync(f, NOW);
     const out = setupAndSync(f, NOW + 1);
     expect(out.skipped).toBe("unchanged");
+  });
+
+  test("unchanged feed recomputes when local items changed after last sync", () => {
+    db.insert(items).values(baseItem({ id: 1 })).run();
+    const f = feed({ "upc:850049670302": [offer()] }, 100);
+    setupAndSync(f, NOW);
+    db.insert(items)
+      .values(
+        baseItem({
+          id: 2,
+          retailer: "microcenter",
+          sku: null,
+          mcProductId: "776963",
+          productUrl: "https://www.microcenter.com/product/776963/x",
+          updatedAt: NOW + 1,
+          createdAt: NOW + 1,
+        }),
+      )
+      .run();
+
+    const out = setupAndSync(f, NOW + 2);
+
+    expect(out.skipped).toBeUndefined();
+    expect(out.matchedItemCount).toBe(2);
+    expect(db.select().from(itemDeals).all()).toHaveLength(2);
+  });
+
+  test("force recomputes even when feed timestamp is unchanged", () => {
+    db.insert(items).values(baseItem()).run();
+    const f = feed({ "upc:850049670302": [offer()] }, 100);
+    setupAndSync(f, NOW);
+
+    const out = applyFeedToDb(db, f, NOW + 1, NOW + 1, true);
+
+    expect(out.skipped).toBeUndefined();
+    expect(out.matchedItemCount).toBe(1);
+    expect(db.select().from(itemDeals).all()).toHaveLength(1);
   });
 
   test("identical price re-sync appends no history rows", () => {

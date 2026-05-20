@@ -193,6 +193,7 @@ export type ProductLookup =
       mc_product_id: string;
       name: string;
       brand: string | null;
+      upc: string | null;
       image_url: string | null;
       product_url: string;
       current_price_cents: number | null;

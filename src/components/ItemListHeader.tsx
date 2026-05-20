@@ -124,7 +124,7 @@ export function ItemListHeader({ sort, onChange }: Props) {
         onClick={() => cycle("status")}
       />
       {/* dropdown trigger column placeholder so headers align with row content */}
-      <div className="size-7" aria-hidden="true" />
+      <div className="size-9" aria-hidden="true" />
     </div>
   );
 }

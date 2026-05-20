@@ -325,6 +325,12 @@ export function AddItemDialog({ open, onOpenChange, onAdded }: Props) {
                   <span className="truncate">
                     {stockLabel(lookup)}
                   </span>
+                  {lookup.retailer === "microcenter" && lookup.upc ? (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span className="tabular-nums">UPC {lookup.upc}</span>
+                    </>
+                  ) : null}
                 </div>
                 {lookup.retailer === "bestbuy" && lookup.stock_source === "metadata-only" ? (
                   <p className="font-mono text-[10px] leading-snug text-muted-foreground break-words">
