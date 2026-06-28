@@ -22,7 +22,7 @@ for arg in "$@"; do
   esac
 done
 
-HEALTH_URL="http://10.0.0.1:3002/api/health"
+HEALTH_URL="http://127.0.0.1:3002/api/health"
 TIMEOUT_SECS=60
 
 echo "[deploy] git pull"
@@ -31,13 +31,17 @@ git pull --ff-only
 echo "[deploy] npm install"
 npm install --no-audit --no-fund
 
+echo "[deploy] db migrate"
+npm run db:migrate
+
 if [[ "$SKIP_BUILD" -eq 0 ]]; then
   echo "[deploy] next build"
   npm run build
 fi
 
-echo "[deploy] pm2 reload all"
-pm2 reload ecosystem.config.cjs --update-env
+echo "[deploy] reload app + worker"
+pm2 startOrReload ecosystem.config.cjs --only inventory-app --update-env
+pm2 startOrReload ecosystem.config.cjs --only inventory-worker --update-env
 
 echo "[deploy] waiting for ${HEALTH_URL} (timeout ${TIMEOUT_SECS}s)"
 deadline=$(( $(date +%s) + TIMEOUT_SECS ))

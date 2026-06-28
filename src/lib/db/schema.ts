@@ -189,6 +189,29 @@ export const settings = sqliteTable(
 );
 
 /**
+ * proxies — shared proxy pool for browser and PDP fallback checks.
+ */
+export const proxies = sqliteTable(
+  'proxies',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    host: text('host').notNull(),
+    port: integer('port').notNull(),
+    username: text('username'),
+    password: text('password'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('idx_proxies_identity').on(
+      table.host,
+      table.port,
+      table.username,
+      table.password,
+    ),
+  ],
+);
+
+/**
  * deal_groups — directory of buying-group sources from deals.json (SPEC §22).
  * `source` is the raw upstream key (e.g. "buyformeretail:bfmr.com"); `displayName`
  * is a humanized label for UI.
@@ -291,6 +314,8 @@ export type WorkerHeartbeat = typeof workerHeartbeat.$inferSelect;
 export type NewWorkerHeartbeat = typeof workerHeartbeat.$inferInsert;
 export type Settings = typeof settings.$inferSelect;
 export type NewSettings = typeof settings.$inferInsert;
+export type Proxy = typeof proxies.$inferSelect;
+export type NewProxy = typeof proxies.$inferInsert;
 export type DealGroup = typeof dealGroups.$inferSelect;
 export type NewDealGroup = typeof dealGroups.$inferInsert;
 export type ItemDeal = typeof itemDeals.$inferSelect;

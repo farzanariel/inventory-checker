@@ -15,10 +15,10 @@ module.exports = {
       name: 'inventory-app',
       cwd: __dirname,
       script: 'node_modules/next/dist/bin/next',
-      // Bind to Docker bridge IP so Traefik (Docker) can reach via host.docker.internal.
-      // 10.0.0.1 is docker0 — not publicly exposed, only reachable from containers on this host.
-      // PORT 3002 avoids conflict with Paperclip server on 3100 (Next.js binds PORT+100 internally).
-      args: ['start', '-H', '10.0.0.1'],
+      // Bind on all interfaces so the host reverse proxy can reach Next.js.
+      // Public traffic still goes through Nginx/Cloudflare; PORT 3002 avoids
+      // conflicts with other services.
+      args: ['start', '-H', '0.0.0.0'],
       env: {
         NODE_ENV: 'production',
         PORT: '3002',
@@ -47,6 +47,22 @@ module.exports = {
       watch: false,
       // Give the worker time to finish its current tick on graceful shutdown
       kill_timeout: 5000,
+    },
+    {
+      name: 'inventory-auto-deploy',
+      cwd: __dirname,
+      script: 'scripts/auto-deploy.sh',
+      interpreter: 'bash',
+      env: {
+        DEPLOY_REMOTE: 'origin',
+        DEPLOY_BRANCH: 'main',
+        DEPLOY_POLL_INTERVAL_SECS: '30',
+      },
+      out_file: path.join(__dirname, 'logs', 'auto-deploy.out.log'),
+      error_file: path.join(__dirname, 'logs', 'auto-deploy.err.log'),
+      merge_logs: true,
+      autorestart: true,
+      watch: false,
     },
   ],
 };

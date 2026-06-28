@@ -1,41 +1,43 @@
 #!/usr/bin/env bash
-# Cron-driven auto-deploy. Fetches origin, runs deploy.sh only if main has
-# advanced. Wrapped in flock so overlapping cron ticks can't double-deploy.
-# All output goes to logs/auto-deploy.log; cron stays quiet on no-op runs.
-#
-# Install:  (crontab -l 2>/dev/null; echo '* * * * * /root/inventory-checker/scripts/auto-deploy.sh') | crontab -
+# Poll origin/main and run the normal health-gated deploy when a new commit lands.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-LOG=logs/auto-deploy.log
-LOCK=logs/auto-deploy.lock
+REMOTE="${DEPLOY_REMOTE:-origin}"
+BRANCH="${DEPLOY_BRANCH:-main}"
+INTERVAL_SECS="${DEPLOY_POLL_INTERVAL_SECS:-30}"
+LOCK_FILE="${DEPLOY_LOCK_FILE:-/tmp/inventory-checker-deploy.lock}"
 
-exec >>"$LOG" 2>&1
+mkdir -p logs
 
-# Drop overlapping ticks rather than queue them.
-exec 9>"$LOCK"
-if ! flock -n 9; then
-  exit 0
-fi
+echo "[auto-deploy] watching ${REMOTE}/${BRANCH} every ${INTERVAL_SECS}s"
 
-ts() { date -Is; }
+while :; do
+  remote_sha=""
+  if remote_sha="$(git ls-remote --heads "$REMOTE" "$BRANCH" | awk '{print $1}')"; then
+    local_sha="$(git rev-parse HEAD)"
 
-git fetch --quiet origin main
+    if [[ -n "$remote_sha" && "$remote_sha" != "$local_sha" ]]; then
+      echo "[auto-deploy] new commit detected: ${local_sha} -> ${remote_sha}"
+      if (
+        flock -n 9 || exit 75
+        ./scripts/deploy.sh
+      ) 9>"$LOCK_FILE"; then
+        echo "[auto-deploy] deploy complete"
+      else
+        status=$?
+        if [[ "$status" -eq 75 ]]; then
+          echo "[auto-deploy] deploy already running; skipping this tick"
+        else
+          echo "[auto-deploy] deploy failed with exit ${status}" >&2
+        fi
+      fi
+    fi
+  else
+    echo "[auto-deploy] unable to read ${REMOTE}/${BRANCH}" >&2
+  fi
 
-LOCAL=$(git rev-parse HEAD)
-REMOTE=$(git rev-parse origin/main)
-
-if [[ "$LOCAL" == "$REMOTE" ]]; then
-  exit 0
-fi
-
-echo "[$(ts)] new commits on origin/main: $LOCAL -> $REMOTE; deploying"
-
-if scripts/deploy.sh; then
-  echo "[$(ts)] deploy ok ($(git rev-parse --short HEAD))"
-else
-  echo "[$(ts)] deploy FAILED (exit $?)" >&2
-  exit 1
-fi
+  sleep "$INTERVAL_SECS"
+done

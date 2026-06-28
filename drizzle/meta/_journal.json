@@ -64,6 +64,13 @@
       "when": 1779670800000,
       "tag": "0008_sort_order",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1782604800000,
+      "tag": "0009_proxies",
+      "breakpoints": true
     }
   ]
 }

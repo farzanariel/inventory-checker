@@ -1,4 +1,5 @@
 import { execFile as _execFile } from "node:child_process";
+import { getBestBuyCurlProxyArgs } from "./proxies";
 
 const CURL_CHROME = "/usr/local/bin/curl_chrome116";
 
@@ -15,29 +16,15 @@ function execFileAsync(
   });
 }
 
-function bestBuyProxyArgs(): string[] | null {
-  const pdpProxy = process.env.BESTBUY_PDP_PROXY ?? "";
-  const pdpMatch = pdpProxy.match(/^([^:@]+):([^@]*)@([^:]+):(\d+)$/);
-  if (pdpMatch) {
-    const [, user, pass, host, port] = pdpMatch;
-    return ["--proxy", `http://${host}:${port}`, "--proxy-user", `${user}:${pass}`];
-  }
-
-  const browserProxy = process.env.BB_PROXY ?? "";
-  const browserMatch = browserProxy.match(/^([^:]+):(\d+):([^:]+):(.*)$/);
-  if (browserMatch) {
-    const [, host, port, user, pass] = browserMatch;
-    return ["--proxy", `http://${host}:${port}`, "--proxy-user", `${user}:${pass}`];
-  }
-
-  return null;
+async function bestBuyProxyArgs(): Promise<string[] | null> {
+  return getBestBuyCurlProxyArgs();
 }
 
 export async function fetchBestBuyLandingHtmlViaProxy(
   url: string,
   timeoutMs: number,
 ): Promise<{ html: string; finalUrl: string } | null> {
-  const proxy = bestBuyProxyArgs();
+  const proxy = await bestBuyProxyArgs();
   if (!proxy) return null;
 
   const args = [

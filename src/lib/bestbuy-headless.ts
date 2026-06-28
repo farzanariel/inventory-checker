@@ -46,6 +46,7 @@ import {
 import { FingerprintInjector } from "fingerprint-injector";
 
 import type { ProductResult } from "./bestbuy";
+import { getBrowserProxyLine } from "./proxies";
 
 const fpGenerator = new FingerprintGenerator({
   browsers: [{ name: "chrome", minVersion: 128 }],
@@ -287,7 +288,7 @@ export async function getHeadlessContext(
 ): Promise<BrowserContext> {
   const resolved: HeadlessOptions = {
     ...options,
-    proxy: options.proxy ?? process.env.BB_PROXY ?? undefined,
+    proxy: options.proxy ?? (await getBrowserProxyLine()),
     storageStatePath:
       options.storageStatePath ??
       process.env.BB_STORAGE_STATE ??
@@ -398,7 +399,7 @@ export async function scrapePdpForSku(
 ): Promise<ProductResult> {
   const resolved: HeadlessOptions = {
     ...options,
-    proxy: options.proxy ?? process.env.BB_PROXY ?? undefined,
+    proxy: options.proxy ?? (await getBrowserProxyLine()),
     storageStatePath:
       options.storageStatePath ??
       process.env.BB_STORAGE_STATE ??

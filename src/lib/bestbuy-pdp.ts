@@ -20,6 +20,7 @@ import { mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { productUrlForSku, type ProductResult } from "./bestbuy";
+import { getBestBuyCurlProxyArgs } from "./proxies";
 
 // ── config ─────────────────────────────────────────────────────────────────
 
@@ -69,21 +70,8 @@ let warmingPromise: Promise<void> | null = null;
 
 // ── proxy URL ──────────────────────────────────────────────────────────────
 
-function proxyArgs(): string[] | null {
-  const raw = process.env.BESTBUY_PDP_PROXY ?? "";
-  if (!raw.trim()) return null;
-
-  // "user:pass@host:port"
-  const m = raw.match(/^([^:@]+):([^@]*)@([^:]+):(\d+)$/);
-  if (!m) {
-    console.warn("[bestbuy-pdp] BESTBUY_PDP_PROXY format invalid; expected user:pass@host:port");
-    return null;
-  }
-  const [, user, pass, host, port] = m;
-  return [
-    "--proxy", `http://${host}:${port}`,
-    "--proxy-user", `${user}:${pass}`,
-  ];
+async function proxyArgs(): Promise<string[] | null> {
+  return getBestBuyCurlProxyArgs();
 }
 
 // ── internal helpers ───────────────────────────────────────────────────────
@@ -279,7 +267,7 @@ async function fetchOneSku(sku: string, proxy: string[]): Promise<ProductResult>
  * Fetch product info for a set of SKUs by scraping their PDP pages through a
  * residential proxy. Fetches up to MAX_CONCURRENT SKUs in parallel.
  *
- * Returns an error result for all SKUs if `BESTBUY_PDP_PROXY` is not set.
+ * Returns an error result for all SKUs if no saved or env proxy is configured.
  */
 export async function fetchProductsViaPdp(
   skus: string[]
@@ -287,10 +275,10 @@ export async function fetchProductsViaPdp(
   const results = new Map<string, ProductResult>();
   if (skus.length === 0) return results;
 
-  const proxy = proxyArgs();
+  const proxy = await proxyArgs();
   if (!proxy) {
     for (const sku of skus) {
-      results.set(sku, { ok: false, sku, error: "PDP proxy not configured (BESTBUY_PDP_PROXY)" });
+      results.set(sku, { ok: false, sku, error: "PDP proxy not configured" });
     }
     return results;
   }

@@ -338,3 +338,54 @@ export async function saveSettings(patch: SettingsPatch): Promise<SettingsRespon
   });
   return jsonOrThrow<SettingsResponse>(res);
 }
+
+export type ProxyEntry = {
+  id: number;
+  host: string;
+  port: number;
+  username: string | null;
+  password: string | null;
+  created_at: number;
+};
+
+export type ProxiesResponse = {
+  proxies: ProxyEntry[];
+  count?: number;
+  added?: number;
+  replaced?: number;
+  cleared?: number;
+  total?: number;
+};
+
+export async function fetchProxies(): Promise<ProxiesResponse> {
+  const res = await fetch("/api/proxies", { cache: "no-store" });
+  return jsonOrThrow<ProxiesResponse>(res);
+}
+
+export async function addProxies(proxies: string[]): Promise<ProxiesResponse> {
+  const res = await fetch("/api/proxies", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ proxies }),
+  });
+  return jsonOrThrow<ProxiesResponse>(res);
+}
+
+export async function replaceProxies(proxies: string[]): Promise<ProxiesResponse> {
+  const res = await fetch("/api/proxies", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ proxies }),
+  });
+  return jsonOrThrow<ProxiesResponse>(res);
+}
+
+export async function removeProxy(index: number): Promise<ProxiesResponse> {
+  const res = await fetch(`/api/proxies/${index}`, { method: "DELETE" });
+  return jsonOrThrow<ProxiesResponse>(res);
+}
+
+export async function clearSavedProxies(): Promise<ProxiesResponse> {
+  const res = await fetch("/api/proxies", { method: "DELETE" });
+  return jsonOrThrow<ProxiesResponse>(res);
+}

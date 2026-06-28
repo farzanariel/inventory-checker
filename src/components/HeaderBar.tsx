@@ -13,7 +13,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MoonIcon, PlusIcon, RefreshCwIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { MoonIcon, PlusIcon, RefreshCwIcon, SettingsIcon, ShieldIcon, SunIcon } from "lucide-react";
 import { AddItemDialog } from "@/components/AddItemDialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { triggerDealsSync, type HealthResponse } from "@/lib/api";
@@ -254,6 +254,15 @@ export function HeaderBar({ watchingCount, lastSyncAt, onAdded }: Props) {
                 <MoonIcon className="size-4" aria-hidden="true" />
               )}
             </Button>
+
+            <Link
+              href="/proxies"
+              aria-label="Proxies"
+              title="Proxies"
+              className={`${buttonVariants({ variant: "outline", size: "icon-sm" })} active:scale-[0.97]`}
+            >
+              <ShieldIcon className="size-4" aria-hidden="true" />
+            </Link>
 
             {/* Settings: gear icon link to /settings */}
             <Link
