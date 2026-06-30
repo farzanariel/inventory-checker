@@ -12,7 +12,8 @@
  * Orchestration only — all business logic lives in checker.ts.
  */
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import { and, asc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import { and, eq, gt, inArray, isNotNull, isNull, lt, lte, ne, or, sql } from 'drizzle-orm';
+import { pathToFileURL } from 'node:url';
 
 import { closeDb, getDb } from '@/lib/db/client';
 import { items, stockEvents, workerHeartbeat } from '@/lib/db/schema';
@@ -31,6 +32,7 @@ import {
   needsHeadlessFallback,
   type FulfillmentItemContext,
 } from '@/lib/bestbuy-tls';
+import { getSettings } from '@/lib/settings';
 
 const MC_CONCURRENCY = 3;
 
@@ -40,6 +42,7 @@ const PRUNE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const DEAL_HISTORY_RETENTION_MS = 90 * 24 * 60 * 60 * 1000; // SPEC §22
 const DEALS_SYNC_INTERVAL_MS = 10 * 60 * 1000; // SPEC §22 — every 10 min
 const MAX_BATCH_SIZE = 25;
+const BATCH_LOOKAHEAD_MS = 10_000;
 const WORKER_VERSION = process.env.WORKER_VERSION ?? 'dev';
 
 
@@ -161,9 +164,7 @@ async function syncDealsIfDue(db: ReturnType<typeof getDb>, now: number) {
   }
 }
 
-async function tick(db: ReturnType<typeof getDb>): Promise<void> {
-  const tickStart = Date.now();
-
+export function selectItemsForTick(db: ReturnType<typeof getDb>, tickStart: number) {
   const dueItems = db
     .select()
     .from(items)
@@ -177,6 +178,46 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     .orderBy(sql`${items.nextCheckDueAt} ASC NULLS FIRST`)
     .limit(MAX_BATCH_SIZE)
     .all();
+
+  if (dueItems.length === 0 || dueItems.length >= MAX_BATCH_SIZE) {
+    return dueItems;
+  }
+
+  const dueBestBuyIntervals = Array.from(
+    new Set(
+      dueItems
+        .filter((item) => item.retailer !== 'microcenter' && item.sku != null)
+        .map((item) => item.checkIntervalMin),
+    ),
+  );
+
+  if (dueBestBuyIntervals.length === 0) {
+    return dueItems;
+  }
+
+  const lookaheadItems = db
+    .select()
+    .from(items)
+    .where(
+      and(
+        eq(items.enabled, 1),
+        ne(items.retailer, 'microcenter'),
+        isNotNull(items.sku),
+        inArray(items.checkIntervalMin, dueBestBuyIntervals),
+        gt(items.nextCheckDueAt, tickStart),
+        lte(items.nextCheckDueAt, tickStart + BATCH_LOOKAHEAD_MS),
+      ),
+    )
+    .orderBy(sql`${items.nextCheckDueAt} ASC`)
+    .limit(MAX_BATCH_SIZE - dueItems.length)
+    .all();
+
+  return [...dueItems, ...lookaheadItems];
+}
+
+export async function tick(db: ReturnType<typeof getDb>): Promise<void> {
+  const tickStart = Date.now();
+  const dueItems = selectItemsForTick(db, tickStart);
 
   if (dueItems.length === 0) {
     updateHeartbeat(db, tickStart, 0, 0);
@@ -193,9 +234,21 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   // are fetched individually via the headless pool.
   const bbItems = dueItems.filter((i) => i.retailer !== 'microcenter' && i.sku != null);
   const mcItems = dueItems.filter((i) => i.retailer === 'microcenter' && i.mcProductId != null);
+  const lookaheadCount = dueItems.filter(
+    (item) => item.nextCheckDueAt != null && item.nextCheckDueAt > tickStart,
+  ).length;
+  let bbFetchMs = 0;
+  let tlsFallbackMs = 0;
+  let fulfillmentMs = 0;
+  let graphqlMs = 0;
+  let pdpMs = 0;
+  let applyMs = 0;
+  let mcMs = 0;
 
   const skus = bbItems.map((i) => i.sku as string);
+  const bbFetchStart = Date.now();
   const fetchMap = skus.length > 0 ? await fetchProducts(skus) : new Map();
+  bbFetchMs = Date.now() - bbFetchStart;
 
   // --- Layer 1: TLS-impersonating HTTP client ---
   // For SKUs that failed via undici (non-missing errors like 403/timeout),
@@ -212,7 +265,9 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     );
   });
   if (tlsFallbackSkus.length > 0) {
+    const tlsStart = Date.now();
     const tlsMap = await fetchProductsViaTls(tlsFallbackSkus);
+    tlsFallbackMs = Date.now() - tlsStart;
     for (const [sku, result] of tlsMap) {
       if (result.ok) {
         console.log(`[worker] sku=${sku} fetch_path=tls`);
@@ -236,6 +291,7 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     return r && !r.ok && isMissingFromPriceBlocks(r.error);
   });
   if (fulfillmentSkus.length > 0) {
+    const fulfillmentStart = Date.now();
     const itemBySku = new Map<string, FulfillmentItemContext>();
     for (const item of bbItems) {
       const sku = item.sku as string;
@@ -259,9 +315,12 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
       // On failure, leave the original ProductNotFoundException error in fetchMap
       // so the item stays in PENDING_REINDEX exactly as before (no regression).
     }
+    fulfillmentMs = Date.now() - fulfillmentStart;
 
     if (needsMetadataSkus.length > 0) {
+      const graphqlStart = Date.now();
       const detailsMap = await fetchProductDetailsViaGraphql(needsMetadataSkus);
+      graphqlMs = Date.now() - graphqlStart;
       for (const sku of needsMetadataSkus) {
         const stockResult = fetchMap.get(sku);
         const merged = stockResult
@@ -288,7 +347,9 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
     return r && !r.ok && needsHeadlessFallback(r.error);
   });
   if (pdpSkus.length > 0) {
+    const pdpStart = Date.now();
     const pdpMap = await fetchProductsViaPdp(pdpSkus);
+    pdpMs = Date.now() - pdpStart;
     for (const [sku, result] of pdpMap) {
       if (result.ok) {
         console.log(`[worker] sku=${sku} fetch_path=pdp_proxy`);
@@ -298,35 +359,46 @@ async function tick(db: ReturnType<typeof getDb>): Promise<void> {
   }
 
   let errorCount = 0;
+  const settings = getSettings(db);
   // BB path: apply each result sequentially (each is its own short txn).
+  const applyStart = Date.now();
   for (const item of bbItems) {
     if (shouldStop) break;
     const sku = item.sku as string;
     const result =
       fetchMap.get(sku) ??
       ({ ok: false, sku, error: 'Missing from batch response' } as const);
-    const outcome = await applyCheckResult(item.id, result);
+    const outcome = await applyCheckResult(item.id, result, {
+      webhookUrl: settings.discordWebhookUrl,
+      webhookUsername: settings.discordUsername,
+    });
     if (outcome.webhookOk === false || result.ok === false) errorCount++;
   }
+  applyMs = Date.now() - applyStart;
 
   // MC path: fetch + apply per item, capped concurrency.
   if (mcItems.length > 0 && !shouldStop) {
+    const mcStart = Date.now();
     const outcomes = await runConcurrent(mcItems, MC_CONCURRENCY, async (item) => {
       if (shouldStop) return null;
       const result = await fetchMicroCenterProduct(item.mcProductId as string);
-      return applyMicroCenterCheckResult(item.id, result);
+      return applyMicroCenterCheckResult(item.id, result, {
+        webhookUrl: settings.discordWebhookUrl,
+        webhookUsername: settings.discordUsername,
+      });
     });
     for (const outcome of outcomes) {
       if (outcome && (outcome.webhookOk === false || outcome.notification === null && outcome.reason.startsWith('MC error'))) {
         errorCount++;
       }
     }
+    mcMs = Date.now() - mcStart;
   }
 
   const tickEnd = Date.now();
   updateHeartbeat(db, tickEnd, dueItems.length, errorCount);
   console.log(
-    `[worker] tick: checked=${dueItems.length} errors=${errorCount} ms=${tickEnd - tickStart} heartbeat-ok`,
+    `[worker] tick: checked=${dueItems.length} bb=${bbItems.length} mc=${mcItems.length} lookahead=${lookaheadCount} errors=${errorCount} ms=${tickEnd - tickStart} phases=bb:${bbFetchMs},tls:${tlsFallbackMs},fulfillment:${fulfillmentMs},graphql:${graphqlMs},pdp:${pdpMs},apply:${applyMs},mc:${mcMs} heartbeat-ok`,
   );
 }
 
@@ -360,8 +432,10 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error('[worker] fatal:', err);
-  closeDb();
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error('[worker] fatal:', err);
+    closeDb();
+    process.exit(1);
+  });
+}
