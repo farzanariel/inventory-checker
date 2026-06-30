@@ -267,7 +267,7 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
             setEditOpen(true);
           }
         }}
-        className={`group relative flex items-center gap-3 px-1 py-2.5 min-h-12 cursor-pointer transition-colors duration-150 hover:bg-foreground/[0.03] active:bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
+        className={`group relative flex items-center gap-2 md:gap-3 px-1 py-3 md:py-2.5 min-h-14 md:min-h-12 cursor-pointer transition-colors duration-150 hover:bg-foreground/[0.03] active:bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
           flashing ? "row-flash" : ""
         } ${isPaused ? "opacity-60" : ""}`}
       >
@@ -301,15 +301,104 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
             width={40}
             height={40}
             unoptimized={item.retailer === "microcenter"}
-            className="size-10 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+            className="hidden md:block size-10 shrink-0 rounded-md border border-border bg-white object-contain p-1"
           />
         ) : null}
 
-        {/* main content — two lines */}
+        {/* main content */}
         <div className="min-w-0 flex-1">
-          {/* line 1 — spreadsheet-style columns on desktop. Fixed widths so price
+          {/* Mobile layout — 2x2 baseline-aligned grid.
+              Row 1: title (left)  ·  price (right)
+              Row 2: SKU + signals (left)  ·  STATUS (right)
+              Baselines align horizontally because each row uses items-baseline
+              with matching font-sizes on left and right. */}
+          <div className="md:hidden grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1">
+            <a
+              href={item.productUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="min-w-0 truncate text-[15px] font-medium text-foreground underline-offset-2 hover:underline self-baseline"
+              title={item.name ?? `SKU ${item.sku}`}
+            >
+              {item.name ?? `SKU ${item.sku}`}
+            </a>
+            <span className="justify-self-end text-[15px] font-semibold tabular-nums text-foreground whitespace-nowrap self-baseline">
+              {priceLabel}
+            </span>
+
+            <div className="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground self-baseline">
+              {item.dealsSummary.groupCount > 0 ? (
+                <DealsBadge summary={item.dealsSummary} className="text-[11px]" />
+              ) : null}
+              <span className="tabular-nums whitespace-nowrap">{identifierLabel}</span>
+              <span aria-hidden="true">·</span>
+              {consecutiveErrorsLine ? (
+                <span
+                  className="tabular-nums"
+                  style={{ color: "var(--color-status-error)" }}
+                >
+                  {consecutiveErrorsLine}
+                </span>
+              ) : (
+                <span className="tabular-nums">{relativeLabel}</span>
+              )}
+              {dropChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  {dropChip}
+                </>
+              ) : null}
+              {saleEndsChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="tabular-nums"
+                    style={{ color: "var(--color-status-pricedrop)" }}
+                  >
+                    {saleEndsChip}
+                  </span>
+                </>
+              ) : null}
+              {conditionChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="uppercase tracking-wider"
+                    style={{ color: "var(--color-status-degraded)" }}
+                  >
+                    {conditionChip}
+                  </span>
+                </>
+              ) : null}
+              {marketplaceChip ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span
+                    className="uppercase tracking-wider truncate max-w-[8rem]"
+                    title={`Sold by ${marketplaceChip}, not Best Buy directly`}
+                  >
+                    {marketplaceChip}
+                  </span>
+                </>
+              ) : null}
+              {isPaused ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>paused</span>
+                </>
+              ) : null}
+            </div>
+            <StockStatusLabel
+              item={statusItem}
+              checking={checking}
+              className="justify-self-end self-baseline min-w-0"
+            />
+          </div>
+
+          {/* Desktop line 1 — spreadsheet-style columns. Fixed widths so price
               right edges and status labels align vertically across every row. */}
-          <div className="flex items-baseline gap-3">
+          <div className="hidden md:flex items-baseline gap-3">
             <div className="min-w-0 flex-1">
               <a
                 href={item.productUrl}
@@ -322,43 +411,23 @@ export function ItemRow({ item, onChanged, draggable = true }: Props) {
                 {item.name ?? `SKU ${item.sku}`}
               </a>
             </div>
-            {/* Best-group-price column — narrow, right-aligned. */}
-            <span className="hidden md:flex items-center justify-end gap-2 w-28 text-right whitespace-nowrap overflow-hidden">
+            <span className="flex items-center justify-end gap-2 w-28 text-right whitespace-nowrap overflow-hidden">
               {dropChip}
               <DealsBadge summary={item.dealsSummary} />
             </span>
-            {/* Price column — right-aligned fixed width. */}
-            <span className="hidden md:block w-24 text-right text-sm font-semibold tabular-nums text-foreground whitespace-nowrap">
+            <span className="w-24 text-right text-sm font-semibold tabular-nums text-foreground whitespace-nowrap">
               {priceLabel}
             </span>
-            {/* Status column — right-aligned fixed width, nowrap so labels never wrap. */}
             <StockStatusLabel
               item={statusItem}
               checking={checking}
-              className="hidden md:inline-grid w-24 justify-items-end text-right"
+              className="w-24 justify-items-end text-right"
             />
           </div>
 
-          {/* line 2 — desktop mirrors line-1 column widths so the group count
-              column-aligns under the best-group-price chip. Mobile keeps a
-              flat flex-wrap row with price + status pulled forward. */}
-          <div className="mt-0.5 flex items-baseline gap-3 font-mono text-xs text-muted-foreground">
+          {/* Desktop line 2 — column-aligned secondary row. */}
+          <div className="mt-0.5 hidden md:flex items-baseline gap-3 font-mono text-xs text-muted-foreground">
             <div className="min-w-0 flex-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-              {/* Mobile-only: price + status appear first on line 2. */}
-              <span className="md:hidden text-xs font-semibold tabular-nums text-foreground">
-                {priceLabel}
-              </span>
-              <span className="md:hidden">
-                <DealsBadge summary={item.dealsSummary} />
-              </span>
-              {dropChip ? <span className="md:hidden">{dropChip}</span> : null}
-              <StockStatusLabel
-                item={statusItem}
-                checking={checking}
-                className="md:hidden text-[10px]"
-              />
-              <span aria-hidden="true" className="md:hidden">·</span>
-
               <span className="tabular-nums">{identifierLabel}</span>
               {item.upc ? (
                 <>

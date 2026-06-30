@@ -8,6 +8,8 @@
  *   - hasUpc && groupCount === 0: "not currently bought" (muted)
  *   - !hasUpc: "UPC pending" (muted yellow) — pre-backfill state
  */
+import { CheckIcon } from "lucide-react";
+
 import type { ItemDealsSummary } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
 
@@ -46,26 +48,38 @@ export function DealsBadge({ summary, className = "" }: Props) {
   }
 
   const margin = summary.marginCents;
-  const marginColor =
+  // "Full value" = a buying group is offering at or above the current retail
+  // price → green. Anything below retail → red. Null margin (no current price
+  // to compare against) falls back to muted.
+  const atFullValue = margin != null && margin >= 0;
+  const accent =
     margin == null
       ? "var(--color-muted-foreground)"
-      : margin > 0
+      : atFullValue
         ? "var(--color-status-in)"
         : "var(--color-status-error)";
+  const tintBg =
+    margin == null
+      ? "transparent"
+      : atFullValue
+        ? "color-mix(in oklch, var(--color-status-in) 14%, transparent)"
+        : "color-mix(in oklch, var(--color-status-error) 14%, transparent)";
 
   const title = summary.bestSource
-    ? `Best price ${formatPrice(summary.bestGroupPriceCents ?? 0)} from ${summary.bestSource}` +
+    ? `Bought by ${summary.groupCount} group${summary.groupCount === 1 ? "" : "s"} · best ${formatPrice(summary.bestGroupPriceCents ?? 0)} from ${summary.bestSource}` +
       (margin != null
         ? ` (${margin >= 0 ? "+" : "−"}${formatPrice(Math.abs(margin))} vs current)`
         : "")
-    : undefined;
+    : `Bought by ${summary.groupCount} group${summary.groupCount === 1 ? "" : "s"}`;
 
   return (
     <span
-      className={`font-mono text-sm tabular-nums tracking-tight whitespace-nowrap ${className}`}
-      style={{ color: marginColor }}
+      className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-xs md:text-sm tabular-nums tracking-tight whitespace-nowrap ${className}`}
+      style={{ color: accent, backgroundColor: tintBg }}
       title={title}
+      aria-label={title}
     >
+      <CheckIcon className="size-3 shrink-0" aria-hidden="true" />
       {formatPrice(summary.bestGroupPriceCents ?? 0)}
     </span>
   );
